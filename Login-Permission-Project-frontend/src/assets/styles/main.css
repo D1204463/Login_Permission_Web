@@ -1,0 +1,12 @@
+
+.lp-btn-primary{
+    color: #ffffff;
+    background-color: #1E88A8; /*#006284;*/
+    border-color: #1E88A8; /*#006284;*/
+}
+
+.lp-btn-primary:hover{
+    color: #ffffff;
+    background-color:#1E88A8; /*#006284;*/
+    border-color: #1E88A8; /*#006284;*/  /*#91B493*/
+}
