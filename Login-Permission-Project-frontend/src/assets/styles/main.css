@@ -1,0 +1,15 @@
+
+.lp-btn-primary{
+    color: #0F2540;
+    background-color: #FC9F4D; /*#006284;#1E88A8*/
+    border-color: #FC9F4D; /*#006284;#1E88A8*/
+}
+
+.lp-btn-primary:hover{
+    color: #0F2540;
+    background-color:#faaa65; /*#006284;#1E88A8*/
+    border-color: #faaa65; /*#006284;#1E88A8*/  /*#91B493*/
+}
+.lp-dropdown{
+    color: #ffffff;
+}
