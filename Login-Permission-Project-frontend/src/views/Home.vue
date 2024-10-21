@@ -1,8 +1,8 @@
 <template>
     <Sidebar />
-    <div class="container col-md-auto">
+    <!-- <div class="container col-md-auto">
         <Body />
-    </div>
+    </div> -->
 </template>
 
 <script setup>
