@@ -7,5 +7,4 @@
 
 <script setup>
 import Sidebar from '../components/Sidebar.vue';
-import Body from '../components/Body.vue';
 </script>

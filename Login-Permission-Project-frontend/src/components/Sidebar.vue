@@ -248,4 +248,24 @@ hr {
     background-color: rgba(255, 255, 255, 0.1);
     margin: 1rem 0;
 }
+
+/* 在原有的 style 中添加 */
+.col-auto {
+    position: fixed;
+    height: 100vh;
+    z-index: 1000;
+    width: 240px; /* 固定寬度 */
+}
+
+/* 修改 container-fluid 的樣式 */
+.container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* 確保 row 不會溢出 */
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
 </style>
