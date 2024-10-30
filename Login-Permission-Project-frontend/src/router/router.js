@@ -2,6 +2,7 @@ import { createWebHistory, createRouter } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/LoginView.vue'
 import Unit from '../views/Unit.vue'
+import Position from '../views/Position.vue'
 import Register from '../components/Register.vue'
 // import UnitComponents from '../components/Unit.vue'
 // import Sidebar from '../components/Sidebar.vue'
@@ -28,11 +29,11 @@ const routes = [
         name: 'Unit',
         component: Unit
     },
-    // {
-    //     path: '/sidebar',
-    //     name: 'Sidebar',
-    //     component: Sidebar
-    // }
+    {
+        path: '/position',
+        name: 'Position',
+        component: Position
+    }
 ]
 
 const router =  createRouter({
