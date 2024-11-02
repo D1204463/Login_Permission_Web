@@ -31,7 +31,7 @@
                                                 <select class="form-select" id="unitSelect" v-model="searchByUnitId">
                                                     <option selected value="">選擇科別</option>
                                                     <option v-for="unit in units" :key="unit.unit_id"
-                                                        :value="unit.unit_id" >
+                                                        :value="unit.unit_id">
                                                         ({{ unit.unit_id }}) {{ unit.unit_name }}
                                                     </option>
                                                 </select>
@@ -41,10 +41,11 @@
                                         <div class="col-md">
                                             <div class="form-floating">
                                                 <!-- 搜尋職位 -->
-                                                <select class="form-select" id="positionSelect" v-model="searchByPositionId">
+                                                <select class="form-select" id="positionSelect"
+                                                    v-model="searchByPositionId">
                                                     <option selected value="">選擇職位</option>
-                                                    <option v-for="position in positions" :key="position.position_id"
-                                                        :value="position.position_id">
+                                                    <option v-for="position in positionOptions"
+                                                        :key="position.position_id" :value="position.position_id">
                                                         ({{ position.position_id }}) {{ position.position }}
                                                     </option>
                                                 </select>
@@ -53,8 +54,13 @@
                                         </div>
                                         <!-- 搜尋按鈕 -->
                                         <div class="col-auto d-flex align-items-center">
-                                            <button type="button" class="btn btn-primary search-btn" v-on:click="search">
+                                            <button type="button" class="btn btn-primary search-btn me-2"
+                                                v-on:click="search">
                                                 <font-awesome-icon :icon="['fas', 'magnifying-glass']" size="lg" />
+                                            </button>
+                                            <!-- 新增重置按鈕 -->
+                                            <button type="button" class="btn btn-secondary search-btn" v-on:click="resetSearch">
+                                                <font-awesome-icon :icon="['fas', 'rotate']" size="lg" />
                                             </button>
                                         </div>
                                     </div>
@@ -82,7 +88,7 @@
                     <tbody>
                         <tr v-for="position in positions" v-bind:key="position.position_id">
                             <td class="text-center">
-                                <!-- 點擊 Button 出現 Edit Position Model -->
+                                <!-- 點擊 Button 出現 Edit Position Modal -->
                                 <button type="button" class="btn btn-link" data-bs-toggle="modal"
                                     data-bs-target="#editPositionModal" v-on:click="onUpdatePosition(position)">
                                     <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
@@ -91,9 +97,9 @@
                             <td class="text-center">{{ position.position_id }}</td>
                             <td class="text-center">{{ position.position }}</td>
                             <td class="text-center">{{ position.unit_id }}</td>
-                            <td class="text-center">{{ position.unit_name }}</td>
+                            <td class="text-center">{{ position.unit.unit_name }}</td>
                             <td class="text-center">
-                                <!-- 點擊 Button 出現 Delete Position Model -->
+                                <!-- 點擊 Button 出現 Delete Position Modal -->
                                 <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
                                     data-bs-target="#deletePositionModal" v-on:click="onSelectPosition(position)">
                                     <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
@@ -106,7 +112,7 @@
         </div>
     </div>
 
-    <!-- 新增職位 Model -->
+    <!-- 新增職位 Modal -->
     <div class="modal fade" id="createPositionModal" tabindex="-1" aria-labelledby="createPositionModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
@@ -154,7 +160,7 @@
         </div>
     </div>
 
-    <!-- 修改職位 Model -->
+    <!-- 修改職位 Modal -->
     <div class="modal fade" id="editPositionModal" tabindex="-1" aria-labelledby="editPositionModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
@@ -237,11 +243,12 @@ export default {
     },
     data() {
         return {
-            positions: [],
+            positions: [], //用於顯示搜尋結果
+            positionOptions: [], //搜尋職位時需要的，用於下拉式選單
             units: [],
-            selectedUnitName: "", // 新增的欄位用來顯示Unit Name
-            searchByPositionId: "", // 用於儲存所選職位 ID
-            searchByUnitId: "", // 用於儲存所選科別 ID
+            selectedUnitName: "", //新增的欄位用來顯示Unit Name
+            searchByPositionId: "", //用於儲存所選職位 ID
+            searchByUnitId: "", //用於儲存所選科別 ID
             selectedPosition: {
                 position_id: "",
                 position: "",
@@ -271,8 +278,10 @@ export default {
         },
         async getPositionData() { //get 職位(Position)的資料
             try {
-                let response = await fetch("http://localhost:8085/Position/getAll");
-                this.positions = await response.json();
+                let response = await fetch("http://localhost:8085/Position/get");
+                const data = await response.json();
+                this.positions = data;
+                this.positionOptions = data; //設置下拉式選單選項
                 console.log(this.positions);
             } catch (error) {
                 console.log('Error Get Position:', error);
@@ -284,28 +293,33 @@ export default {
                 const positionId = this.searchByPositionId ? parseInt(this.searchByPositionId) : null;
 
                 const params = new URLSearchParams();
-                if(unitId !== null) {
+                if (unitId !== null) {
                     params.append('unitId', unitId.toString());
                 }
-                if(positionId !== null) {
+                if (positionId !== null) {
                     params.append('positionId', positionId.toString());
                 }
 
                 const response = await fetch(`http://localhost:8085/Position/search?${params}`);
 
-                if(!response.ok) {
+                if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
                 this.positions = data;
-                
+
                 // 處理空結果
-                if(this.positions.length === 0) {
+                if (this.positions.length === 0) {
                     console.log("沒有符合條件的搜尋結果");
                 }
-            } catch(error) {
+            } catch (error) {
                 console.log("Error Search", error);
             }
+        },
+        resetSearch() { //重置搜尋
+            this.searchByUnitId = "";
+            this.searchByPositionId = "";
+            this.getPositionData(); //重新Get所有資料
         },
         async createPosition() { //新增Position的方法
             try {
@@ -358,7 +372,7 @@ export default {
                 console.log('Error Update Position:', error);
             }
         },
-        updateSelectedUnitName() { //為了顯示科別名稱的方法 -> for AddPosition Modle
+        updateSelectedUnitName() { //為了顯示科別名稱的方法 -> for AddPosition Modal
             const selectedUnit = this.units.find(unit => unit.unit_id === this.newPosition.unit_id);
             this.selectedUnitName = selectedUnit ? selectedUnit.unit_name : "";
         }
@@ -375,8 +389,7 @@ export default {
 .content-wrapper {
     background-color: #ffffff;
     border-radius: 8px;
-    padding: 0 1.5rem;
-    /* 只保留左右間距 */
+    padding: 0 1.5rem; /* 只保留左右間距 */
     margin-right: 5%;
     margin-top: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
