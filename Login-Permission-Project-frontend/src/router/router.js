@@ -4,6 +4,7 @@ import Login from '../views/LoginView.vue'
 import Unit from '../views/Unit.vue'
 import Register from '../components/Register.vue'
 import LoginRecord from "../views/LoginRecord.vue";
+import Employee from "../views/Employee.vue";
 // import UnitComponents from '../components/Unit.vue'
 // import Sidebar from '../components/Sidebar.vue'
 
@@ -28,10 +29,16 @@ const routes = [
         path: '/unit',
         name: 'Unit',
         component: Unit
-    },{
+    },
+    {
         path: '/loginRecord',
         name: 'LoginRecordPage',
         component: LoginRecord
+    },
+    {
+        path: '/employee',
+        name: 'Employee',
+        component: Employee
     },
     // {
     //     path: '/sidebar',
