@@ -149,8 +149,8 @@
                             <td class="text-center">{{ employee.name }}</td>
                             <td class="text-center">{{ employee.email }}</td>
                             <td class="text-center">{{ employee.phoneNumber }}</td>
-                            <td class="text-center">{{ employee.department }}</td>
-                            <td class="text-center">{{ employee.unit }}</td>
+                            <td class="text-center">{{ getDepartmentName(employee.position_id) }}</td>
+                            <td class="text-center">{{ getUnitName(employee.position_id) }}</td>
                             <td class="text-center">{{ employee.position }}</td>
                             <td class="text-center">
                                 <span :class="['status-badge', getStatusClass(employee.status_id)]">
@@ -305,18 +305,27 @@ const notifyError = (message) => alert(message)
 // 獲取所有下拉選項數據
 const fetchOptions = async () => {
     try {
-        // 獲取部門、科別、職位和狀態選項
-        const [departmentResponse, unitResponse, positionResponse, statusResponse] = await Promise.all([
-            axios.get('http://localhost:8085/department/test/get'),
-            axios.get('http://localhost:8085/unit/test/get'),
-            axios.get('http://localhost:8085/Position/get'),
-            axios.get('http://localhost:8085/status/test/get')
-        ])
+        // 獲取部門選項
+        const departmentResponse = await axios.get('http://localhost:8085/department/test/get');
+        departmentOptions.value = departmentResponse.data.map(dept => ({
+            value: dept.department_id,
+            label: dept.department_name
+        }));
 
-        departmentOptions.value = departmentResponse.data.map(dept => ({ value: dept.department_id, label: dept.department_name }))
-        unitOptions.value = unitResponse.data.map(unit => ({ value: unit.unit_id, label: unit.unit_name }))
-        positionOptions.value = positionResponse.data.map(position => ({ value: position.position_id, label: position.position }))
-        statusOptions.value = statusResponse.data.map(status => ({ value: status.status_id, label: status.name }))
+        // 獲取科別選項
+        const unitResponse = await axios.get('http://localhost:8085/unit/test/get');
+        unitOptions.value = unitResponse.data.map(unit => ({
+            value: unit.unit_id,
+            label: unit.unit_name
+        }));
+
+        // 獲取職位選項（包含部門和科別ID）
+        const positionResponse = await axios.get('http://localhost:8085/position/test/get');
+        positionOptions.value = positionResponse.data.map(position => ({
+            position_id: position.position_id,
+            department_id: position.department_id,
+            unit_id: position.unit_id
+        }));
 
     } catch (error) {
         notifyError('獲取選項數據失敗');
@@ -413,12 +422,160 @@ const handleSubmit = async () => {
     }
 }
 
+const getDepartmentName = (positionId) => {
+    const position = positionOptions.value.find(p => p.position_id === positionId);
+    if (position) {
+        const department = departmentOptions.value.find(d => d.value === position.department_id);
+        return department ? department.label : '未知部門';
+    }
+    return '未知部門';
+};
+
+const getUnitName = (positionId) => {
+    const position = positionOptions.value.find(p => p.position_id === positionId);
+    if (position) {
+        const unit = unitOptions.value.find(u => u.value === position.unit_id);
+        return unit ? unit.label : '未知科別';
+    }
+    return '未知科別';
+};
+
+
 // On mounted
 onMounted(() => {
   fetchOptions();
   fetchEmployees();
 });
 </script>
+
+<style scoped>
+
+
+.content-wrapper {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 0 1.5rem; /* 只保留左右間距 */
+    margin-right: 5%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.nav-tabs {
+    margin-right: 5%;
+    margin-top: 15px;
+}
+
+.nav-tabs .nav-link {
+    color: #334255;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    position: relative;
+}
+
+.nav-tabs .nav-link.active {
+    color: #334255;
+    font-weight: 600;
+    border-bottom: 2px solid #334255;
+    background: none;
+}
+
+.nav-tabs .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #334255;
+}
+
+.add-unit-btn {
+    color: #334255;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border: 2px solid #334255;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    height: 58px;
+    /* 與表單元素等高 */
+    white-space: nowrap;
+}
+
+.add-unit-btn:hover {
+    background-color: #334255;
+    color: #ffffff;
+}
+
+.search-btn {
+    background-color: #334255;
+    border-color: #334255;
+    padding: 0.75rem;
+    height: 58px;
+    width: 58px;
+}
+
+.search-btn:hover {
+    background-color: #FFCD50;
+    border-color: #FFCD50;
+    color: #334255;
+}
+
+.form-floating>.form-select {
+    padding-top: 1.625rem;
+    padding-bottom: 0.625rem;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    padding: 1rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.btn-link {
+    color: #334255;
+    padding: 0.375rem;
+    transition: all 0.2s ease;
+}
+
+.btn-link:hover {
+    color: #FFCD50;
+    transform: scale(1.1);
+}
+
+.btn-link.text-danger:hover {
+    color: #dc3545;
+}
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+    .unit-container {
+        padding: 1rem;
+    }
+
+    .content-wrapper {
+        padding: 1rem;
+    }
+
+    .row {
+        row-gap: 1rem;
+    }
+
+    .add-unit-btn {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+</style>
 
 
 
