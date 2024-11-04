@@ -7,7 +7,7 @@ import LoginRecord from "../views/LoginRecord.vue";
 import Employee from "../views/Employee.vue";
 import Employee1 from "../views/Employee1.vue";
 import EmployeeStatusView from '../views/EmployeeStatusView.vue';
-import EmployeeManagement1 from '../views/EmployeeManagement1.vue' // 新增這行
+
 // import UnitComponents from '../components/Unit.vue'
 // import Sidebar from '../components/Sidebar.vue'
 
@@ -54,12 +54,7 @@ const routes = [
         name: 'EmployeeStatus',
         component: EmployeeStatusView
     },
-    {
-        path: '/employee-management',
-        name: 'EmployeeManagement1', // 新增這行
-        component: EmployeeManagement1 // 新增這行
-    },
-    
+
 
     // {
     //     path: '/sidebar',
