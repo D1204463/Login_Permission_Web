@@ -24,19 +24,19 @@
                         <div class="card-body">
                             <form>
                                 <div class="row g-3 align-items-center">
-                                    <div class="col-md">
+                                    <div class="col-md-4">
                                         <div class="form-floating">
-                                            <input type="text" class="form-control" id="employeeIdSelect" v-model="searchByEmployeeId" placeholder="查詢員工編號">
-                                            <label for="employeeIdSelect">員工編號查詢</label>
+                                            <input type="text" class="form-control" id="employeeId" v-model="searchByEmployeeId" placeholder="查詢員工編號">
+                                            <label for="employeeId">員工編號查詢</label>
                                         </div>
                                     </div>
-                                    <div class="col-md">
+                                    <div class="col-md-4">
                                         <div class="form-floating">
                                             <input type="text" class="form-control" id="employeeName" v-model="searchByName" placeholder="查詢員工姓名">
                                             <label for="employeeName">員工姓名查詢</label>
                                         </div>
                                     </div>
-                                    <div class="col-md">
+                                    <div class="col-md-4">
                                         <div class="form-floating">
                                             <select class="form-select" id="departmentSelect" v-model="searchByDepartmentId">
                                                 <option selected value="">選擇部門</option>
@@ -47,7 +47,7 @@
                                             <label for="departmentSelect">部門查詢</label>
                                         </div>
                                     </div>
-                                    <div class="col-md">
+                                    <div class="col-md-4">
                                         <div class="form-floating">
                                             <select class="form-select" id="unitSelect" v-model="searchByUnitId">
                                                 <option selected value="">選擇科別</option>
@@ -58,18 +58,18 @@
                                             <label for="unitSelect">科別查詢</label>
                                         </div>
                                     </div>
-                                    <div class="col-md">
+                                    <div class="col-md-4">
                                         <div class="form-floating">
                                             <select class="form-select" id="positionSelect" v-model="searchByPositionId">
                                                 <option selected value="">選擇職位</option>
-                                                <option v-for="position in positions" :key="position.position_id" :value="position.position_id">
+                                                <option v-for="position in positionOptions" :key="position.position_id" :value="position.position_id">
                                                     ({{ position.position_id }}) {{ position.position }}
                                                 </option>
                                             </select>
                                             <label for="positionSelect">職位查詢</label>
                                         </div>
                                     </div>
-                                    <div class="col-md">
+                                    <div class="col-md-4">
                                         <div class="form-floating">
                                             <select class="form-select" id="statusSelect" v-model="searchByStatusId">
                                                 <option selected value="">選擇狀態</option>
@@ -116,7 +116,7 @@
                         <tr v-for="employee in employees" :key="employee.employee_id">
                             <td class="text-center">
                                 <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#editEmployeeModal" v-on:click="onUpdateEmployee(employee)">
+                                    data-bs-target="#editEmployeeModal" v-on:click="onEditEmployee(employee)">
                                     <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
                                 </button>
                             </td>
@@ -136,7 +136,7 @@
                             <!-- <td class="text-center">{{ employee.status.name }}</td> -->
                             <td class="text-center">
                                 <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
-                                    data-bs-target="#deleteEmployeeModal" v-on:click="onSelectEmployee(employee)">
+                                    data-bs-target="#deleteEmployeeModal" @click="onDeleteEmployee(employee.employee_id)">
                                     <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
                                 </button>
                             </td>
@@ -160,7 +160,7 @@ export default {
     data() {
         return {
             employees: [],
-            employeeOptions: [],
+            // employeeOptions: [],
             departments: [],
             units: [],
             positionOptions: [],
@@ -171,6 +171,14 @@ export default {
             searchByUnitId: "",
             searchByPositionId: "",
             searchByStatusId: "",
+            selectedEmployee: null,
+            newEmployee: {
+                name: '',
+                email: '',
+                phoneNumber: '',
+                position_id: null,
+                status_id: null
+            }
         };
     },
     methods: {
@@ -208,7 +216,7 @@ export default {
         },
         async fetchPositions() {
             try {
-                let response = await fetch("http://localhost:8085/position/get");
+                let response = await fetch("http://localhost:8085/Position/get");
                 this.positionOptions = await response.json();
             } catch (error) {
                 console.log("Error fetching positions:", error);
@@ -233,8 +241,53 @@ export default {
             this.searchByPositionId = "";
             this.searchByStatusId = "";
             this.fetchEmployees();
+        },
+        async addEmployee() {
+            try {
+                const response = await fetch("http://localhost:8085/employee/test/add", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(this.newEmployee)
+                });
+                if (response.ok) {
+                    this.fetchEmployees(); // 重新載入資料
+                }
+            } catch (error) {
+                console.error("Error adding employee:", error);
+            }
+        },
+        onEditEmployee(employee) {
+            this.selectedEmployee = { ...employee }; // 克隆選擇的員工資料
+        },
+        async updateEmployee() {
+            try {
+                const response = await fetch("http://localhost:8085/employee/test/edit", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(this.selectedEmployee)
+                });
+                if (response.ok) {
+                    this.fetchEmployees();
+                }
+            } catch (error) {
+                console.error("Error updating employee:", error);
+            }
+        },
+        async onDeleteEmployee(employeeId) {
+            try {
+                const response = await fetch(`http://localhost:8085/employee/test/delete/${employeeId}`, {
+                    method: "DELETE"
+                });
+                if (response.ok) {
+                    this.fetchEmployees();
+                }
+            } catch (error) {
+                console.error("Error deleting employee:", error);
+            }
         }
     },
+    
+    
     mounted() {
         this.fetchEmployees();
         this.fetchStatusOptions();
@@ -300,13 +353,21 @@ export default {
     color: #334255;
 }
 
-.form-floating>.form-select {
+.form-floating>.form-select, .form-floating>.form-control {
     padding-top: 1.625rem;
     padding-bottom: 0.625rem;
+    height: 100%;
+    width: 100%;
+}
+
+.form-floating label {
+    color: #334255;
+    font-weight: 500;
 }
 
 .table {
     margin-bottom: 0;
+    white-space: nowrap;
 }
 
 .table th {
@@ -314,11 +375,13 @@ export default {
     font-weight: 600;
     padding: 1rem;
     border-bottom: 2px solid #dee2e6;
+    text-align: center;
 }
 
 .table td {
     padding: 1rem;
     vertical-align: middle;
+    text-align: center;
 }
 
 .btn-link {
@@ -354,5 +417,36 @@ export default {
         width: 100%;
         margin-bottom: 1rem;
     }
+        
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+
+    .table th, .table td {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
 }
+
+/* 調整下拉選單的寬度和樣式 */
+.form-select {
+    min-width: 150px;
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.form-control {
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+.card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+.card .card-body {
+    padding: 1rem;
+}
+
 </style>
