@@ -5,7 +5,6 @@ import Unit from '../views/Unit.vue'
 import Register from '../components/Register.vue'
 import LoginRecord from "../views/LoginRecord.vue";
 import Employee from "../views/Employee.vue";
-import Employee1 from "../views/Employee1.vue";
 import EmployeeStatusView from '../views/EmployeeStatusView.vue';
 
 // import UnitComponents from '../components/Unit.vue'
@@ -43,11 +42,6 @@ const routes = [
         path: '/employee',
         name: 'Employee',
         component: Employee
-    },
-    {
-        path: '/employee1',
-        name: 'Employee1',
-        component: Employee1
     },
     {
         path: '/employee-status',
