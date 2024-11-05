@@ -324,9 +324,13 @@ export default {
     async fetchStatuses() {
       try {
         let response = await fetch("http://localhost:8085/status/test/get");
-        this.statuses = await response.json();
-        this.statusOptions = this.statuses; // 確保選項正確綁定
-        console.log(this.statuses); // 檢查資料是否正確加載
+        if(response.ok){
+          this.statuses = await response.json();
+          this.statusOptions = this.statuses; // 確保選項正確綁定
+          console.log("status Options:" , this.statuses); // 檢查資料是否正確加載
+        } else {
+          console.log("failed to fetch status data");
+        }
       } catch (error) {
         console.log("Error fetching statuses:", error);
       }
@@ -334,22 +338,41 @@ export default {
     search() {
       // 根據 searchByStatusId 過濾狀態
       this.statuses = this.statusOptions.filter(
-        (status) => status.status_id == this.searchByStatusId
+        (status) => status.status_id === this.searchByStatusId
       );
     },
-    resetSearch() {
+    async resetSearch() {
       this.searchByStatusId = "";
-      this.fetchStatuses();
+      await this.fetchStatuses();
     },
-    createStatus() {
-      // 新增職位的邏輯
-      fetch("http://localhost:8085/status/test/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(this.newStatus),
-      }).then(this.fetchStatuses);
+    // 新增職位的邏輯
+    async createStatus() {
+      if(!this.findDuplicateStatusId(this.newStatus)) {
+        const requestBody = JSON.stringify(this.newStatus);
+        console.log(this.newStatus);
+        try{
+          const response = await fetch("http://localhost:8085/status/test/add", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: requestBody,
+          })
+          if(response.ok) {
+            await this.fetchStatuses;
+            console.log("Fetch status successfully");
+          } else {
+            console.log("Fail to fetch status");
+          }
+        } catch (error) {
+          console.log("Error fetching statuses:", error);
+        }
+      } else {
+        alert("已經存在相同Id的狀態")
+      }
+
+
+
     },
     onUpdateStatus(status) {
       this.editStatus = { ...status };
@@ -366,6 +389,7 @@ export default {
     onSelectStatus(status) {
       this.selectedStatus = status;
     },
+
     deleteStatus() {
       fetch(
         `http://localhost:8085/status/test/delete/${this.selectedStatus.status_id}`,
@@ -374,7 +398,17 @@ export default {
         }
       ).then(this.fetchStatuses);
     },
+    findDuplicateStatusId(newStatus){
+      for(let i = 0; i < this.statuses.length; i ++) {
+        if(String(this.statuses[i].status_id) === String(newStatus.status_id)) {
+          console.log("This status id is already exist");
+          return true;
+        }
+      }
+      return false;
+    }
   },
+
   mounted() {
     this.fetchStatuses();
   },
