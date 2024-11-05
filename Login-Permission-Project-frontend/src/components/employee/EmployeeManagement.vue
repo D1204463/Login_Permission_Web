@@ -124,13 +124,21 @@
                             <td class="text-center">{{ employee.name }}</td>
                             <td class="text-center">{{ employee.email }}</td>
                             <td class="text-center">{{ employee.phoneNumber }}</td>
-                            <td class="text-center">{{ employee.positions[0]?.unit?.department?.department_name || 'N/A' }}</td>
-                            <td class="text-center">{{ employee.positions[0]?.unit?.unit_name || 'N/A' }}</td>
-                            <td class="text-center">
-                                <span v-for="position in employee.positions" :key="position.position_id">
-                                    {{ position.position }}
-                                </span>
+                            <td class="text-center" v-if="employee.positions && employee.positions.length > 0">
+                                {{ employee.positions[0]?.unit?.department?.department_name || 'N/A' }}
                             </td>
+                            <td class="text-center" v-if="employee.positions && employee.positions.length > 0">
+                                {{ employee.positions[0]?.unit?.unit_name || 'N/A' }}
+                            </td>
+                            <td class="text-center">
+                                <span v-if="employee.positions && employee.positions.length > 0">
+                                    <span v-for="position in employee.positions" :key="position.position_id">
+                                        {{ position.position }}
+                                    </span>
+                                </span>
+                                <span v-else>N/A</span>
+                            </td>
+
                             <td class="text-center">{{ employee.employeeStatus ? employee.employeeStatus.name : 'N/A' }}</td>
 
                             <!-- <td class="text-center">{{ employee.status.name }}</td> -->
@@ -185,7 +193,12 @@ export default {
         async fetchEmployees() {
             try {
                 let response = await fetch("http://localhost:8085/employee/test/get");
-                this.employees = await response.json();
+                if(response.ok) {
+                    this.employees = await response.json();
+                } else {
+                    console.error("Error fetching employees:", response.statusText);
+                }
+                
             } catch (error) {
                 console.log("Error fetching employees:", error);
             }
@@ -249,8 +262,12 @@ export default {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(this.newEmployee)
                 });
+                console.log("Add response:", response);
                 if (response.ok) {
                     this.fetchEmployees(); // 重新載入資料
+                    this.newEmployee = { name: '', email: '', phoneNumber: '', position_id: null, status_id: null };
+                }else{
+                    console.error("Error adding employee:", response.statusText);
                 }
             } catch (error) {
                 console.error("Error adding employee:", error);
