@@ -127,7 +127,6 @@
       const errorMessage = ref('')
       const router = useRouter();
 
-
       // 切換密碼顯示
       const togglePassword = () => {
         showPassword.value = !showPassword.value
@@ -152,24 +151,17 @@
             },
             body: JSON.stringify(requestBody)
           });
-
+          console.log("Response:", response);
           if (response.ok) {
-            const responseBody = await response.json();
-            console.log("Response Body:", responseBody);
-            const token = responseBody.JWT_Token;
+            const token = await response.text();
+
             localStorage.setItem("JWT_Token", token);
-            console.log("Login successful");
+            console.log("登錄成功,jwt驗證碼:" + token);
             await router.push("/");
           } else {
-            console.log("Failed to retrieve data. Status:", response.status);
             const errorMessageText = await response.text();
-            console.log("Error message:", errorMessageText);
+            console.log("登錄失敗:", errorMessageText);
           }
-
-          console.log({
-            employeeId: employeeId.value,
-            password: password.value
-          });
 
         } catch (error) {
           errorMessage.value = '登入失敗，請檢查帳號密碼是否正確';
