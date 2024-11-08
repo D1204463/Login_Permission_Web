@@ -40,8 +40,8 @@
                                         <div class="form-floating">
                                             <select class="form-select" id="departmentSelect" v-model="searchByDepartmentId">
                                                 <option selected value="">選擇部門</option>
-                                                <option v-for="department in departments" :key="department.department_id" :value="department.department_id">
-                                                    ({{ department.department_id }}) {{ department.department_name }}
+                                                <option v-for="department in departments" >
+                                                      {{ department}}
                                                 </option>
                                             </select>
                                             <label for="departmentSelect">部門查詢</label>
@@ -51,8 +51,8 @@
                                         <div class="form-floating">
                                             <select class="form-select" id="unitSelect" v-model="searchByUnitId">
                                                 <option selected value="">選擇科別</option>
-                                                <option v-for="unit in units" :key="unit.unit_id" :value="unit.unit_id">
-                                                    ({{ unit.unit_id }}) {{ unit.unit_name }}
+                                                <option v-for="unit in units">
+                                                    {{ unit}}
                                                 </option>
                                             </select>
                                             <label for="unitSelect">科別查詢</label>
@@ -62,8 +62,8 @@
                                         <div class="form-floating">
                                             <select class="form-select" id="positionSelect" v-model="searchByPositionId">
                                                 <option selected value="">選擇職位</option>
-                                                <option v-for="position in positionOptions" :key="position.position_id" :value="position.position_id">
-                                                    ({{ position.position_id }}) {{ position.position }}
+                                                <option v-for="position in positions">
+                                                     {{ position}}
                                                 </option>
                                             </select>
                                             <label for="positionSelect">職位查詢</label>
@@ -73,8 +73,8 @@
                                         <div class="form-floating">
                                             <select class="form-select" id="statusSelect" v-model="searchByStatusId">
                                                 <option selected value="">選擇狀態</option>
-                                                <option v-for="status in statusOptions" :key="status.status_id" :value="status.status_id">
-                                                    ({{ status.status_id }}) {{ status.name }}
+                                                <option v-for="statusName in status">
+                                                    {{ statusName }}
                                                 </option>
                                             </select>
                                             <label for="statusSelect">狀態查詢</label>
@@ -113,7 +113,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="employee in employeeInfo" :key="employee.employee_id">
+                        <tr v-for="employee in filteredEmployeeInfo()" :key="employee.employee_id">
                             <td class="text-center">
                                 <button type="button" class="btn btn-link" data-bs-toggle="modal"
                                     data-bs-target="#editEmployeeModal" v-on:click="onEditEmployee(employee)">
@@ -163,12 +163,11 @@ export default {
     data() {
         return {
             employees: [],
-            // employeeOptions: [],
             employeeInfo:[],
             departments: [],
             units: [],
-            positionOptions: [],
-            statusOptions: [],
+            position:[],
+            status:[],
             searchByEmployeeId: "",
             searchByName: "",
             searchByDepartmentId: "",
@@ -201,17 +200,6 @@ export default {
             }
         },
 
-        search() {
-            this.employees = this.employees.filter(employee => {
-                const matchesEmployeeId = !this.searchByEmployeeId || employee.employee_id == this.searchByEmployeeId;
-                const matchesName = !this.searchByName || employee.name.includes(this.searchByName);
-                const matchesDepartment = !this.searchByDepartmentId || (employee.positions[0]?.unit?.department?.department_id == this.searchByDepartmentId);
-                const matchesUnit = !this.searchByUnitId || (employee.positions[0]?.unit?.unit_id == this.searchByUnitId);
-                const matchesPosition = !this.searchByPositionId || employee.positions.some(pos => pos.position_id == this.searchByPositionId);
-                const matchesStatus = !this.searchByStatusId || (employee.employeeStatus?.status_id == this.searchByStatusId);
-                return matchesEmployeeId && matchesName && matchesDepartment && matchesUnit && matchesPosition && matchesStatus;
-            });
-        },
         resetSearch() {
             this.searchByEmployeeId = "";
             this.searchByName = "";
@@ -239,6 +227,21 @@ export default {
                 console.error("Error adding employee:", error);
             }
         },
+        filteredEmployeeInfo() {
+        return this.employeeInfo.filter(employee => {
+
+          // 檢查每個篩選條件，如果存在就必須匹配
+              return (
+                  (this.searchByEmployeeId === "" || String(employee.employee_id) === this.searchByEmployeeId) &&
+                  (this.searchByName === "" || employee.name.includes(this.searchByName)) &&
+                  (this.searchByDepartmentId === "" || employee.departmentName === this.searchByDepartmentId) &&
+                  (this.searchByUnitId === "" || employee.unitName === this.searchByUnitId) &&
+                  (this.searchByPositionId === "" || employee.positionName === this.searchByPositionId) &&
+                  (this.searchByStatusId === "" || employee.statusName === this.searchByStatusId)
+
+              );
+            });
+       },
         onEditEmployee(employee) {
             this.selectedEmployee = { ...employee }; // 克隆選擇的員工資料
         },
@@ -267,12 +270,37 @@ export default {
             } catch (error) {
                 console.error("Error deleting employee:", error);
             }
-        }
+        },
+      addDepartments() {
+        this.departments = this.employeeInfo.map(info => info.departmentName);
+        this.departments = [...new Set(this.departments)];
+      },
+
+      addUnits() {
+        this.units = this.employeeInfo.map(info => info.unitName);
+        this.units = [...new Set(this.units)];
+      },
+
+      addPosition() {
+        this.positions = this.employeeInfo.map(info => info.positionName);
+        this.positions = [...new Set(this.positions)];
+      },
+
+      addStatus() {
+        this.status = this.employeeInfo.map(info => info.statusName);
+        this.status = [...new Set(this.status)];
+      }
+
+
     },
     
     
-    mounted() {
-        this.fetchEmployees();
+    async mounted() {
+        await this.fetchEmployees();
+        this.addDepartments();
+        this.addUnits();
+        this.addPosition();
+        this.addStatus();
     }
 };
 </script>
