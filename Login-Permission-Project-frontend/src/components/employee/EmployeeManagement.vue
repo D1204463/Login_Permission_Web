@@ -12,7 +12,7 @@
                 <!-- 新增員工按鈕 -->
                 <div class="col-auto">
                     <button type="button" class="btn add-employee-btn" style="margin-bottom:20px;"
-                        data-bs-toggle="modal" data-bs-target="#createEmployeeModal">
+                        data-bs-toggle="modal" data-bs-target="#createEmployeeModal" @click="">
                         <font-awesome-icon :icon="['fas', 'plus']" size="2xl" class="me-2" />
                         新增員工
                     </button>
@@ -113,7 +113,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="employee in employees" :key="employee.employee_id">
+                        <tr v-for="employee in employeeInfo" :key="employee.employee_id">
                             <td class="text-center">
                                 <button type="button" class="btn btn-link" data-bs-toggle="modal"
                                     data-bs-target="#editEmployeeModal" v-on:click="onEditEmployee(employee)">
@@ -124,22 +124,17 @@
                             <td class="text-center">{{ employee.name }}</td>
                             <td class="text-center">{{ employee.email }}</td>
                             <td class="text-center">{{ employee.phoneNumber }}</td>
-                            <td class="text-center" v-if="employee.positions && employee.positions.length > 0">
-                                {{ employee.positions[0]?.unit?.department?.department_name || 'N/A' }}
+                            <td class="text-center">
+                                {{ employee.departmentName? employee.departmentName : 'N/A' }}
                             </td>
-                            <td class="text-center" v-if="employee.positions && employee.positions.length > 0">
-                                {{ employee.positions[0]?.unit?.unit_name || 'N/A' }}
+                            <td class="text-center"  >
+                                {{ employee.unitName ?employee.unitName : 'N/A' }}
                             </td>
                             <td class="text-center">
-                                <span v-if="employee.positions && employee.positions.length > 0">
-                                    <span v-for="position in employee.positions" :key="position.position_id">
-                                        {{ position.position }}
-                                    </span>
-                                </span>
-                                <span v-else>N/A</span>
+                                {{employee.positionName ? employee.positionName : 'N/A'}}
                             </td>
 
-                            <td class="text-center">{{ employee.employeeStatus ? employee.employeeStatus.name : 'N/A' }}</td>
+                            <td class="text-center">{{ employee.statusName? employee.statusName : 'N/A' }}</td>
 
                             <!-- <td class="text-center">{{ employee.status.name }}</td> -->
                             <td class="text-center">
@@ -169,6 +164,7 @@ export default {
         return {
             employees: [],
             // employeeOptions: [],
+            employeeInfo:[],
             departments: [],
             units: [],
             positionOptions: [],
@@ -192,9 +188,10 @@ export default {
     methods: {
         async fetchEmployees() {
             try {
-                let response = await fetch("http://localhost:8085/employee/test/get");
+                let response = await fetch("http://localhost:8085/employee/test/getAllEmployeeInfo");
                 if(response.ok) {
-                    this.employees = await response.json();
+                    this.employeeInfo = await response.json();
+                    console.log(this.employeeInfo);
                 } else {
                     console.error("Error fetching employees:", response.statusText);
                 }
@@ -203,38 +200,7 @@ export default {
                 console.log("Error fetching employees:", error);
             }
         },
-        async fetchStatusOptions() {
-            try {
-                let response = await fetch("http://localhost:8085/status/test/get");
-                this.statusOptions = await response.json();
-            } catch (error) {
-                console.log("Error fetching statuses:", error);
-            }
-        },
-        async fetchDepartments() {
-            try {
-                let response = await fetch("http://localhost:8085/department/test/get");
-                this.departments = await response.json();
-            } catch (error) {
-                console.log("Error fetching departments:", error);
-            }
-        },
-        async fetchUnits() {
-            try {
-                let response = await fetch("http://localhost:8085/unit/test/get");
-                this.units = await response.json();
-            } catch (error) {
-                console.log("Error fetching units:", error);
-            }
-        },
-        async fetchPositions() {
-            try {
-                let response = await fetch("http://localhost:8085/Position/get");
-                this.positionOptions = await response.json();
-            } catch (error) {
-                console.log("Error fetching positions:", error);
-            }
-        },
+
         search() {
             this.employees = this.employees.filter(employee => {
                 const matchesEmployeeId = !this.searchByEmployeeId || employee.employee_id == this.searchByEmployeeId;
@@ -307,10 +273,6 @@ export default {
     
     mounted() {
         this.fetchEmployees();
-        this.fetchStatusOptions();
-        this.fetchDepartments();
-        this.fetchUnits();
-        this.fetchPositions();
     }
 };
 </script>
