@@ -70,6 +70,7 @@
                 type="submit" 
                 class="btn lp-btn-outline"
                 :disabled="isLoading"
+                @click="handleLogin"
               >
                 <template v-if="isLoading">
                   <font-awesome-icon 
@@ -98,64 +99,112 @@
     </div>
   </template>
   
-  <script setup>
+  <script  >
   import { ref } from 'vue'
   import { library } from '@fortawesome/fontawesome-svg-core'
-  import { 
-    faUserCircle, 
-    faEye, 
-    faEyeSlash, 
-    faSpinner 
+  import {
+    faUserCircle,
+    faEye,
+    faEyeSlash,
+    faSpinner
   } from '@fortawesome/free-solid-svg-icons'
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-  
+  import {useRouter} from "vue-router";
+
   // 添加圖標到庫中
   library.add(faUserCircle, faEye, faEyeSlash, faSpinner)
-  
-  // 響應式狀態
-  const employeeId = ref('')
-  const password = ref('')
-  const showPassword = ref(false)
-  const isLoading = ref(false)
-  const errorMessage = ref('')
-  
-  // 切換密碼顯示
-  const togglePassword = () => {
-    showPassword.value = !showPassword.value
-  }
-  
-  // 處理登入
-  const handleLogin = async () => {
-    try {
-      isLoading.value = true
-      errorMessage.value = ''
-  
-      // TODO: 實作登入邏輯
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      console.log({
-        employeeId: employeeId.value,
-        password: password.value
-      })
-      
-    } catch (error) {
-      errorMessage.value = '登入失敗，請檢查帳號密碼是否正確'
-    } finally {
-      isLoading.value = false
+
+  export default {
+    components: {
+      FontAwesomeIcon
+    },
+    setup() {
+      // 響應式狀態
+      const employeeId = ref('')
+      const password = ref('')
+      const showPassword = ref(false)
+      const isLoading = ref(false)
+      const errorMessage = ref('')
+      const router = useRouter();
+
+
+      // 切換密碼顯示
+      const togglePassword = () => {
+        showPassword.value = !showPassword.value
+      }
+
+      // 處理登入
+      const handleLogin = async () => {
+        try {
+          isLoading.value = true;
+          errorMessage.value = '';
+
+          const requestBody = {
+            employee_id: employeeId.value, // 使用 .value
+            password: password.value       // 使用 .value
+          };
+
+          // TODO: 實作登入邏輯
+          const response = await fetch("http://localhost:8085/employee/test/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody)
+          });
+
+          if (response.ok) {
+            const responseBody = await response.json();
+            console.log("Response Body:", responseBody);
+            const token = responseBody.JWT_Token;
+            localStorage.setItem("JWT_Token", token);
+            console.log("Login successful");
+            await router.push("/");
+          } else {
+            console.log("Failed to retrieve data. Status:", response.status);
+            const errorMessageText = await response.text();
+            console.log("Error message:", errorMessageText);
+          }
+
+          console.log({
+            employeeId: employeeId.value,
+            password: password.value
+          });
+
+        } catch (error) {
+          errorMessage.value = '登入失敗，請檢查帳號密碼是否正確';
+        } finally {
+          isLoading.value = false;
+        }
+      };
+
+
+      // 處理註冊
+      const handleRegister = () => {
+        // TODO: 實作註冊邏輯或導航到註冊頁面
+        console.log('跳轉到註冊頁面')
+      }
+
+      // 處理忘記密碼
+      const handleForgotPassword = () => {
+        // TODO: 實作忘記密碼邏輯
+        console.log('忘記密碼')
+      }
+
+      return {
+        employeeId,
+        password,
+        showPassword,
+        isLoading,
+        errorMessage,
+        togglePassword,
+        handleLogin,
+        handleRegister,
+        handleForgotPassword
+      }
     }
   }
-  
-  // 處理註冊
-  const handleRegister = () => {
-    // TODO: 實作註冊邏輯或導航到註冊頁面
-    console.log('跳轉到註冊頁面')
-  }
-  
-  // 處理忘記密碼
-  const handleForgotPassword = () => {
-    // TODO: 實作忘記密碼邏輯
-    console.log('忘記密碼')
-  }
+
   </script>
   
   <style scoped>
