@@ -2,6 +2,7 @@ import { createWebHistory, createRouter } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/LoginView.vue'
 import Unit from '../views/Unit.vue'
+import Position from '../views/Position.vue'
 import Register from '../components/Register.vue'
 import LoginRecord from "../views/LoginRecord.vue";
 // import UnitComponents from '../components/Unit.vue'
@@ -33,11 +34,11 @@ const routes = [
         name: 'LoginRecordPage',
         component: LoginRecord
     },
-    // {
-    //     path: '/sidebar',
-    //     name: 'Sidebar',
-    //     component: Sidebar
-    // }
+    {
+        path: '/position',
+        name: 'Position',
+        component: Position
+    }
 ]
 
 const router =  createRouter({
