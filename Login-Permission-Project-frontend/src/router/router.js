@@ -7,6 +7,8 @@ import Register from '../components/Register.vue'
 import LoginRecord from "../views/LoginRecord.vue";
 import Employee from "../views/Employee.vue";
 import EmployeeStatusView from '../views/EmployeeStatusView.vue';
+import Department from '../views/Department.vue'
+
 
 // import UnitComponents from '../components/Unit.vue'
 // import Sidebar from '../components/Sidebar.vue'
@@ -52,6 +54,11 @@ const routes = [
         path: '/employee-status',
         name: 'EmployeeStatus',
         component: EmployeeStatusView
+    },
+    {
+        path: '/Department',
+        name: 'Department',
+        component: Department
     },
 
 
