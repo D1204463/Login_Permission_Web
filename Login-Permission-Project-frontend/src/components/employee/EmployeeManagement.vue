@@ -81,9 +81,7 @@
                                         </div>
                                     </div>
                                     <div class="col-auto d-flex align-items-center">
-                                        <button type="button" class="btn btn-primary search-btn me-2" v-on:click="search">
-                                            <font-awesome-icon :icon="['fas', 'magnifying-glass']" size="lg" />
-                                        </button>
+
                                         <button type="button" class="btn btn-secondary search-btn" v-on:click="resetSearch">
                                             <font-awesome-icon :icon="['fas', 'rotate']" size="lg" />
                                         </button>
@@ -179,7 +177,6 @@ export default {
                 name: '',
                 email: '',
                 phoneNumber: '',
-                position_id: null,
                 status_id: null
             }
         };
@@ -218,7 +215,7 @@ export default {
                 });
                 console.log("Add response:", response);
                 if (response.ok) {
-                    this.fetchEmployees(); // 重新載入資料
+                    await this.fetchEmployees(); // 重新載入資料
                     this.newEmployee = { name: '', email: '', phoneNumber: '', position_id: null, status_id: null };
                 }else{
                     console.error("Error adding employee:", response.statusText);
@@ -253,7 +250,7 @@ export default {
                     body: JSON.stringify(this.selectedEmployee)
                 });
                 if (response.ok) {
-                    this.fetchEmployees();
+                    await this.fetchEmployees();
                 }
             } catch (error) {
                 console.error("Error updating employee:", error);
@@ -265,7 +262,7 @@ export default {
                     method: "DELETE"
                 });
                 if (response.ok) {
-                    this.fetchEmployees();
+                    await this.fetchEmployees();
                 }
             } catch (error) {
                 console.error("Error deleting employee:", error);

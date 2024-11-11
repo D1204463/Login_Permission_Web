@@ -110,6 +110,7 @@
   } from '@fortawesome/free-solid-svg-icons'
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
   import {useRouter} from "vue-router";
+  import { inject } from 'vue';
 
   // 添加圖標到庫中
   library.add(faUserCircle, faEye, faEyeSlash, faSpinner)
@@ -118,6 +119,7 @@
     components: {
       FontAwesomeIcon
     },
+    inject:["userData","parseToken"],
     setup() {
       // 響應式狀態
       const employeeId = ref('')
@@ -151,24 +153,25 @@
             },
             body: JSON.stringify(requestBody)
           });
-          console.log("Response:", response);
           if (response.ok) {
             const token = await response.text();
 
             localStorage.setItem("JWT_Token", token);
             console.log("登錄成功,jwt驗證碼:" + token);
-            await router.push("/");
+            await router.push('/');
           } else {
             const errorMessageText = await response.text();
             console.log("登錄失敗:", errorMessageText);
           }
 
         } catch (error) {
+          console.error("發生異常:", error);
           errorMessage.value = '登入失敗，請檢查帳號密碼是否正確';
         } finally {
           isLoading.value = false;
         }
       };
+
 
 
       // 處理註冊

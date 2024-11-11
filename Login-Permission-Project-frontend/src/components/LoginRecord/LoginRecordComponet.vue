@@ -99,13 +99,20 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script  >
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUserPlus, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 library.add(faUserPlus, faPenToSquare);
+
+export default {
+  components: {
+    FontAwesomeIcon
+  }
+};
+
 </script>
 
 <style scoped>
