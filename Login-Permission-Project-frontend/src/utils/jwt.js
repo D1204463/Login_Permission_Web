@@ -1,13 +1,41 @@
 export function parseJwt(token) {
     try {
-        const base64Url = token.split(".")[1];
-        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return "%" + ('00' + c.charCodeAt(0).toString(16).slice(-2));
-        }).join(''));
-        return JSON.parse(jsonPayload);
+        // 檢查 token 是否存在且為字串
+        if (!token || typeof token !== 'string') {
+            console.error('Invalid token format');
+            return null;
+        }
+
+        // 分割 token
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+            console.error('Invalid JWT format');
+            return null;
+        }
+
+        // 解碼 payload
+        const base64Url = parts[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+
+        // 處理填充
+        const pad = '='.repeat((4 - base64.length % 4) % 4);
+        const jsonPayload = atob(base64 + pad);
+
+        // 解析 JSON
+        const payload = JSON.parse(jsonPayload);
+
+        return {
+            sub: payload.sub || null,
+            userName: payload.userName || null,
+            userEmail: payload.userEmail || null,
+            userPhone: payload.userPhone || null,
+            userStatusId: payload.userStatusId || null,
+            permissionId: Array.isArray(payload.permissionId) ? payload.permissionId : [],
+            loginRecordId: payload.loginRecordId || null
+        };
     } catch(e) {
-        console.error("解析 JWT 失敗: ", e);
+        console.error('JWT 解析錯誤:', e);
+        console.log('原始 token:', token);
         return null;
     }
 }
