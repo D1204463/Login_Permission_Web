@@ -13,29 +13,43 @@ export function parseJwt(token) {
             return null;
         }
 
-        // 解碼 payload
+        // 解碼(base64) payload & 修正編碼問題(UTF-8)
         const base64Url = parts[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const pad = '='.repeat((4 - base64.length % 4) % 4);
+        const rawPayload = atob(base64 + pad);
+
+        // 直接轉換為 UTF-8 字符串
+        const decoder = new TextDecoder('utf-8');
+        const uint8Array = new Uint8Array(rawPayload.length);
+        for (let i = 0; i < rawPayload.length; i++) {
+            uint8Array[i] = rawPayload.charCodeAt(i);
+        }
+        const decodedString = decoder.decode(uint8Array);
 
         // 處理填充
-        const pad = '='.repeat((4 - base64.length % 4) % 4);
-        const jsonPayload = atob(base64 + pad);
+        // const pad = '='.repeat((4 - base64.length % 4) % 4);
+        // const jsonPayload = atob(base64 + pad);
 
-        // 解析 JSON
-        const payload = JSON.parse(jsonPayload);
+        // 解析 JSON 並確保正確的中文編碼
+        const payload = JSON.parse(decodedString);
 
         return {
             sub: payload.sub || null,
-            userName: payload.userName || null,
-            userEmail: payload.userEmail || null,
-            userPhone: payload.userPhone || null,
+            userName: payload.userName || '', // 特別處理中文編碼
+            userEmail: payload.userEmail || '',
+            userPhone: payload.userPhone || '',
             userStatusId: payload.userStatusId || null,
             permissionId: Array.isArray(payload.permissionId) ? payload.permissionId : [],
             loginRecordId: payload.loginRecordId || null
         };
     } catch(e) {
         console.error('JWT 解析錯誤:', e);
-        console.log('原始 token:', token);
+        console.log({
+            error: e.message,
+            tokenLength: token ? token.length : 0,
+            tokenStart: token ? token.substring(0, 50) : 'no token'
+        });
         return null;
     }
 }

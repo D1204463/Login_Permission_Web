@@ -1,4 +1,5 @@
 <template>
+
     <div class="container-fluid">
         <div class="row flex-nowrap">
             <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0" style="background-color: #334255;">
@@ -14,7 +15,7 @@
                         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                             id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                             <font-awesome-icon :icon="['fas', 'circle-user']" size="2xl" />
-                            <span class="d-none d-sm-inline mx-3">User-name</span>
+                            <span class="d-none d-sm-inline mx-3">{{ userName || 'User' }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                             <li><a class="dropdown-item" href="#">Settings</a></li>
@@ -22,7 +23,7 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="#">Sign out</a></li>
+                            <li><a class="dropdown-item" href="#" @click="logout">Sign out</a></li>
                         </ul>
                     </div>
 
@@ -55,9 +56,9 @@
                             </a>
                             <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu1 }">
                                 <ul class="nav flex-column ms-4 submenu-items">
-                                    <li class="w-100" v-for="(item, index) in managementItems" :key="index">
-                                        <a href="#" class="submenu-link">
-                                            <span class="d-none d-sm-inline">{{ item }}</span>
+                                    <li class="w-100" v-for="(item, index) in managementItems " :key="index">
+                                        <a :href="item.url" class="submenu-link" v-if="isVisible(item.name)">
+                                            <span class="d-none d-sm-inline">{{ item.name }}</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -114,60 +115,121 @@
             </div>
         </div>
     </div>
+
 </template>
 
-<script setup>
-import { ref, reactive, onMounted } from 'vue'
+<script>
+import { mapGetters } from 'vuex'
 
-const isSubmenuOpen = reactive({
-    submenu1: false,
-    submenu2: false,
-    submenu3: false
-})
+export default {
+    name: 'MyComponent',
 
-const managementItems = ref([
-    '員工管理',
-    '部門管理',
-    '科別管理',
-    '職位管理',
-    '權限管理',
-    '員工狀態',
-    '登入記錄'
-])
+    //   inject: ['userData', 'parseToken'],
 
-const toggleSubmenu = (menuId) => {
-    isSubmenuOpen[menuId] = !isSubmenuOpen[menuId]
+    data() {
+        return {
+            userFile: null,
+            isSubmenuOpen: {
+                submenu1: false,
+                submenu2: false,
+                submenu3: false
+            },
+            managementItems: [
+                { name: '員工管理', url: '/employee' },
+                { name: '部門管理', url: '/' },
+                { name: '科別管理', url: '/unit' },
+                { name: '職位管理', url: '/position' },
+                { name: '權限管理', url: '/' },
+                { name: '員工狀態', url: '/employee-status' },
+                { name: '登入記錄', url: '/loginRecord' }
+            ],
+            currentTime: '',
+            currentDate: '',
+        }
+    },
+
+    computed: {
+        ...mapGetters({
+            userName: 'auth/userName'
+        })
+    },
+
+    methods: {
+        toggleSubmenu(menuId) {
+            this.isSubmenuOpen[menuId] = !this.isSubmenuOpen[menuId]
+        },
+
+        updateTime() {
+            const now = new Date()
+
+            // 更新時間 (24小時制)
+            this.currentTime = now.toLocaleTimeString('zh-TW', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            })
+
+            // 更新日期
+            this.currentDate = now.toLocaleDateString('zh-TW', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                weekday: 'long'
+            })
+        },
+        async logout() {
+            const token = localStorage.getItem("JWT_Token");
+            try {
+                const response = await fetch("http://localhost:8085/employee/test/logout", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+                if (response.ok) {
+                    localStorage.removeItem("JWT_Token");
+                    localStorage.removeItem("userData");
+                    this.$store.dispatch('auth/logout'); // 新增：觸發 Vuex 的登出 action
+                    this.$router.push("/login");
+                } else {
+                    const body = await response.json();
+                    console.log("Log out failed:" + body)
+                }
+            } catch (error) {
+                console.log("Failed to send log out request")
+            }
+        },
+
+        isVisible(managementItem) {
+            if (!this.userFile || !Array.isArray(this.userFile.permissionId)) {
+                return false;
+            }
+            if (managementItem === "部門管理" || managementItem === "科別管理") {
+                return this.userFile.permissionId.includes(4);
+            }
+            else {
+                return true;
+            }
+        }
+    },
+    mounted() {
+        // this.parseToken();
+        this.updateTime() // 初始化時間
+        // 每秒更新一次時間
+        setInterval(this.updateTime, 1000)
+
+        try {
+            const userData = localStorage.getItem("userData");
+            if (userData) {
+                this.userFile = JSON.parse(userData);
+            }
+        } catch (error) {
+            console.error('解析用戶數據失敗：', error);
+        }
+    }
 }
-
-// 新增時間相關的程式碼
-const currentTime = ref('')
-const currentDate = ref('')
-
-const updateTime = () => {
-    const now = new Date()
-    
-    // 更新時間 (24小時制)
-    currentTime.value = now.toLocaleTimeString('zh-TW', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-    })
-    
-    // 更新日期
-    currentDate.value = now.toLocaleDateString('zh-TW', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        weekday: 'long'
-    })
-}
-
-onMounted(() => {
-    updateTime() // 初始化時間
-    // 每秒更新一次時間
-    setInterval(updateTime, 1000)
-})
 </script>
 
 <style scoped>
@@ -254,7 +316,8 @@ hr {
     position: fixed;
     height: 100vh;
     z-index: 1000;
-    width: 240px; /* 固定寬度 */
+    width: 240px;
+    /* 固定寬度 */
 }
 
 /* 修改 container-fluid 的樣式 */

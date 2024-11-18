@@ -22,7 +22,7 @@ const mutations = {
     },
     SET_USER_INFO(state, userInfo) {
         state.userId = userInfo.sub;
-        state.userName = userInfo.userName;
+        state.userName = userInfo.userName || '';
         state.userEmail = userInfo.userEmail;
         state.userPhone = userInfo.userPhone;
         state.userStatusId = userInfo.userStatusId;
@@ -48,13 +48,17 @@ const mutations = {
 const actions = {
     // 登入成功後的處理
     async loginSuccess({ commit }, token) {
-        commit('SET_TOKEN', token);
-        const userInfo = parseJwt(token);
-        if (userInfo) {
-            commit('SET_USER_INFO', userInfo);
-            if(userInfo.permissionId) {
-                commit('SET_PERMISSIONS', userInfo.permissionId);
+        try {
+            commit('SET_TOKEN', token);
+            const userInfo = parseJwt(token);
+            if (userInfo) {
+                console.log('解析後的用戶訊息:', userInfo); // 用於調試
+                commit('SET_USER_INFO', userInfo);
+            } else {
+                console.error('無法解析用戶訊息');
             }
+        } catch (error) {
+            console.error('處理登入成功時發生錯誤:', error);
         }
     },
     // 登出
@@ -76,7 +80,7 @@ const getters = {
     hasAnyPermission: (state) => (permissionIds) => {
         return permissionIds.some(id => state.permissions.includes(id));
     },
-    userName: state => state.userName,
+    userName: state => state.userName || 'User',
     userEmail: state => state.userEmail,
 };
 
