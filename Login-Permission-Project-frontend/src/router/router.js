@@ -10,6 +10,7 @@ import EmployeeStatusView from '../views/EmployeeStatusView.vue';
 import Department from '../views/Department.vue'
 
 import store from '../store';
+import { PERMISSIONS } from "../utils/jwt";
 
 // import UnitComponents from '../components/Unit.vue'
 // import Sidebar from '../components/Sidebar.vue'
@@ -24,7 +25,8 @@ const routes = [
     {
         path: '/login',
         name: 'LoginPage',
-        component: Login
+        component: Login,
+        meta: { requiresAuth: false }
     },
     {
         path: '/register',
@@ -49,7 +51,11 @@ const routes = [
     {
         path: '/employee',
         name: 'Employee',
-        component: Employee
+        component: Employee,
+        meta: { 
+            requiresAuth: true,
+            permissions: [PERMISSIONS.DEPT_FULL_ACCESS, PERMISSIONS.DEPT_PARTIAL_ACCESS]
+          }
     },
     {
         path: '/employee-status',
@@ -59,7 +65,11 @@ const routes = [
     {
         path: '/Department',
         name: 'Department',
-        component: Department
+        component:Department,
+        meta: { 
+          requiresAuth: true,
+          permissions: [PERMISSIONS.DEPT_FULL_ACCESS, PERMISSIONS.DEPT_PARTIAL_ACCESS]
+        }
     },
 
 
@@ -77,14 +87,23 @@ const router =  createRouter({
 
 //路由守衛
   router.beforeEach((to, from, next) => {
-    const permissions = store.replaceState.permissions;
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const isAuthenticated = store.getters['auth/isAuthenticated'];
 
-    if(to.meta.requiresAdmin && !permissions.includes('admin')){
+    if(requiresAuth && !isAuthenticated){
         //如果沒有 admin 權限，就跳轉到其他頁面
         next('/login');
-    } else {
-        next();
+        return;
+    } 
+
+    if(to.meta.permissions) {
+        const hasRequiredPermission = store.getters['auth/hasAnyPermission'](to.meta.permissions);
+        if(!hasRequiredPermission) {
+            next('/403');
+            return;
+        }
     }
+    next();
   });
 
 

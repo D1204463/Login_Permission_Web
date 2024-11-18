@@ -110,6 +110,8 @@
   } from '@fortawesome/free-solid-svg-icons'
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
   import {useRouter} from "vue-router";
+  import { useStore } from 'vuex';
+  import { PERMISSIONS } from '../utils/jwt';
 
   // 添加圖標到庫中
   library.add(faUserCircle, faEye, faEyeSlash, faSpinner)
@@ -126,6 +128,7 @@
       const isLoading = ref(false)
       const errorMessage = ref('')
       const router = useRouter();
+      const store = useStore();
 
       // 切換密碼顯示
       const togglePassword = () => {
@@ -138,10 +141,10 @@
           isLoading.value = true;
           errorMessage.value = '';
 
-          const requestBody = {
-            employee_id: employeeId.value, // 使用 .value
-            password: password.value       // 使用 .value
-          };
+          // const requestBody = {
+          //   employee_id: employeeId.value, // 使用 .value
+          //   password: password.value       // 使用 .value
+          // };
 
           // TODO: 實作登入邏輯
           const response = await fetch("http://localhost:8085/employee/test/login", {
@@ -149,22 +152,30 @@
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(requestBody)
+            // body: JSON.stringify(requestBody)
+            body: JSON.stringify({
+                employee_id: employeeId.value,
+                password: password.value
+            })
           });
+    
           console.log("Response:", response);
           if (response.ok) {
             const token = await response.text();
+            // 存儲 token 和用戶訊息到 Vuex
+            await store.dispatch('auth/loginSuccess', token);
 
-            localStorage.setItem("JWT_Token", token);
+            // localStorage.setItem("JWT_Token", token);
             console.log("登錄成功,jwt驗證碼:" + token);
             await router.push("/");
           } else {
             const errorMessageText = await response.text();
+            errorMessage.value = errorMessageText || '登入失敗，請檢查帳號密碼是否正確';
             console.log("登錄失敗:", errorMessageText);
           }
-
         } catch (error) {
-          errorMessage.value = '登入失敗，請檢查帳號密碼是否正確';
+          console.error("登錄失敗:", error);
+          errorMessage.value = '登入失敗，請稍後再試';
         } finally {
           isLoading.value = false;
         }

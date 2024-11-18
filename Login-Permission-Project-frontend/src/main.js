@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router/router'
-import store from './store/index'
+import store from './store'
 
 import './assets/styles/main.css' // 全局css
 import { library } from '@fortawesome/fontawesome-svg-core';
