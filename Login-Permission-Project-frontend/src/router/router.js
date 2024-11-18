@@ -9,6 +9,7 @@ import Employee from "../views/Employee.vue";
 import EmployeeStatusView from '../views/EmployeeStatusView.vue';
 import Department from '../views/Department.vue'
 
+import store from '../store';
 
 // import UnitComponents from '../components/Unit.vue'
 // import Sidebar from '../components/Sidebar.vue'
@@ -73,5 +74,18 @@ const router =  createRouter({
     history: createWebHistory(),
     routes,
   })
+
+//路由守衛
+  router.beforeEach((to, from, next) => {
+    const permissions = store.replaceState.permissions;
+
+    if(to.meta.requiresAdmin && !permissions.includes('admin')){
+        //如果沒有 admin 權限，就跳轉到其他頁面
+        next('/login');
+    } else {
+        next();
+    }
+  });
+
 
 export default router;
