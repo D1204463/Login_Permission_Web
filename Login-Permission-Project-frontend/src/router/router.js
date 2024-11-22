@@ -1,5 +1,8 @@
 import { createWebHistory, createRouter } from 'vue-router'
 import Home from '../views/Home.vue'
+import MyNotifications from '../views/HomePageButton/MyNotificationsView.vue'
+import DepartmentAnnouncements from '../views/HomePageButton/DepartmentAnnouncementsView.vue'
+import CompanyAnnouncements from '../views/HomePageButton/CompanyAnnouncementsView.vue'
 import Login from '../views/LoginView.vue'
 import Unit from '../views/Unit.vue'
 import Position from '../views/Position.vue'
@@ -21,6 +24,21 @@ const routes = [
         path: '/',
         name: 'Home',
         component: Home
+    },
+    {
+        path: '/MyNotifications',
+        name: 'MyNotifications',
+        component: MyNotifications
+    },
+    {
+        path: '/department-announcements',
+        name: 'DepartmentAnnouncements',
+        component: DepartmentAnnouncements
+    },
+    {
+        path: '/company-announcements',
+        name: 'CompanyAnnouncements',
+        component: CompanyAnnouncements
     },
     {
         path: '/login',
