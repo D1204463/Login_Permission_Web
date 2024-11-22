@@ -182,18 +182,18 @@ export default {
     },
 
     computed: {
-        ...mapGetters({
-            userName: 'auth/userName',
-            storePermissions: 'auth/userPermissions' // 從 store 獲取權限
-        }),
+        ...mapGetters('auth', [
+            'userName',
+            'userPermissions',
+            'hasPermission',
+            'hasAnyPermission'
+        ]),
         filteredManagementItems() {
             return this.managementItems.filter(item => {
                 if (!item.requiredPermissions || item.requiredPermissions.length === 0) {
                     return true;
                 }
-                return item.requiredPermissions.some(permission => 
-                    this.userPermissions.includes(permission)
-                );
+                return this.hasAnyPermission(item.requiredPermissions);
             });
         },
     },

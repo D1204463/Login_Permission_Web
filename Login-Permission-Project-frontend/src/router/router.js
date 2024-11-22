@@ -52,7 +52,7 @@ const routes = [
         path: '/employee',
         name: 'Employee',
         component: Employee,
-        meta: { 
+        meta: {
             requiresAuth: true,
             permissions: [
                 PERMISSIONS.DEPT_READ,
@@ -60,7 +60,7 @@ const routes = [
                 PERMISSIONS.DEPT_CREATE,
                 PERMISSIONS.DEPT_DELETE
             ]
-          }
+        }
     },
     {
         path: '/employee-status',
@@ -70,15 +70,15 @@ const routes = [
     {
         path: '/Department',
         name: 'Department',
-        component:Department,
-        meta: { 
-          requiresAuth: true,
-          permissions: [
-            PERMISSIONS.DEPT_READ,
-            PERMISSIONS.DEPT_UPDATE,
-            PERMISSIONS.DEPT_CREATE,
-            PERMISSIONS.DEPT_DELETE
-        ]
+        component: Department,
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.DEPT_READ,
+                PERMISSIONS.DEPT_UPDATE,
+                PERMISSIONS.DEPT_CREATE,
+                PERMISSIONS.DEPT_DELETE
+            ]
         }
     },
 
@@ -90,31 +90,54 @@ const routes = [
     // }
 ]
 
-const router =  createRouter({
+const router = createRouter({
     history: createWebHistory(),
     routes,
-  })
+})
 
 //路由守衛
-  router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-    const isAuthenticated = store.getters['auth/isAuthenticated'];
+    const isAuthenticated = store.state.auth.isAuthenticated;
 
-    if(requiresAuth && !isAuthenticated){
+    // 調試訊息
+    console.log('Route authentication:', {
+        path: to.path,
+        requiresAuth,
+        isAuthenticated,
+        permissions: to.meta.permissions
+    });
+
+    // 檢查認證
+    if (requiresAuth && !isAuthenticated) {
+        console.log('Authentication required, redirecting to login');
         //如果沒有 admin 權限，就跳轉到其他頁面
         next('/login');
         return;
-    } 
+    }
 
-    if(to.meta.permissions) {
+    // 檢查權限
+    if (to.meta.permissions) {
+        // 使用命名空間的 getter
         const hasRequiredPermission = store.getters['auth/hasAnyPermission'](to.meta.permissions);
-        if(!hasRequiredPermission) {
+        console.log('Permission check:', {
+            required: to.meta.permissions,
+            has: hasRequiredPermission,
+            userPermissions: store.state.auth.userInfo.permissionCode
+        });
+
+        if (!hasRequiredPermission) {
             next('/403');
             return;
         }
     }
     next();
-  });
+});
+
+//全局錯誤處理
+router.onError((error) => {
+    console.error('Router error:', error);
+});
 
 
 export default router;
