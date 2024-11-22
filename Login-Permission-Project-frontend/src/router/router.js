@@ -54,7 +54,16 @@ const routes = [
     {
         path: '/unit',
         name: 'Unit',
-        component: Unit
+        component: Unit,
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.UNIT_READ,
+                PERMISSIONS.UNIT_UPDATE,
+                PERMISSIONS.UNIT_CREATE,
+                PERMISSIONS.UNIT_DELETE
+            ]
+        }
     },
     {
         path: '/loginRecord',
@@ -70,15 +79,6 @@ const routes = [
         path: '/employee',
         name: 'Employee',
         component: Employee,
-        meta: {
-            requiresAuth: true,
-            permissions: [
-                PERMISSIONS.DEPT_READ,
-                PERMISSIONS.DEPT_UPDATE,
-                PERMISSIONS.DEPT_CREATE,
-                PERMISSIONS.DEPT_DELETE
-            ]
-        }
     },
     {
         path: '/employee-status',

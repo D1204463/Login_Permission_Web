@@ -6,98 +6,100 @@
                 <a class="nav-link active" href="#">科別管理</a>
             </li>
         </ul>
-
-        <div class="content-wrapper">
-            <div class="row g-3 align-items-center">
-                <!-- 新增科別按鈕 -->
-                <div class="col-auto">
-                    <button class="btn add-unit-btn" style="margin-bottom:20px;" data-bs-toggle="modal"
-                        data-bs-target="#createUnitModal">
-                        <font-awesome-icon :icon="['fas', 'plus']" size="xl" class="me-2" />
-                        新增科別
-                    </button>
-                </div>
-                <!-- 搜尋區塊 -->
-                <div class="col">
-                    <div class="card w-100 mb-4 border-0">
-                        <div class="card-body">
-                            <!-- 搜尋表單 -->
-                            <div class="col">
-                                <form @submit.prevent="handleSearch">
-                                    <div class="row g-3 align-items-center">
-                                        <div class="col-md">
-                                            <div class="form-floating">
-                                                <select class="form-select" id="unitSelect" v-model="searchByUnitId">
-                                                    <option value="">選擇科別</option>
-                                                    <option v-for="unit in unitOptions" :key="unit.unit_id"
-                                                        :value="unit.unit_id">
-                                                        {{ unit.unit_name }} / {{ unit.unit_code }}
-                                                    </option>
-                                                </select>
-                                                <label for="unitSelect">科別/科別代碼</label>
+        <div v-if="canReadUnit">
+            <div class="content-wrapper">
+                <div class="row g-3 align-items-center">
+                    <!-- 新增科別按鈕 -->
+                    <div class="col-auto">
+                        <button class="btn add-unit-btn" style="margin-bottom:20px;" data-bs-toggle="modal"
+                            data-bs-target="#createUnitModal" v-if="canCreateUnit">
+                            <font-awesome-icon :icon="['fas', 'plus']" size="xl" class="me-2" />
+                            新增科別
+                        </button>
+                    </div>
+                    <!-- 搜尋區塊 -->
+                    <div class="col">
+                        <div class="card w-100 mb-4 border-0">
+                            <div class="card-body">
+                                <!-- 搜尋表單 -->
+                                <div class="col">
+                                    <form @submit.prevent="handleSearch">
+                                        <div class="row g-3 align-items-center">
+                                            <div class="col-md">
+                                                <div class="form-floating">
+                                                    <select class="form-select" id="unitSelect"
+                                                        v-model="searchByUnitId">
+                                                        <option value="">選擇科別</option>
+                                                        <option v-for="unit in unitOptions" :key="unit.unit_id"
+                                                            :value="unit.unit_id">
+                                                            {{ unit.unit_name }} / {{ unit.unit_code }}
+                                                        </option>
+                                                    </select>
+                                                    <label for="unitSelect">科別/科別代碼</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md">
+                                                <div class="form-floating">
+                                                    <select class="form-select" id="deptSelect"
+                                                        v-model="searchByDepartmentId">
+                                                        <option value="">選擇部門</option>
+                                                        <option v-for="dept in departments" :key="dept.department_id"
+                                                            :value="dept.department_id">
+                                                            {{ dept.department_name }}
+                                                        </option>
+                                                    </select>
+                                                    <label for="deptSelect">部門</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto d-flex align-items-center">
+                                                <button type="button" class="btn btn-secondary search-btn"
+                                                    v-on:click="resetSearch">
+                                                    <font-awesome-icon :icon="['fas', 'rotate']" size="lg" />
+                                                </button>
                                             </div>
                                         </div>
-                                        <div class="col-md">
-                                            <div class="form-floating">
-                                                <select class="form-select" id="deptSelect"
-                                                    v-model="searchByDepartmentId">
-                                                    <option value="">選擇部門</option>
-                                                    <option v-for="dept in departments" :key="dept.department_id"
-                                                        :value="dept.department_id">
-                                                        {{ dept.department_name }}
-                                                    </option>
-                                                </select>
-                                                <label for="deptSelect">部門</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto d-flex align-items-center">
-                                            <button type="button" class="btn btn-secondary search-btn"
-                                                v-on:click="resetSearch">
-                                                <font-awesome-icon :icon="['fas', 'rotate']" size="lg" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 資料表格 -->
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th class="text-center" style="width: 80px">編輯</th>
-                            <th class="text-center">科別代號</th>
-                            <th class="text-center">科別</th>
-                            <th class="text-center">科別代碼</th>
-                            <th class="text-center">部門</th>
-                            <th class="text-center" style="width: 80px">刪除</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="unit in filteredUnits" :key="unit.unit_id">
-                            <td class="text-center">
-                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#editUnitModal" v-on:click="onUpdateUnit(unit)">
-                                    <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
-                                </button>
-                            </td>
-                            <td class="text-center">{{ unit.unit_id }}</td>
-                            <td class="text-center">{{ unit.unit_name }}</td>
-                            <td class="text-center">{{ unit.unit_code }}</td>
-                            <td class="text-center">{{ unit.department_id }}</td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
-                                    data-bs-target="#deleteUnit" v-on:click="onSelectUnit(unit)">
-                                    <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- 資料表格 -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 80px">編輯</th>
+                                <th class="text-center">科別代號</th>
+                                <th class="text-center">科別</th>
+                                <th class="text-center">科別代碼</th>
+                                <th class="text-center">部門</th>
+                                <th class="text-center" style="width: 80px">刪除</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="unit in filteredUnits" :key="unit.unit_id">
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#editUnitModal" v-on:click="onUpdateUnit(unit)" v-if="canUpdateUnit">
+                                        <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
+                                    </button>
+                                </td>
+                                <td class="text-center">{{ unit.unit_id }}</td>
+                                <td class="text-center">{{ unit.unit_name }}</td>
+                                <td class="text-center">{{ unit.unit_code }}</td>
+                                <td class="text-center">{{ unit.department_id }}</td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
+                                        data-bs-target="#deleteUnit" v-on:click="onSelectUnit(unit)" v-if="canDeleteUnit">
+                                        <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -159,7 +161,7 @@
     </div>
 
     <!-- 修改科別 Modal -->
-     <div class="modal fade" id="editUnitModal" aria-labelledby="editUnitModal" aria-hidden="true">
+    <div class="modal fade" id="editUnitModal" aria-labelledby="editUnitModal" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -212,9 +214,9 @@
                 </div>
             </div>
         </div>
-     </div>
+    </div>
 
-     <!-- 刪除科別 Modal -->
+    <!-- 刪除科別 Modal -->
     <div class="modal fade" id="deleteUnit" aria-labelledby="deleteUnitModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -227,8 +229,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" 
-                    v-on:click="deleteUnit">Delete</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                        v-on:click="deleteUnit">Delete</button>
                 </div>
             </div>
         </div>
@@ -248,6 +250,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 // 添加圖標
 library.add(faPlus, faPenToSquare, faTrashCan, faMagnifyingGlass)
+
+import { PERMISSIONS } from '../../utils/jwt';
 
 export default {
     components: {
@@ -378,7 +382,19 @@ export default {
                 const matchDepartment = !this.searchByDepartmentId || unit.department_id === this.searchByDepartmentId;
                 return matchUnit && matchDepartment;
             });
-        }
+        },
+        canReadUnit() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_READ);
+        },
+        canCreateUnit() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_CREATE);
+        },
+        canUpdateUnit() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_UPDATE);
+        },
+        canDeleteUnit() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_DELETE);
+        },
     },
 
     created() {
