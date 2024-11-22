@@ -56,10 +56,13 @@
                             </a>
                             <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu1 }">
                                 <ul class="nav flex-column ms-4 submenu-items">
-                                    <li class="w-100" v-for="(item, index) in managementItems " :key="index">
-                                        <a :href="item.url" class="submenu-link" v-if="isVisible(item.name)">
-                                            <span class="d-none d-sm-inline">{{ item.name }}</span>
-                                        </a>
+                                    <li class="w-100" v-for="item in filteredManagementItems" :key="item.name">
+                                        <router-link :to="item.url" class="submenu-link" v-slot="{ navigate }" custom>
+                                            <a @click="navigate" class="submenu-link"
+                                                :class="{ 'active': $route.path === item.url }">
+                                                <span class="d-none d-sm-inline">{{ item.name }}</span>
+                                            </a>
+                                        </router-link>
                                     </li>
                                 </ul>
                             </div>
@@ -120,6 +123,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { parseJwt, PERMISSIONS } from '../utils/jwt'
 
 export default {
     name: 'MyComponent',
@@ -135,23 +139,63 @@ export default {
                 submenu3: false
             },
             managementItems: [
-                { name: '員工管理', url: '/employee' },
-                { name: '部門管理', url: '/' },
-                { name: '科別管理', url: '/unit' },
-                { name: '職位管理', url: '/position' },
-                { name: '權限管理', url: '/' },
-                { name: '員工狀態', url: '/employee-status' },
-                { name: '登入記錄', url: '/loginRecord' }
+                {
+                    name: '員工管理',
+                    url: '/employee',
+                    requiredPermissions: [] // 所有人都可以看到
+                },
+                {
+                    name: '部門管理',
+                    url: '/Department',
+                    requiredPermissions: [PERMISSIONS.DEPT_READ, PERMISSIONS.DEPT_UPDATE, PERMISSIONS.DEPT_CREATE, PERMISSIONS.DEPT_DELETE]
+                },
+                {
+                    name: '科別管理',
+                    url: '/unit',
+                    requiredPermissions: [PERMISSIONS.UNIT_READ, PERMISSIONS.UNIT_UPDATE, PERMISSIONS.UNIT_CREATE, PERMISSIONS.UNIT_DELETE]
+                },
+                {
+                    name: '職位管理',
+                    url: '/position',
+                    requiredPermissions: []
+                },
+                {
+                    name: '權限管理',
+                    url: '/',
+                    requiredPermissions: []
+                },
+                {
+                    name: '員工狀態',
+                    url: '/employee-status',
+                    requiredPermissions: []
+                },
+                {
+                    name: '登入記錄',
+                    url: '/loginRecord',
+                    requiredPermissions: [PERMISSIONS.LOGIN_RECORD_READ]
+                },
             ],
             currentTime: '',
             currentDate: '',
+            userPermissions: [],
         }
     },
 
     computed: {
         ...mapGetters({
-            userName: 'auth/userName'
-        })
+            userName: 'auth/userName',
+            storePermissions: 'auth/userPermissions' // 從 store 獲取權限
+        }),
+        filteredManagementItems() {
+            return this.managementItems.filter(item => {
+                if (!item.requiredPermissions || item.requiredPermissions.length === 0) {
+                    return true;
+                }
+                return item.requiredPermissions.some(permission => 
+                    this.userPermissions.includes(permission)
+                );
+            });
+        },
     },
 
     methods: {
@@ -202,32 +246,45 @@ export default {
             }
         },
 
-        isVisible(managementItem) {
-            if (!this.userFile || !Array.isArray(this.userFile.permissionId)) {
-                return false;
-            }
-            if (managementItem === "部門管理" || managementItem === "科別管理") {
-                return this.userFile.permissionId.includes(4);
-            }
-            else {
+        isVisible(item) {  //基於每個項目的 requiredPermissions 進行判斷
+            // 如果沒有設定必要權限，則所有人都可以看到
+            if (!item.requiredPermissions || item.requiredPermissions.length === 0) {
                 return true;
+            }
+            // 檢查用戶是否擁有任一必要權限
+            return item.requiredPermissions.some(permission =>
+                this.userPermissions.includes(permission)
+            );
+        },
+        initializeUserPermissions() {  //在組件掛載時從 JWT 獲取權限
+            const token = localStorage.getItem("JWT_Token");
+            if (token) {
+                const decodedToken = parseJwt(token);
+                if (decodedToken && decodedToken.permissionCode) {
+                    this.userPermissions = decodedToken.permissionCode;
+                    console.log('User permissions:', this.userPermissions);
+                    // 同步到 Vuex store
+                    this.$store.dispatch('auth/setPermissions', decodedToken.permissionCode);
+                    console.log('User permissions initialized:', this.userPermissions);
+                }
             }
         }
     },
     mounted() {
         // this.parseToken();
+        this.initializeUserPermissions();
         this.updateTime() // 初始化時間
         // 每秒更新一次時間
         setInterval(this.updateTime, 1000)
 
-        try {
-            const userData = localStorage.getItem("userData");
-            if (userData) {
-                this.userFile = JSON.parse(userData);
-            }
-        } catch (error) {
-            console.error('解析用戶數據失敗：', error);
-        }
+        // try {
+        //     const userData = localStorage.getItem("userData");
+        //     if (userData) {
+        //         this.userFile = JSON.parse(userData);
+        //     }
+        // } catch (error) {
+        //     console.error('解析用戶數據失敗：', error);
+        // }
     }
 }
 </script>

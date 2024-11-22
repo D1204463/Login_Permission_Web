@@ -54,7 +54,12 @@ const routes = [
         component: Employee,
         meta: { 
             requiresAuth: true,
-            permissions: [PERMISSIONS.DEPT_FULL_ACCESS, PERMISSIONS.DEPT_PARTIAL_ACCESS]
+            permissions: [
+                PERMISSIONS.DEPT_READ,
+                PERMISSIONS.DEPT_UPDATE,
+                PERMISSIONS.DEPT_CREATE,
+                PERMISSIONS.DEPT_DELETE
+            ]
           }
     },
     {
@@ -68,7 +73,12 @@ const routes = [
         component:Department,
         meta: { 
           requiresAuth: true,
-          permissions: [PERMISSIONS.DEPT_FULL_ACCESS, PERMISSIONS.DEPT_PARTIAL_ACCESS]
+          permissions: [
+            PERMISSIONS.DEPT_READ,
+            PERMISSIONS.DEPT_UPDATE,
+            PERMISSIONS.DEPT_CREATE,
+            PERMISSIONS.DEPT_DELETE
+        ]
         }
     },
 

@@ -26,7 +26,7 @@ const mutations = {
         state.userEmail = userInfo.userEmail;
         state.userPhone = userInfo.userPhone;
         state.userStatusId = userInfo.userStatusId;
-        state.permissions = userInfo.permissionId || [];
+        state.permissions = userInfo.permissionCode || [];
         state.loginRecordId = userInfo.loginRecordId;
     },
     SET_PERMISSIONS(state, permissions) {
@@ -74,11 +74,11 @@ const actions = {
 const getters = {
     isAuthenticated: state => !!state.token,
     userPermissions: state => state.permissions,
-    hasPermission: (state) => (permissionId) => {
-        return state.permissions.includes(permissionId);
+    hasPermission: (state) => (permission) => {
+        return state.permissions.includes(permission);
     },
-    hasAnyPermission: (state) => (permissionIds) => {
-        return permissionIds.some(id => state.permissions.includes(id));
+    hasAnyPermission: (state) => (permissions) => {
+        return permissions.some(permission => state.permissions.includes(permission));
     },
     userName: state => state.userName || 'User',
     userEmail: state => state.userEmail,
