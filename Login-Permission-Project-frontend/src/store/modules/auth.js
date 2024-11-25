@@ -1,4 +1,7 @@
 import { parseJwt } from '../../utils/jwt';
+import {getLoginRecord} from "../../utils/loginRecordUtils.js";
+import {login} from "../../utils/loginUtils.js";
+import{handleError} from "../../utils/handleError.js";
 
 export default {
     namespaced: true, // 添加命名空間
@@ -13,6 +16,8 @@ export default {
             loginRecordId: null,
         },
         isAuthenticated: false,
+        loginRecords:[],
+        failLoginRecordMessage:null
     },
     mutations: {
         setUserInfo(state, token) {
@@ -28,6 +33,13 @@ export default {
                     permissionCode: Array.isArray(user.permissionCode) ? user.permissionCode : [], // 確保是陣列
                 };
             }
+        },
+        setFailRecordMessage(state,message){
+            state.failLoginRecordMessage = message;
+    },
+        setLoginRecord(state, record){
+            state.loginRecords = record;
+            console.log("testing setLoginRecord:" , state.loginRecords);
         },
         setToken(state, token) {
             localStorage.setItem('JWT_Token', token);
@@ -46,65 +58,39 @@ export default {
                 permissionCode: [],
             };
             state.isAuthenticated = false;
+            state.loginRecords = null;
         },
         clearToken() {
             localStorage.removeItem('JWT_Token');
         }
     },
     actions: {
-        async login({ commit }, { userName, userPassword }) {
+        //實作登錄
+        async login({ commit }, { employee_id, password }) {
             try {
-                const response = await fetch("http://localhost:8085/employee/test/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        employee_id: userName,
-                        password: userPassword
-                    })
-                });
+                const response = await login(employee_id,password);
 
-                // 檢查響應狀態
                 if (response.status === 200) {
                     console.log("登錄成功");
-                    // 直接獲取文本響應（JWT token）
+                    // 解析獲取的JWT token（JWT token）
                     const token = await response.text();
                     console.log('Received token:', token);
-
-                    // 儲存 token
                     commit('setToken', token);
-                    // 解析並儲存用戶訊息
                     commit('setUserInfo', token);
-                    // 設置認證狀態
                     commit('setAuthenticated', true);
 
-                    return {
-                        success: true,
-                        message: "登錄成功"
-                    };
+                    return {success: true, message: "登錄成功"};
+
                 } else {
-                    let errorMessage;
-                    try {
-                        const errorData = await response.json();
-                        errorMessage = errorData.message;
-                    } catch (e) {
-                        errorMessage = await response.text();
-                    }
-                    
-                    return { 
-                        success: false, 
-                        message: errorMessage || "登入失敗，請檢查帳號密碼是否正確" 
-                    };
+                    let errorMessage = await handleError(response);
+                    return {success: false, message: errorMessage};
                 }
             } catch (error) {
                 console.error("登錄請求失敗:", error);
-                return {
-                    success: false,
-                    message: "登錄失敗，請檢查網路是否連線正常"
-                };
+                return {success: false, message: "登錄失敗，請檢查網路是否連線正常"};
             }
         },
+
         async logout({ commit }) {
             try {
                 const token = localStorage.getItem('JWT_Token');
@@ -123,6 +109,26 @@ export default {
                 // 無論後端請求成功與否，都清除本地狀態
                 commit("clearUserInfo");
                 commit('clearToken');
+            }
+        },
+        //獲取登錄紀錄
+        async getLoginRecord({ commit }) {
+            const token = localStorage.getItem("JWT_Token");
+            if(token === null) {
+                commit("setFailRecordMessage","找不到token, 請嘗試重新登錄")
+            }
+            try{
+                const response =  await getLoginRecord(token);
+                if(response.ok){
+                    const loginRecord = await response.json();
+                    console.log("loginRecord:" ,loginRecord);
+                    commit("setLoginRecord", loginRecord)
+
+                } else {
+                    console.log("獲取登錄紀錄失敗," + await response.text());
+                }
+            } catch (error) {
+                console.log("獲取登錄紀錄失敗,請檢查連線是否正常");
             }
         }
     },
@@ -144,6 +150,11 @@ export default {
             return permissions.some(permission =>
                 state.userInfo.permissionCode.includes(permission)
             );
+        },
+        filterLoginRecord: (state) =>( time, status) => {
+            return state.loginRecords.filter(record => {
+                return record.time === time && record.status === status;
+            });
         }
     }
 };

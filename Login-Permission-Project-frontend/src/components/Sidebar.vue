@@ -59,7 +59,7 @@
                             <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu1 }">
                                 <ul class="nav flex-column ms-4 submenu-items">
                                     <li class="w-100" v-for="item in filteredManagementItems" :key="item.name">
-                                        <router-link :to="item.url" class="submenu-link" v-slot="{ navigate }" custom>
+                                        <router-link :to="item.url" class="submenu-link"  >
                                             <a @click="navigate" class="submenu-link"
                                                 :class="{ 'active': $route.path === item.url }">
                                                 <span class="d-none d-sm-inline">{{ item.name }}</span>
@@ -224,30 +224,6 @@ export default {
                 weekday: 'long'
             })
         },
-        async logout() {
-            const token = localStorage.getItem("JWT_Token");
-            try {
-                const response = await fetch("http://localhost:8085/employee/test/logout", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
-                if (response.ok) {
-                    localStorage.removeItem("JWT_Token");
-                    localStorage.removeItem("userData");
-                    this.$store.dispatch('auth/logout'); // 新增：觸發 Vuex 的登出 action
-                    this.$router.push("/login");
-                } else {
-                    const body = await response.json();
-                    console.log("Log out failed:" + body)
-                }
-            } catch (error) {
-                console.log("Failed to send log out request")
-            }
-        },
-
         isVisible(item) {  //基於每個項目的 requiredPermissions 進行判斷
             // 如果沒有設定必要權限，則所有人都可以看到
             if (!item.requiredPermissions || item.requiredPermissions.length === 0) {
@@ -270,7 +246,10 @@ export default {
                     console.log('User permissions initialized:', this.userPermissions);
                 }
             }
-        }
+        },
+      async logout(){
+          await this.$store.dispatch('auth/logout')
+      }
     },
     mounted() {
         // this.parseToken();

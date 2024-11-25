@@ -105,13 +105,15 @@ export default {
 
         // 使用 Vuex action 進行登入
         const result = await store.dispatch('auth/login', {
-          userName: employeeId.value,
-          userPassword: password.value
+          employee_id: employeeId.value,
+          password: password.value
         });
 
         if (result.success) {
           console.log('登入成功，正在跳轉...');
-          // 登入成功，導向首頁
+          // 登入成功，向後端再發送一次請求拿取登錄紀錄,導向首頁
+          await  store.dispatch('auth/getLoginRecord');
+          console.log(store.state.loginRecords);
           router.push('/');
         } else {
           // 顯示錯誤訊息
