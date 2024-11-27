@@ -12,11 +12,12 @@ export default {
             permissionCode: [],
             loginRecordId: null,
         },
-        isAuthenticated: false,
+        isAuthenticated: false,  // 用來追蹤使用者是否已登入
     },
     mutations: {
+        // 設置使用者資訊
         setUserInfo(state, token) {
-            const user = parseJwt(token);
+            const user = parseJwt(token); // 解析 JWT token
             if (user) {
                 state.userInfo = {
                     userId: user.sub,
@@ -29,12 +30,14 @@ export default {
                 };
             }
         },
+        // 儲存 token 到 localStorage
         setToken(state, token) {
             localStorage.setItem('JWT_Token', token);
         },
         setAuthenticated(state, isAuthenticated) {
             state.isAuthenticated = isAuthenticated;
         },
+        // 清除使用者資訊
         clearUserInfo(state) {
             state.userInfo = {
                 userId: null,
