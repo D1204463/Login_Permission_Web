@@ -6,112 +6,238 @@
                 <a class="nav-link active" href="#">科別管理</a>
             </li>
         </ul>
-
-        <div class="content-wrapper">
-            <div class="row g-3 align-items-center">
-                <!-- 新增科別按鈕 -->
-                <div class="col-auto">
-                    <button class="btn add-unit-btn" style="margin-bottom:20px;">
-                        <font-awesome-icon :icon="['fas', 'plus']" size="xl" class="me-2" />
-                        新增科別
-                    </button>
-                </div>
-                <!-- 搜尋區塊 -->
-                <div class="col">
-                    <div class="card w-100 mb-4 border-0">
-                        <div class="card-body">
-                            <!-- 搜尋表單 -->
-                            <div class="col">
-                                <form @submit.prevent="handleSearch">
-                                    <div class="row g-3 align-items-center">
-                                        <div class="col-md">
-                                            <div class="form-floating">
-                                                <select class="form-select" id="unitSelect" v-model="searchForm.unit">
-                                                    <option value="">選擇科別</option>
-                                                    <option v-for="unit in unitOptions" :key="unit.value"
-                                                        :value="unit.value">
-                                                        {{ unit.label }}
-                                                    </option>
-                                                </select>
-                                                <label for="unitSelect">科別</label>
+        <div v-if="canReadUnit">
+            <div class="content-wrapper">
+                <div class="row g-3 align-items-center">
+                    <!-- 新增科別按鈕 -->
+                    <div class="col-auto">
+                        <button class="btn add-unit-btn" style="margin-bottom:20px;" data-bs-toggle="modal"
+                            data-bs-target="#createUnitModal" v-if="canCreateUnit">
+                            <font-awesome-icon :icon="['fas', 'plus']" size="xl" class="me-2" />
+                            新增科別
+                        </button>
+                    </div>
+                    <!-- 搜尋區塊 -->
+                    <div class="col">
+                        <div class="card w-100 mb-4 border-0">
+                            <div class="card-body">
+                                <!-- 搜尋表單 -->
+                                <div class="col">
+                                    <form @submit.prevent="handleSearch">
+                                        <div class="row g-3 align-items-center">
+                                            <div class="col-md">
+                                                <div class="form-floating">
+                                                    <select class="form-select" id="unitSelect"
+                                                        v-model="searchByUnitId">
+                                                        <option value="">選擇科別</option>
+                                                        <option v-for="unit in unitOptions" :key="unit.unit_id"
+                                                            :value="unit.unit_id">
+                                                            {{ unit.unit_name }} / {{ unit.unit_code }}
+                                                        </option>
+                                                    </select>
+                                                    <label for="unitSelect">科別/科別代碼</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md">
+                                                <div class="form-floating">
+                                                    <select class="form-select" id="deptSelect"
+                                                        v-model="searchByDepartmentId">
+                                                        <option value="">選擇部門</option>
+                                                        <option v-for="dept in departments" :key="dept.department_id"
+                                                            :value="dept.department_id">
+                                                            {{ dept.department_name }}
+                                                        </option>
+                                                    </select>
+                                                    <label for="deptSelect">部門</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto d-flex align-items-center">
+                                                <button type="button" class="btn btn-secondary search-btn"
+                                                    v-on:click="resetSearch">
+                                                    <font-awesome-icon :icon="['fas', 'rotate']" size="lg" />
+                                                </button>
                                             </div>
                                         </div>
-                                        <div class="col-md">
-                                            <div class="form-floating">
-                                                <select class="form-select" id="codeSelect" v-model="searchForm.code">
-                                                    <option value="">選擇科別代碼</option>
-                                                    <option v-for="code in codeOptions" :key="code.value"
-                                                        :value="code.value">
-                                                        {{ code.label }}
-                                                    </option>
-                                                </select>
-                                                <label for="codeSelect">科別代碼</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md">
-                                            <div class="form-floating">
-                                                <select class="form-select" id="deptSelect"
-                                                    v-model="searchForm.department">
-                                                    <option value="">選擇部門</option>
-                                                    <option v-for="dept in deptOptions" :key="dept.value"
-                                                        :value="dept.value">
-                                                        {{ dept.label }}
-                                                    </option>
-                                                </select>
-                                                <label for="deptSelect">部門</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto d-flex align-items-center">
-                                            <button type="submit" class="btn btn-primary search-btn">
-                                                <font-awesome-icon :icon="['fas', 'magnifying-glass']" size="lg"/>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 資料表格 -->
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th class="text-center" style="width: 80px">編輯</th>
-                            <th class="text-center">科別代號</th>
-                            <th class="text-center">科別</th>
-                            <th class="text-center">科別代碼</th>
-                            <th class="text-center">部門</th>
-                            <th class="text-center" style="width: 80px">刪除</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="unit in units" :key="unit.id">
-                            <td class="text-center">
-                                <button class="btn btn-link" @click="handleEdit(unit)">
-                                    <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg"/>
-                                </button>
-                            </td>
-                            <td class="text-center">{{ unit.id }}</td>
-                            <td class="text-center">{{ unit.name }}</td>
-                            <td class="text-center">{{ unit.code }}</td>
-                            <td class="text-center">{{ unit.department }}</td>
-                            <td class="text-center">
-                                <button class="btn btn-link text-danger" @click="handleDelete(unit)">
-                                    <font-awesome-icon :icon="['fas', 'trash-can']" size="lg"/>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- 資料表格 -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 80px">編輯</th>
+                                <th class="text-center">科別代號</th>
+                                <th class="text-center">科別</th>
+                                <th class="text-center">科別代碼</th>
+                                <th class="text-center">部門</th>
+                                <th class="text-center" style="width: 80px">刪除</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="unit in filteredUnits" :key="unit.unit_id">
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#editUnitModal" v-on:click="onUpdateUnit(unit)" v-if="canUpdateUnit">
+                                        <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
+                                    </button>
+                                </td>
+                                <td class="text-center">{{ unit.unit_id }}</td>
+                                <td class="text-center">{{ unit.unit_name }}</td>
+                                <td class="text-center">{{ unit.unit_code }}</td>
+                                <td class="text-center">{{ unit.department_id }}</td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
+                                        data-bs-target="#deleteUnit" v-on:click="onSelectUnit(unit)" v-if="canDeleteUnit">
+                                        <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增科別 Modal -->
+    <div class="modal fade" id="createUnitModal" aria-labelledby="createUnitModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Unit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 科別名稱 Unit -->
+                    <div class="mb-3 row">
+                        <label for="addUnit" class="col-sm-3 col-form-label">Unit Id</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
+                                aria-label="Unit">
+                        </div>
+                    </div>
+                    <!-- 科別 Unit資料填充-->
+                    <div class="mb-3 row">
+                        <label for="addUnit" class="col-sm-3 col-form-label">Unit</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
+                                aria-label="Unit">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="addUnit" class="col-sm-3 col-form-label">Unit Code</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
+                                aria-label="Unit">
+                        </div>
+                    </div>
+                    <!-- 部門 Department，從 Departments 資料填充-->
+                    <div class="mb-3 row">
+                        <label for="chooseDepartmentId" class="col-sm-3 col-form-label">Department</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" id="chooseDepartmentID" v-model="newUnit.department_id"
+                                @change="updateSelectedDepartmentName">
+                                <option disabled value="">選擇部門</option>
+                                <option v-for="department in departments" :key="department.department_id"
+                                    :value="department.department_id">
+                                    {{ department.department_id }} ({{ department.department_name }})
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                            v-on:click="createPosition">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改科別 Modal -->
+    <div class="modal fade" id="editUnitModal" aria-labelledby="editUnitModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModLabel">Edit Unit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 科別名稱 Unit -->
+                    <div class="mb-3 row">
+                        <label for="addUnit" class="col-sm-3 col-form-label">Unit Id</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
+                                aria-label="Unit">
+                        </div>
+                    </div>
+                    <!-- 科別 Unit資料填充-->
+                    <div class="mb-3 row">
+                        <label for="addUnit" class="col-sm-3 col-form-label">Unit</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
+                                aria-label="Unit">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="addUnit" class="col-sm-3 col-form-label">Unit Code</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
+                                aria-label="Unit">
+                        </div>
+                    </div>
+                    <!-- 部門 Department，從 Departments 資料填充-->
+                    <div class="mb-3 row">
+                        <label for="chooseDepartmentId" class="col-sm-3 col-form-label">Department</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" id="chooseDepartmentID" v-model="newUnit.department_id"
+                                @change="updateSelectedDepartmentName">
+                                <option disabled value="">選擇部門</option>
+                                <option v-for="department in departments" :key="department.department_id"
+                                    :value="department.department_id">
+                                    {{ department.department_id }} ({{ department.department_name }})
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                            v-on:click="createPosition">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 刪除科別 Modal -->
+    <div class="modal fade" id="deleteUnit" aria-labelledby="deleteUnitModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Unit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this Unit?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                        v-on:click="deleteUnit">Delete</button>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
-<script setup>
+<script>
 import { ref } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
@@ -125,68 +251,165 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 // 添加圖標
 library.add(faPlus, faPenToSquare, faTrashCan, faMagnifyingGlass)
 
-// 搜尋表單數據
-const searchForm = ref({
-    unit: '',
-    code: '',
-    department: ''
-})
+import { PERMISSIONS } from '../../utils/jwt';
 
-// 下拉選項數據
-const unitOptions = ref([
-    { value: '1', label: '企金科' },
-    { value: '2', label: '個金科' },
-    { value: '3', label: '資訊科' },
-    { value: '4', label: '財務科' },
-    { value: '5', label: '總務科' }
-])
+export default {
+    components: {
+        FontAwesomeIcon
+    },
+    data() {
+        return {
+            units: [],
+            unitOptions: [],
+            codes: [],
+            departments: [],
+            selectedDepartmentName: "",
+            searchByUnitId: "",
+            searchByDepartmentId: "",
+            selectedUnit: {
+                unit_id: "",
+                unit_name: "",
+                unit_code: "",
+                department: "",
+            },
+            newUnit: {
+                nit_id: "",
+                unit_name: "",
+                unit_code: "",
+                department: "",
+            },
+            edidUnit: {
+                nit_id: "",
+                unit_name: "",
+                unit_code: "",
+                department: "",
+            },
+        }
+    },
+    methods: {
+        async getDepartment() {
+            try {
+                let response = await fetch("http://localhost:8085/department/test/get");
+                this.departments = await response.json();
+                console.log(this.departments);
+            } catch (error) {
+                console.log('Error Get Departments:', error);
+            }
+        },
+        async getUnitData() {
+            try {
+                let response = await fetch("http://localhost:8085/unit/test/get");
+                const data = await response.json();
+                this.units = data;
+                this.unitOptions = data;
+                console.log(this.units);
+            } catch (error) {
+                console.log('Error Get Unit:', error);
+            }
+        },
 
-const codeOptions = ref([
-    { value: '1', label: 'CF' },
-    { value: '2', label: 'PF' },
-    { value: '3', label: 'IT' },
-    { value: '4', label: 'FN' },
-    { value: '5', label: 'GA' }
-])
+        resetSearch() {
+            this.searchByDepartmentId = "";
+            this.searchByUnitId = "";
+            this.getUnitData();
+        },
 
-const deptOptions = ref([
-    { value: '1', label: '消金部' },
-    { value: '2', label: '管理部' }
-])
+        async createUnit() {
+            try {
+                const response = await fetch("http://localhost:8085/unit/test/add", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(this.newUnit),
+                }).then(() => {
+                    console.log(response.json);
+                    this.getUnitData();
+                });
+            } catch (error) {
+                console.log('Error Add Unit:', error);
+            }
+        },
 
-// 表格數據
-const units = ref([
-    {
-        id: '001',
-        name: '企金科',
-        code: 'CF',
-        department: '消金部'
-    }
-])
+        onSelectUnit(unit) {
+            this.selectedUnit = unit;
+        },
+        async deleteUnit() {
+            let unitId = this.selectedUnit.unit_id;
+            try {
+                const response = await fetch("http://localhost:8085/unit/test/delete" + unitId, {
+                    method: "DELETE",
+                }).then(() => {
+                    this.getUnitData();
+                });
+            } catch (error) {
+                console.log('Error Delete Unit:', error);
+            }
+        },
 
-// 處理搜尋
-const handleSearch = () => {
-    console.log('搜尋條件：', searchForm.value)
-}
+        onUpdateUnit(unit) {
+            this.edidUnit = { ...unit };
+        },
+        async updateUnit() {
+            try {
+                const response = await fetch("http://localhost:8085/unit/test/edit", {
+                    method: "PUT",
+                    header: {
+                        "Content-Type": "application/json",
+                    },
+                    body: Json.stringify(this.edidUnit),
+                }).then(() => {
+                    this.getUnitData();
+                });
+            } catch (error) {
+                console.log('Error Update Unit:', error);
+            }
+        },
+        updateSelectedDepartmentName() {
+            const selectedDepartment = this.departments.find(department => department.department_id === this.newUnit.department_id);
+            this.selectedDepartmentName = selectedDepartment ? selectedDepartment.department_name : "";
+        },
+    },
+    computed: {
+        // 將 filteredUnitInfo 改為計算屬性
+        filteredUnits() {
+            if (!this.searchByUnitId && !this.searchByDepartmentId) {
+                return this.units;
+            }
 
-// 處理編輯
-const handleEdit = (unit) => {
-    console.log('編輯單位：', unit)
-}
+            return this.units.filter(unit => {
+                const matchUnit = !this.searchByUnitId || unit.unit_id === this.searchByUnitId;
+                const matchDepartment = !this.searchByDepartmentId || unit.department_id === this.searchByDepartmentId;
+                return matchUnit && matchDepartment;
+            });
+        },
+        canReadUnit() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_READ);
+        },
+        canCreateUnit() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_CREATE);
+        },
+        canUpdateUnit() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_UPDATE);
+        },
+        canDeleteUnit() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_DELETE);
+        },
+    },
 
-// 處理刪除
-const handleDelete = (unit) => {
-    console.log('刪除單位：', unit)
+    created() {
+        this.getUnitData();
+        this.getDepartment();
+    },
 }
 </script>
 
 <style scoped>
-
-
 .content-wrapper {
     background-color: #ffffff;
     border-radius: 8px;
-    padding: 0 1.5rem; /* 只保留左右間距 */
+    padding: 0 1.5rem;
+    /* 只保留左右間距 */
     margin-right: 5%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
