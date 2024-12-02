@@ -28,17 +28,17 @@ const routes = [
     {
         path: '/MyNotifications',
         name: 'MyNotifications',
-        component: MyNotifications
+        component: Home
     },
     {
         path: '/department-announcements',
         name: 'DepartmentAnnouncements',
-        component: DepartmentAnnouncements
+        component: Home
     },
     {
         path: '/company-announcements',
         name: 'CompanyAnnouncements',
-        component: CompanyAnnouncements
+        component: Home
     },
     {
         path: '/login',
