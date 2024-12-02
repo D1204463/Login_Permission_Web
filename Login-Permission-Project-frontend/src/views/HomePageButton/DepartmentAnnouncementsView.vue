@@ -4,7 +4,7 @@
         <!-- 左側 Sidebar -->
         <Sidebar />
         </div>
-        <div class="col-9">
+        <div class="col-8">
             <HomePage/>
             <DepartmentAnnouncements />
         </div>

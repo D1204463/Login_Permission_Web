@@ -15,9 +15,6 @@ import Department from '../views/Department.vue'
 import store from '../store';
 import { PERMISSIONS } from "../utils/jwt";
 
-// import UnitComponents from '../components/Unit.vue'
-// import Sidebar from '../components/Sidebar.vue'
-
 
 const routes = [
     {
@@ -28,17 +25,17 @@ const routes = [
     {
         path: '/MyNotifications',
         name: 'MyNotifications',
-        component: MyNotifications
+        component: Home
     },
     {
         path: '/department-announcements',
         name: 'DepartmentAnnouncements',
-        component: DepartmentAnnouncements
+        component: Home
     },
     {
         path: '/company-announcements',
         name: 'CompanyAnnouncements',
-        component: CompanyAnnouncements
+        component: Home
     },
     {
         path: '/login',

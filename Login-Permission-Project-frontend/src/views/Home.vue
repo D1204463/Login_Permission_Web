@@ -5,7 +5,7 @@
         <!-- 左側 Sidebar -->
         <Sidebar />
         </div>
-        <div class="col-9">
+        <div class="col-8">
             <HomePage />
         </div>
     </div>
@@ -16,7 +16,7 @@
 
 <script setup>
 import Sidebar from '../components/Sidebar.vue';
-import HomePage from '../components/homePage/HomePage.vue'
+import HomePage from '../components/homePage/HomePage.vue';
 </script>
 
 <style scoped>
