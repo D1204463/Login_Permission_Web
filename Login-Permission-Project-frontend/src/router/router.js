@@ -10,7 +10,8 @@ import Register from '../components/Register.vue'
 import LoginRecord from "../views/LoginRecord.vue";
 import Employee from "../views/Employee.vue";
 import EmployeeStatusView from '../views/EmployeeStatusView.vue';
-import Department from '../views/Department.vue'
+import Department from '../views/Department.vue';
+import ProfileView from '../views/Profile.vue'
 
 import store from '../store';
 import { PERMISSIONS } from "../utils/jwt";
@@ -99,6 +100,11 @@ const routes = [
             ]
         }
     },
+    {
+        path: '/Profile',
+        name: 'Profile',
+        component: ProfileView
+    }
 
 
     // {

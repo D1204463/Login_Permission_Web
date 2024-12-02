@@ -19,7 +19,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                             <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><router-link to="/profile" class="dropdown-item">Profile</router-link></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -59,7 +59,7 @@
                             <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu1 }">
                                 <ul class="nav flex-column ms-4 submenu-items">
                                     <li class="w-100" v-for="item in filteredManagementItems" :key="item.name">
-                                        <router-link :to="item.url" class="submenu-link"  >
+                                        <router-link :to="item.url" class="submenu-link" v-slot="{ navigate }" custom>
                                             <a @click="navigate" class="submenu-link"
                                                 :class="{ 'active': $route.path === item.url }">
                                                 <span class="d-none d-sm-inline">{{ item.name }}</span>
