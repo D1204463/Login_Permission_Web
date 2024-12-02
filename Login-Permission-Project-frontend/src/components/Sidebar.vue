@@ -1,14 +1,14 @@
 <template>
 
     <div class="container-fluid">
-      <div class="row flex-nowrap">
-        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0" style="background-color: #334255;">
-          <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-            <!-- Logo -->
-            <a href="/"
-               class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-              <span class="fs-5 d-none d-sm-inline">Bank</span>
-            </a>
+        <div class="row flex-nowrap">
+            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0" style="background-color: #334255;">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                    <!-- Logo -->
+                    <a href="/"
+                        class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                        <span class="fs-5 d-none d-sm-inline">Bank</span>
+                    </a>
 
                     <!-- User Profile -->
                     <div class="dropdown pb-4">
@@ -32,7 +32,7 @@
                         id="menu">
                         <!-- 主頁面 -->
                         <li class="nav-item w-100">
-                            <router-link to="/" >
+                            <router-link to="/">
                                 <a class="nav-link menu-link">
                                     <div class="d-flex align-items-center">
                                         <font-awesome-icon :icon="['fas', 'house']" size="xl" />
@@ -59,7 +59,8 @@
                             <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu1 }">
                                 <ul class="nav flex-column ms-4 submenu-items">
                                     <li class="w-100" v-for="item in filteredManagementItems" :key="item.name">
-                                        <router-link :to="item.url" class="submenu-link"  >
+                                        <!-- jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj -->
+                                        <router-link :to="item.url" class="submenu-link">
                                             <a @click="navigate" class="submenu-link"
                                                 :class="{ 'active': $route.path === item.url }">
                                                 <span class="d-none d-sm-inline">{{ item.name }}</span>
@@ -118,93 +119,8 @@
                     <hr>
                 </div>
             </div>
-
-            <!-- Navigation Menu -->
-            <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start w-100"
-                id="menu">
-              <!-- 主頁面 -->
-              <li class="nav-item w-100">
-                <a href="#" class="nav-link menu-link">
-                  <div class="d-flex align-items-center">
-                    <font-awesome-icon :icon="['fas', 'house']" size="xl" />
-                    <span class="ms-3 d-none d-sm-inline">主頁面</span>
-                  </div>
-                </a>
-              </li>
-
-              <!-- 管理維護系統 -->
-              <li class="nav-item w-100">
-                <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu1')"
-                   :aria-expanded="isSubmenuOpen.submenu1">
-                  <div class="d-flex align-items-center justify-content-between w-100">
-                    <div class="d-flex align-items-center">
-                      <font-awesome-icon :icon="['fas', 'computer']" size="xl" />
-                      <span class="ms-3 d-none d-sm-inline">管理維護系統</span>
-                    </div>
-                    <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
-                                       class="d-none d-sm-inline submenu-icon"
-                                       :class="{ 'rotated': isSubmenuOpen.submenu1 }" />
-                  </div>
-                </a>
-                <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu1 }">
-                  <ul class="nav flex-column ms-4 submenu-items">
-                    <li class="w-100" v-for="(item, index) in managementItems" :key="index">
-                      <a :href="item.url" class="submenu-link">
-                        <span class="d-none d-sm-inline">{{ item.name }}</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-
-              <!-- 人事管理系統 -->
-              <li class="nav-item w-100">
-                <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu2')"
-                   :aria-expanded="isSubmenuOpen.submenu2">
-                  <div class="d-flex align-items-center justify-content-between w-100">
-                    <div class="d-flex align-items-center">
-                      <font-awesome-icon :icon="['fas', 'people-group']" size="xl" />
-                      <span class="ms-3 d-none d-sm-inline">人事管理系統</span>
-                    </div>
-                    <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
-                                       class="d-none d-sm-inline submenu-icon"
-                                       :class="{ 'rotated': isSubmenuOpen.submenu2 }" />
-                  </div>
-                </a>
-              </li>
-
-              <!-- 會計總帳系統 -->
-              <li class="nav-item w-100">
-                <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu3')"
-                   :aria-expanded="isSubmenuOpen.submenu3">
-                  <div class="d-flex align-items-center justify-content-between w-100">
-                    <div class="d-flex align-items-center">
-                      <font-awesome-icon :icon="['fas', 'piggy-bank']" size="xl" />
-                      <span class="ms-3 d-none d-sm-inline">會計總帳系統</span>
-                    </div>
-                    <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
-                                       class="d-none d-sm-inline submenu-icon"
-                                       :class="{ 'rotated': isSubmenuOpen.submenu3 }" />
-                  </div>
-                </a>
-              </li>
-            </ul>
-
-            <div class="sidebar-footer w-100">
-              <div class="text-center p-3 small text-white-50">
-                <div class="mb-1">
-                  <font-awesome-icon :icon="['far', 'clock']" class="me-2" />
-                  {{ currentTime }}
-                </div>
-                <div>
-                  {{ currentDate }}
-                </div>
-              </div>
-            </div>
-
-            <hr>
-          </div>
         </div>
+    </div>
 
 </template>
 
@@ -214,8 +130,6 @@ import { parseJwt, PERMISSIONS } from '../utils/jwt'
 
 export default {
     name: 'MyComponent',
-
-    //   inject: ['userData', 'parseToken'],
 
     data() {
         return {
@@ -332,9 +246,9 @@ export default {
                 }
             }
         },
-      async logout(){
-          await this.$store.dispatch('auth/logout')
-      }
+        async logout() {
+            await this.$store.dispatch('auth/logout')
+        }
     },
     mounted() {
         // this.parseToken();
