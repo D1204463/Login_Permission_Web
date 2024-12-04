@@ -1,3 +1,5 @@
+import Department from "../components/Department.vue";
+
 export function parseJwt(token) {
     try {
         // 檢查 token 是否存在且為字串
@@ -33,6 +35,7 @@ export function parseJwt(token) {
 
         // 解析 JSON 並確保正確的中文編碼
         const payload = JSON.parse(decodedString);
+        console.log('Parsed JWT payload:', payload);
 
         // 返回需要的資料
         return {
@@ -42,7 +45,8 @@ export function parseJwt(token) {
             userPhone: payload.userPhone || '',  // - 電話 (userPhone)
             userStatusId: payload.userStatusId || null,  // - 狀態ID (userStatusId)
             permissionCode: Array.isArray(payload.permissionCode) ? payload.permissionCode : [],  // - 權限ID列表 (permissionId)
-            loginRecordId: payload.loginRecordId || null  // - 登入記錄ID (loginRecordId)
+            loginRecordId: payload.loginRecordId || null,  // - 登入記錄ID (loginRecordId)
+            departmentAndUnit: payload.departmentAndUnit || null
         };
     } catch(e) {
         console.error('JWT 解析錯誤:', e);
