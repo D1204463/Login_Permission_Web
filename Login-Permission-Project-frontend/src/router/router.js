@@ -12,6 +12,7 @@ import Employee from "../views/Employee.vue";
 import EmployeeStatusView from '../views/EmployeeStatusView.vue';
 import Department from '../views/Department.vue';
 import ProfileView from '../views/Profile.vue';
+import Permission from '../views/Permission.vue';
 
 import store from '../store';
 import { PERMISSIONS } from "../utils/jwt";
@@ -77,6 +78,11 @@ const routes = [
         path: '/employee',
         name: 'Employee',
         component: Employee,
+    },
+    {
+        path: '/permission',
+        name: 'Permission',
+        component: Permission
     },
     {
         path: '/employee-status',
