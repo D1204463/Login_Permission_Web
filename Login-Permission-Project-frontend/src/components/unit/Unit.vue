@@ -289,7 +289,12 @@ export default {
     methods: {
         async getDepartment() {
             try {
-                let response = await fetch("http://localhost:8085/department/test/get");
+                const token = localStorage.getItem('JWT_Token');
+                let response = await fetch("http://localhost:8085/department/test/get", {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 this.departments = await response.json();
                 console.log(this.departments);
             } catch (error) {
@@ -298,7 +303,12 @@ export default {
         },
         async getUnitData() {
             try {
-                let response = await fetch("http://localhost:8085/unit/test/get");
+                const token = localStorage.getItem('JWT_Token');
+                let response = await fetch("http://localhost:8085/unit/test/get", {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 const data = await response.json();
                 this.units = data;
                 this.unitOptions = data;
@@ -316,10 +326,12 @@ export default {
 
         async createUnit() {
             try {
+                const token = localStorage.getItem('JWT_Token');
                 const response = await fetch("http://localhost:8085/unit/test/add", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify(this.newUnit),
                 }).then(() => {
@@ -335,13 +347,18 @@ export default {
             this.selectedUnit = unit;
         },
         async deleteUnit() {
+            const token = localStorage.getItem('JWT_Token');
             let unitId = this.selectedUnit.unit_id;
             try {
                 const response = await fetch("http://localhost:8085/unit/test/delete" + unitId, {
                     method: "DELETE",
-                }).then(() => {
-                    this.getUnitData();
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
+                if (response.ok) {
+                    this.getUnitData();
+                }
             } catch (error) {
                 console.log('Error Delete Unit:', error);
             }
@@ -352,10 +369,12 @@ export default {
         },
         async updateUnit() {
             try {
+                const token = localStorage.getItem('JWT_Token');
                 const response = await fetch("http://localhost:8085/unit/test/edit", {
                     method: "PUT",
                     header: {
                         "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`
                     },
                     body: Json.stringify(this.edidUnit),
                 }).then(() => {
