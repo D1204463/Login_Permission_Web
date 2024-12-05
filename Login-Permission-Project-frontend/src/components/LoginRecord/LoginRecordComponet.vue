@@ -8,16 +8,9 @@
     </ul>
 
     <div class="row g-2 mb-3">
-      <!-- 新增人員按鈕 -->
-      <div class="col-md">
-        <button class="btn add-unit-btn">
-          <font-awesome-icon :icon="['fas', 'user-plus']" class="me-2" />
-          新增人員
-        </button>
-      </div>
       <div class="col-md">
         <div class="form-floating">
-          <select class="form-select" id="floatingSelectGrid" >
+          <select class="form-select" id="floatingSelectGrid">
             <option selected>選擇時間</option>
             <option value="1">一日</option>
             <option value="2">一周</option>
@@ -28,8 +21,9 @@
       </div>
       <div class="col-md">
         <div class="form-floating">
-          <select class="form-select" id="floatingSelectGrid"  v-model="loginStatus" >
-            <option selected>狀態</option>
+          <select class="form-select" id="floatingSelectGrid" v-model="loginStatus">
+            <!-- <option selected>狀態</option> -->
+            <option value="">全部狀態</option>
             <option value="成功">成功</option>
             <option value="失敗">失敗</option>
           </select>
@@ -43,66 +37,69 @@
     <div class="table-responsive">
       <table class="table">
         <thead class="table-secondary">
-        <tr >
-          <th>編輯</th>
-          <th>員工姓名</th>
-          <th>登錄ip位址</th>
-          <th>登錄時間</th>
-          <th>登出時間</th>
-          <th>狀態</th>
-        </tr>
+          <tr>
+            <th>員工ID</th>
+            <th>員工姓名</th>
+            <th>登錄ip位址</th>
+            <th>登錄時間</th>
+            <th>登出時間</th>
+            <th>狀態</th>
+          </tr>
         </thead>
-        <tbody >
-        <tr v-for="record in filteredRecords()">
-          <td>
-            <button class="btn btn-link p-0">
-              <font-awesome-icon :icon="['fas', 'pen-to-square']" />
-            </button>
-          </td>
-          <td>{{record.name}}</td>
-          <td>{{record.ip_address}}</td>
-          <td>{{record.login_time}}</td>
-          <td>{{record.logout_time}}</td>
-          <td :class="{'text-red': record.status === '失敗', 'text-black': record.status === '成功'}">{{record.status}}</td>
-        </tr>
+        <tbody>
+          <tr v-for="record in filteredRecords">
+            <td>{{ record.employee_id }}</td>
+            <!-- 後端傳回來的 LoginRecord 沒有employeeName -->
+            <td>{{ record.name }}</td> 
+            <td>{{ record.ip_address }}</td>
+            <td>{{ record.login_time }}</td>
+            <td>{{ record.logout_time }}</td>
+            <td :class="{ 'text-red': record.status === '失敗', 'text-black': record.status === '成功' }">{{ record.status
+              }}
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 </template>
 
-<script  >
+<script>
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUserPlus, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import {mapState} from "vuex";
+import { mapState } from "vuex";
 
 library.add(faUserPlus, faPenToSquare);
 
 export default {
   components: {
     FontAwesomeIcon
-  } ,
-  data(){
-    return{
-      loginStatus:"",
-      loginDate:""
+  },
+  data() {
+    return {
+      loginStatus: "",
+      loginDate: ""
     }
   },
-mounted() {
-  console.log("loginRecords:", this.$store.state.loginRecords);
-},
-  methods:{
+  mounted() {
+    this.$store.dispatch('auth/getLoginRecord');
+    console.log("loginRecords:", this.$store.state.auth.loginRecords);
+  },
+  methods: {
 
   },
   computed: {
-    ...mapState('auth',["loginRecords"]),
-    filteredRecords(){
-      return this.loginRecords.filter(record=>{
-        return record.status === this. loginStatus
-      })
-    }
+    ...mapState('auth', ['loginRecords']),
+
+    filteredRecords() {
+      if (!this.loginRecords) return [];
+      if (!this.loginStatus) return this.loginRecords; // 如果沒選狀態，顯示全部
+        return this.loginRecords.filter(record => {
+          return record.status === this.loginStatus;
+        });
+      }
   },
 }
 
@@ -110,7 +107,7 @@ mounted() {
 
 <style scoped>
 .unit-container {
-  /* padding: 20px; */
+  padding: 20px;
 }
 
 .nav-tabs .nav-link {
@@ -172,5 +169,4 @@ mounted() {
 .text-black {
   color: black;
 }
-
 </style>

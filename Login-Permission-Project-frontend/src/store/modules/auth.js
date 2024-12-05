@@ -93,7 +93,6 @@ export default {
                 return { success: false, message: "登錄失敗，請檢查網路是否連線正常" };
             }
         },
-
         async logout({ commit }) {
             try {
                 const token = localStorage.getItem('JWT_Token');
