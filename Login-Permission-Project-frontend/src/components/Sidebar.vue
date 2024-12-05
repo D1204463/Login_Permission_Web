@@ -59,8 +59,7 @@
                             <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu1 }">
                                 <ul class="nav flex-column ms-4 submenu-items">
                                     <li class="w-100" v-for="item in filteredManagementItems" :key="item.name">
-                                        <!-- jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj -->
-                                        <router-link :to="item.url" class="submenu-link">
+                                        <router-link :to="item.url" class="submenu-link" v-slot="{ navigate }" custom>
                                             <a @click="navigate" class="submenu-link"
                                                 :class="{ 'active': $route.path === item.url }">
                                                 <span class="d-none d-sm-inline">{{ item.name }}</span>
