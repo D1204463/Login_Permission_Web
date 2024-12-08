@@ -107,7 +107,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="createPermissionModalLabe">Add Permission</h5>
+                        <h5 class="modal-title" id="createPermissionModalLabel">Add Permission</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -486,7 +486,7 @@ export default {
         row-gap: 1rem;
     }
 
-    .add-position-btn {
+    .add-permission-btn {
         width: 100%;
         margin-bottom: 1rem;
     }
