@@ -9,7 +9,7 @@
 
         <div class="content-wrapper">
             <div class="row g-3 align-items-center">
-                <div v-if="canReadDept">
+                <div v-if="canReadPerm">
                     <!-- 新增權限按鈕，點擊會出現Model -->
                     <div class="col-auto">
                         <button type="button" class="btn add-permission-btn" style="margin-bottom:20px;"
@@ -85,7 +85,7 @@
                                 <td class="text-center">{{ permission.permission_id }}</td>
                                 <td class="text-center">{{ permission.permission_name }}</td>
                                 <td class="text-center">{{ permission.description }}</td>
-                                <td class="text-center">{{ department.permission_code }}</td>
+                                <td class="text-center">{{ permission.permission_code }}</td>
                                 <td class="text-center">
                                     <!-- 點擊 Button 出現 Delete Permission Modal -->
                                     <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
@@ -107,7 +107,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Add Permission</h5>
+                        <h5 class="modal-title" id="createPermissionModalLabe">Add Permission</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -121,7 +121,7 @@
                         </div>
                         <!-- 權限 description -->
                         <div class="mb-3 row">
-                            <label for="addDescription" class="col-sm-3 col-form-label">Description/label>
+                            <label for="addDescription" class="col-sm-3 col-form-label">Description</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="addDescription"
                                     v-model="newPermission.description" aria-label="Description">
@@ -132,7 +132,7 @@
                             <label for="addPermissionCode" class="col-sm-3 col-form-label">Permission Code</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="addPermissionCode"
-                                    v-model="newDepartment.permission_code" aria-label="PermissionDepartmentCode">
+                                    v-model="newPermission.permission_code" aria-label="PermissionCode">
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -152,7 +152,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Permission</h5>
+                    <h5 class="modal-title" id="editPermissionModalLabel">Edit Permission</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -196,7 +196,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Delete Permission</h5>
+                    <h5 class="modal-title" id="deletePermissionModalLabel">Delete Permission</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -237,7 +237,7 @@ export default {
             permissions: [], //用於顯示搜尋結果，Table用的
             permissionOptions: [], //搜尋權限時需要的，用於下拉式選單
             searchByPermissionId: "", //用於儲存所選權限的ID
-            selectedDepartment: {
+            selectedPermission: {
                 permission_id: "",
                 permission_name: "",
                 description: "",
@@ -318,7 +318,7 @@ export default {
             try {
                 const response = await fetch("http://localhost:8085/Permission/test/edit", {
                     method: "PUT",
-                    header: {
+                    headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(this.editPermission),
@@ -334,32 +334,32 @@ export default {
     created() {
         this.getPermissionData();
     },
-    // computed: {  //Vue 的響應式系統和計算屬性的緩存機制
-    //     filteredPermissions() {
-    //         // 如果沒有選擇權限，返回所有權限
-    //         if (!this.searchByPermissionId) {
-    //             return this.permissions;
-    //         }
-    //         // 如果有選擇權限，進行過濾
-    //         return this.permission.filter(permission => {
-    //             return (
-    //                 permission.permission_id === this.searchByPermissionId
-    //             );
-    //         });
-    //     },
-    //     canReadPerm() {
-    //         return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_READ);
-    //     },
-    //     canCreatePerm() {
-    //         return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_CREATE);
-    //     },
-    //     canUpdatePerm() {
-    //         return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_UPDATE);
-    //     },
-    //     canDeletePerm() {
-    //         return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_DELETE);
-    //     },
-    // },
+    computed: {  //Vue 的響應式系統和計算屬性的緩存機制
+        filteredPermissions() {
+            // 如果沒有選擇權限，返回所有權限
+            if (!this.searchByPermissionId) {
+                return this.permissions;
+            }
+            // 如果有選擇權限，進行過濾
+            return this.permissions.filter(permission => {
+                return (
+                    permission.permission_id === this.searchByPermissionId
+                );
+            });
+        },
+        canReadPerm() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_READ);
+        },
+        canCreatePerm() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_CREATE);
+        },
+        canUpdatePerm() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_UPDATE);
+        },
+        canDeletePerm() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_DELETE);
+        },
+    },
 }
 </script>
 
