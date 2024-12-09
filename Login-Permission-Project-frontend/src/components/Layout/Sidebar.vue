@@ -84,6 +84,18 @@
                                         :class="{ 'rotated': isSubmenuOpen.submenu2 }" />
                                 </div>
                             </a>
+                            <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu2 }">
+                                <ul class="nav flex-column ms-4 submenu-items">
+                                    <li class="w-100" v-for="item in filteredHumanResourcesItems" :key="item.name">
+                                        <router-link :to="item.url" class="submenu-link" v-slot="{ navigate }" custom>
+                                            <a @click="navigate" class="submenu-link"
+                                                :class="{ 'active': $route.path === item.url }">
+                                                <span class="d-none d-sm-inline">{{ item.name }}</span>
+                                            </a>
+                                        </router-link>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
 
                         <!-- 會計總帳系統 -->
@@ -125,7 +137,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { parseJwt, PERMISSIONS } from '../utils/jwt'
+import { parseJwt, PERMISSIONS } from '@/utils/jwt'
 
 export default {
     name: 'MyComponent',
@@ -140,8 +152,8 @@ export default {
             },
             managementItems: [
                 {
-                    name: '員工管理',
-                    url: '/employee',
+                    name: '角色管理',
+                    url: '/role',
                     requiredPermissions: [] // 所有人都可以看到
                 },
                 {
@@ -165,9 +177,16 @@ export default {
                     requiredPermissions: []
                 },
                 {
-                    name: '員工狀態',
+                    name: '狀態管理',
                     url: '/employee-status',
                     requiredPermissions: []
+                },
+            ],
+            hrItems: [
+                {
+                    name: '員工管理',
+                    url: '/employee',
+                    requiredPermissions: [] // 所有人都可以看到
                 },
                 {
                     name: '登入記錄',
@@ -190,6 +209,14 @@ export default {
         ]),
         filteredManagementItems() {
             return this.managementItems.filter(item => {
+                if (!item.requiredPermissions || item.requiredPermissions.length === 0) {
+                    return true;
+                }
+                return this.hasAnyPermission(item.requiredPermissions);
+            });
+        },
+        filteredHumanResourcesItems() {
+            return this.hrItems.filter(item => {
                 if (!item.requiredPermissions || item.requiredPermissions.length === 0) {
                     return true;
                 }

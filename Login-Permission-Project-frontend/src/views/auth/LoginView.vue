@@ -3,5 +3,5 @@
 </template>
 
 <script setup>
-import LoginComponent from '../components/Login.vue';
+import LoginComponent from '@/components/auth/Login.vue';
 </script>

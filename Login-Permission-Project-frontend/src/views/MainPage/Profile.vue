@@ -13,8 +13,8 @@
 </template>
 
 <script setup>
-import Sidebar from '../components/Sidebar.vue';
-import Profile from '../components/Profile.vue';
+import Sidebar from '@/components/layout/Sidebar.vue';
+import Profile from '@/components/MainPage/Profile/Profile.vue';
 </script>
 
 <style scoped>

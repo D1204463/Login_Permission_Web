@@ -4,14 +4,14 @@
         <Sidebar />
         </div>
         <div class="col-9">
-            <DepartmentComponent />
+            <unitComponent />
         </div>
     </div>
 </template>
 
 <script setup>
-import Sidebar from '../components/Sidebar.vue';
-import DepartmentComponent from '../components/Department.vue';
+import Sidebar from '@/components/layout/Sidebar.vue';
+import unitComponent from '@/components/ManagementPage/Unit/Unit.vue';
 </script>
 
 <style scoped>

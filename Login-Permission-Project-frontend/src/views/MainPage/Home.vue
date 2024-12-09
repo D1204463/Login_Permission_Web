@@ -15,8 +15,8 @@
 
 
 <script setup>
-import Sidebar from '../components/Sidebar.vue';
-import HomePage from '../components/homePage/HomePage.vue';
+import Sidebar from '@/components/layout/Sidebar.vue';
+import HomePage from '@/components/MainPage/homePage/HomePage.vue';
 </script>
 
 <style scoped>

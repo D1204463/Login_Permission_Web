@@ -4,14 +4,14 @@
         <Sidebar />
         </div>
         <div class="col-9">
-            <unitComponent />
+            <positionComponent />
         </div>
     </div>
 </template>
 
 <script setup>
-import Sidebar from '../components/Sidebar.vue';
-import unitComponent from '../components/unit/Unit.vue';
+import Sidebar from '@/components/layout/Sidebar.vue';
+import positionComponent from '@/components/ManagementPage/Position/Position.vue';
 </script>
 
 <style scoped>

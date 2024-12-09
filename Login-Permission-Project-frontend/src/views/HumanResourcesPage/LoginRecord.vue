@@ -1,6 +1,7 @@
 <script setup>
-import Sidebar from '../components/Sidebar.vue';
-import LoginRecordComponet from "../components/LoginRecord/LoginRecordComponet.vue";
+import Sidebar from '@/components/layout/Sidebar.vue';
+import LoginRecordComponet from "@/components/HumanResourcesPage/LoginRecord/LoginRecordComponet.vue";
+
 </script>
 
 <template>

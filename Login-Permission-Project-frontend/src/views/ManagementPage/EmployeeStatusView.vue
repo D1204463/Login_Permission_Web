@@ -12,8 +12,8 @@
 
 
 <script setup>
-import Sidebar from '../components/Sidebar.vue';
-import EmployeeStatusManagement from '../components/EmployeeStatusManagement.vue';
+import Sidebar from '@/components/layout/Sidebar.vue';
+import EmployeeStatusManagement from '@/components/ManagementPage/EmployeeStatus/EmployeeStatusManagement.vue';
 </script>
 
 <style scoped>

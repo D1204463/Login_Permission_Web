@@ -1,20 +1,18 @@
 import { createWebHistory, createRouter } from 'vue-router'
-import Home from '../views/Home.vue'
-import MyNotifications from '../views/HomePageButton/MyNotificationsView.vue'
-import DepartmentAnnouncements from '../views/HomePageButton/DepartmentAnnouncementsView.vue'
-import CompanyAnnouncements from '../views/HomePageButton/CompanyAnnouncementsView.vue'
-import Login from '../views/LoginView.vue'
-import Unit from '../views/Unit.vue'
-import Position from '../views/Position.vue'
-import Register from '../components/Register.vue'
-import LoginRecord from "../views/LoginRecord.vue";
-import Employee from "../views/Employee.vue";
-import EmployeeStatusView from '../views/EmployeeStatusView.vue';
-import Department from '../views/Department.vue';
-import ProfileView from '../views/Profile.vue';
+import Home from '@/views/MainPage/Home.vue'
+import ProfileView from '@/views/MainPage/Profile.vue';
+import Login from '@/views/auth/LoginView.vue'
+import Register from '@/components/auth/Register.vue'
+import Unit from '@/views/ManagementPage/Unit.vue'
+import RoleView from '@/views/ManagementPage/RoleView.vue'
+import Position from '@/views/ManagementPage/Position.vue'
+import Department from '@/views/ManagementPage/Department.vue';
+import EmployeeStatusView from '@/views/ManagementPage/EmployeeStatusView.vue';
+import Employee from "@/views/HumanResourcesPage/EmployeeView.vue";
+import LoginRecord from "@/views/HumanResourcesPage/LoginRecord.vue";
 
-import store from '../store';
-import { PERMISSIONS } from "../utils/jwt";
+import store from '@/store';
+import { PERMISSIONS } from "@/utils/jwt";
 
 
 const routes = [
@@ -101,6 +99,11 @@ const routes = [
         path: '/Profile',
         name: 'Profile',
         component: ProfileView
+    },
+    {
+        path: '/Role',
+        name: 'Role',
+        component: RoleView
     },
     
 ]
