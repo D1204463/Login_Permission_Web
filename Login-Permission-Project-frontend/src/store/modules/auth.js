@@ -16,13 +16,14 @@ export default {
             loginRecordId: null,
             departmentAndUnit: [],
         },
-        isAuthenticated: false,
+        isAuthenticated: false, // 用來追蹤使用者是否已登入
         loginRecords: [],
         failLoginRecordMessage: null
     },
     mutations: {
+        // 設置使用者資訊
         setUserInfo(state, token) {
-            const user = parseJwt(token);
+            const user = parseJwt(token); // 解析 JWT token
             if (user) {
                 state.userInfo = {
                     userId: user.sub,
@@ -43,12 +44,14 @@ export default {
             state.loginRecords = record;
             console.log("testing setLoginRecord:", state.loginRecords);
         },
+        // 儲存 token 到 localStorage
         setToken(state, token) {
             localStorage.setItem('JWT_Token', token);
         },
         setAuthenticated(state, isAuthenticated) {
             state.isAuthenticated = isAuthenticated;
         },
+        // 清除使用者資訊
         clearUserInfo(state) {
             state.userInfo = {
                 userId: null,
@@ -73,13 +76,18 @@ export default {
             try {
                 const response = await login(employee_id, password);
 
+                // 檢查響應狀態
                 if (response.status === 200) {
                     console.log("登錄成功");
                     // 解析獲取的JWT token（JWT token）
                     const token = await response.text();
                     console.log('Received token:', token);
+
+                    // 儲存 token
                     commit('setToken', token);
+                    // 解析並儲存用戶訊息
                     commit('setUserInfo', token);
+                    // 設置認證狀態
                     commit('setAuthenticated', true);
 
                     return { success: true, message: "登錄成功" };
