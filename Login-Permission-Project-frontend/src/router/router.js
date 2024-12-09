@@ -10,6 +10,7 @@ import Department from '@/views/ManagementPage/Department.vue';
 import EmployeeStatusView from '@/views/ManagementPage/EmployeeStatusView.vue';
 import Employee from "@/views/HumanResourcesPage/EmployeeView.vue";
 import LoginRecord from "@/views/HumanResourcesPage/LoginRecord.vue";
+import Permission from '@/views/Permission.vue';
 
 import store from '@/store';
 import { PERMISSIONS } from "@/utils/jwt";
@@ -77,6 +78,11 @@ const routes = [
         component: Employee,
     },
     {
+        path: '/permission',
+        name: 'Permission',
+        component: Permission
+    },
+    {
         path: '/employee-status',
         name: 'EmployeeStatus',
         component: EmployeeStatusView
@@ -105,7 +111,7 @@ const routes = [
         name: 'Role',
         component: RoleView
     },
-    
+
 ]
 
 const router = createRouter({
