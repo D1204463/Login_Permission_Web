@@ -51,8 +51,8 @@
                             <font-awesome-icon icon="phone" class="me-2" />
                             聯絡電話
                         </label>
-                        <input type="tel" class="form-control custom-input" id="phone" v-model="form.phone" required
-                            placeholder="請輸入聯絡電話">
+                        <input type="tel" class="form-control custom-input" id="phone" v-model="form.phoneNumber"
+                            required placeholder="請輸入聯絡電話">
                     </div>
                 </div>
 
@@ -83,8 +83,7 @@
     </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script>
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
     faUserPlus,
@@ -111,47 +110,109 @@ library.add(
     faSpinner,
     faArrowLeft
 )
+export default {
+    name: 'RegisterForm',
 
-// 表單數據
-const form = ref({
-    name: '',
-    email: '',
-    password: '',
-    phone: ''
-})
+    components: {
+        FontAwesomeIcon
+    },
+    data() {
+        return {
+            form: {
+                name: '',
+                email: '',
+                password: '',
+                phoneNumber: '',
+                status_id: 1
+            },
+            showPassword: false,
+            isLoading: false,
+            errorMessage: ''
+        }
+    },
+    methods: {
+        togglePassword() {
+            this.showPassword = !this.showPassword
+        },
+        async handleRegister() {
+            // 檢查表單
+            if (!this.validateForm()) {
+                return;
+            }
 
-// 狀態控制
-const showPassword = ref(false)
-const isLoading = ref(false)
-const errorMessage = ref('')
+            this.isLoading = true
+            this.errorMessage = ''
 
-// 切換密碼顯示
-const togglePassword = () => {
-    showPassword.value = !showPassword.value
-}
+            try {
+                const response = await fetch('http://localhost:8085/employee/test/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(this.form)
+                });
 
-// 處理註冊
-const handleRegister = async () => {
-    try {
-        isLoading.value = true
-        errorMessage.value = ''
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-        // TODO: 實作註冊邏輯
-        await new Promise(resolve => setTimeout(resolve, 1000))
+                const data = await response.text();
+                console.log('Response:', response.status, data);
 
-        console.log(form.value)
+                if (data.includes('新增員工成功')) {
+                    alert('註冊成功！請查看您的信箱進行帳號驗證');
+                    this.goToLogin();
+                } else {
+                    throw new Error(data);
+                }
+            } catch (error) {
+                console.error('註冊錯誤詳情:', {
+                    message: error.message,
+                    stack: error.stack
+                });  // 新增更詳細的錯誤記錄
+                this.errorMessage = error.message || '註冊失敗，請稍後再試';
 
-    } catch (error) {
-        errorMessage.value = '註冊失敗，請稍後再試'
-    } finally {
-        isLoading.value = false
+                alert('註冊失敗：' + (error.message || '請稍後再試'));
+            } finally {
+                this.isLoading = false;
+            }
+        },
+        validateForm() {
+            // 驗證 email
+            if (!this.form.email.includes('@')) {
+                this.errorMessage = '請輸入有效的電子郵件地址';
+                return false;
+            }
+            // 驗證密碼
+            if (this.form.password.length < 6) {
+                this.errorMessage = '密碼長度至少需要6個字符';
+                return false;
+            }
+            // 驗證手機號碼
+            if (!/^(09)\d{8}$/.test(this.form.phoneNumber)) {
+                this.errorMessage = '請輸入有效的手機號碼（10位數字）';
+                return false;
+            }
+            // 驗證姓名
+            if (!this.form.name.trim()) {
+                this.errorMessage = '請輸入姓名';
+                return false;
+            }
+            return true;
+        },
+        goToLogin() {
+            this.$router.push({ name: 'LoginPage' });
+        }
+    },
+    watch: {
+        'form': {
+            handler() {
+                this.errorMessage = '';
+            },
+            deep: true
+        }
     }
-}
-
-// 返回登入頁
-const goToLogin = () => {
-    // TODO: 實作返回登入頁邏輯
-    console.log('返回登入頁')
 }
 </script>
 
@@ -210,7 +271,8 @@ const goToLogin = () => {
     transition: all 0.3s ease;
     width: 15% !important;
     /* 移除固定寬度 */
-    height: auto;    /* 設定與輸入框相同的高度 */
+    height: auto;
+    /* 設定與輸入框相同的高度 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -256,7 +318,7 @@ const goToLogin = () => {
 
 }
 
-.btn-outline-light:hover:not(:disabled){
+.btn-outline-light:hover:not(:disabled) {
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
 }
 

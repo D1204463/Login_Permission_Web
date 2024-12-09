@@ -36,8 +36,8 @@
                                                             :key="department.department_id"
                                                             :value="department.department_id">
                                                             ({{ department.department_id }}) {{
-                                                            department.department_name }} / {{
-                                                            department.department_code }}
+                                                                department.department_name }} / {{
+                                                                department.department_code }}
                                                         </option>
                                                     </select>
                                                     <label for="positionSelect">部門查詢</label>
@@ -239,7 +239,12 @@ export default {
     methods: {
         async getDepartmentData() { //get 部門(Department)的資料
             try {
-                let response = await fetch("http://localhost:8085/department/test/get");
+                const token = localStorage.getItem('JWT_Token');
+                let response = await fetch("http://localhost:8085/department/test/get", {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 const data = await response.json();
                 this.departments = data;
                 this.departmentOptions = data; //設置下拉式選單選項
@@ -254,10 +259,12 @@ export default {
         },
         async createDepartment() { //新增Department的方法
             try {
+                const token = localStorage.getItem('JWT_Token');
                 const response = await fetch("http://localhost:8085/department/test/add", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify(this.newDepartment),
                 });
@@ -277,10 +284,14 @@ export default {
             this.selectedDepartment = department;
         },
         async deleteDepartment() { //刪除Department的方法
+            const token = localStorage.getItem('JWT_Token');
             let departmentId = this.selectedDepartment.department_id;
             try {
                 const response = await fetch("http://localhost:8085/department/test/delete/" + departmentId, {
                     method: "DELETE",
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 if (response.ok) {
                     this.getDepartmentData();
@@ -294,11 +305,13 @@ export default {
             this.editDepartment = { ...department };
         },
         async updateDepartment() { //修改Department的方法
+            const token = localStorage.getItem('JWT_Token');
             try {
                 const response = await fetch("http://localhost:8085/department/test/edit", {
                     method: "PUT",
                     header: {
                         "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify(this.editDepartment),
                 });
