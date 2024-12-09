@@ -101,8 +101,8 @@ const routes = [
         path: '/Profile',
         name: 'Profile',
         component: ProfileView
-    }
-
+    },
+    
 ]
 
 const router = createRouter({
