@@ -1,4 +1,3 @@
-import Department from "../components/Department.vue";
 
 export function parseJwt(token) {
     try {
