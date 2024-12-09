@@ -10,8 +10,8 @@
 </template>
 
 <script setup>
-import Sidebar from '../components/Sidebar.vue';
-import PermissionComponent from '../components/Permission.vue';
+import Sidebar from '@/components/layout/Sidebar.vue';
+import PermissionComponent from '@/components/ManagementPage/Permission//Permission.vue';
 </script>
 
 <style scoped>

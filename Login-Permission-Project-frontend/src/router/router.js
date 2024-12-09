@@ -6,11 +6,11 @@ import Register from '@/components/auth/Register.vue'
 import Unit from '@/views/ManagementPage/Unit.vue'
 import RoleView from '@/views/ManagementPage/RoleView.vue'
 import Position from '@/views/ManagementPage/Position.vue'
+import Permission from '@/views/ManagementPage/Permission.vue';
 import Department from '@/views/ManagementPage/Department.vue';
 import EmployeeStatusView from '@/views/ManagementPage/EmployeeStatusView.vue';
 import Employee from "@/views/HumanResourcesPage/EmployeeView.vue";
 import LoginRecord from "@/views/HumanResourcesPage/LoginRecord.vue";
-import Permission from '@/views/Permission.vue';
 
 import store from '@/store';
 import { PERMISSIONS } from "@/utils/jwt";

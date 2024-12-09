@@ -173,7 +173,7 @@ export default {
                 },
                 {
                     name: '權限管理',
-                    url: '/',
+                    url: '/permission',
                     requiredPermissions: []
                 },
                 {
