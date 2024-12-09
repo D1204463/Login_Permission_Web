@@ -32,6 +32,9 @@ export default {
                     userStatusId: user.userStatusId,
                     permissionCode: Array.isArray(user.permissionCode) ? user.permissionCode : [], // 確保是陣列
                 };
+                state.isAuthenticated = true;
+            }else{
+                console.log("JWT missing.")
             }
         },
         setFailRecordMessage(state,message){

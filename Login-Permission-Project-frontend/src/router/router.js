@@ -12,6 +12,7 @@ import Employee from "@/views/HumanResourcesPage/EmployeeView.vue";
 import LoginRecord from "@/views/HumanResourcesPage/LoginRecord.vue";
 
 import store from '@/store';
+import storeAuth from '../store/modules/auth';
 import { PERMISSIONS } from "@/utils/jwt";
 
 
@@ -115,8 +116,9 @@ const router = createRouter({
 
 //路由守衛
 router.beforeEach((to, from, next) => {
+    store.commit('auth/setUserInfo', localStorage.getItem('JWT_Token'));
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-    const isAuthenticated = store.state.auth.isAuthenticated;
+    const isAuthenticated = storeAuth.state.isAuthenticated;
 
     // 調試訊息
     console.log('Route authentication:', {
