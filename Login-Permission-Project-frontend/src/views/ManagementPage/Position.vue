@@ -1,9 +1,7 @@
 <template>
-    <div class="row">
-        <div class="col-3">
+    <div class="layout-container">
         <Sidebar />
-        </div>
-        <div class="col-9">
+        <div class="main-content">
             <positionComponent />
         </div>
     </div>
@@ -15,4 +13,24 @@ import positionComponent from '@/components/ManagementPage/Position/Position.vue
 </script>
 
 <style scoped>
+.layout-container {
+    display: flex;
+    min-height: 100vh;
+    background: #f8f9fa;
+}
+
+.main-content {
+    background: #f8f9fa;
+    flex: 1;
+    padding: 1rem;
+    margin-left: 30px; /* Sidebar 寬度 */
+}
+
+/* 響應式設計 */
+@media (max-width: 991.98px) {
+    .main-content {
+        margin-left: 0;
+        padding-top: 4rem; /* 為菜單按鈕留出空間 */
+    }
+}
 </style>

@@ -1,128 +1,136 @@
 <template>
 
-    <div class="container-fluid">
-        <div class="row flex-nowrap">
-            <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0" style="background-color: #334255;">
-                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-                    <!-- Logo -->
-                    <a href="/"
-                        class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                        <span class="fs-5 d-none d-sm-inline">Bank</span>
+    <div class="sidebar-wrapper">
+        <!-- 手機版導航按鈕 -->
+        <button class="navbar-toggler d-lg-none" type="button" @click="toggleMobileNav">
+            <font-awesome-icon :icon="['fas', 'bars']" />
+        </button>
+
+        <div :class="['sidebar-container', {'mobile-active': isMobileNavOpen}]">
+            <div class="sidebar-content">
+                <!-- Logo -->
+                <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                    <span class="fs-5">Bank</span>
+                </a>
+
+                <!-- User Profile -->
+                <div class="dropdown pb-4">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <font-awesome-icon :icon="['fas', 'circle-user']" size="2xl" />
+                        <span class="mx-3">{{ userName || 'User' }}</span>
                     </a>
-
-                    <!-- User Profile -->
-                    <div class="dropdown pb-4">
-                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                            id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <font-awesome-icon :icon="['fas', 'circle-user']" size="2xl" />
-                            <span class="d-none d-sm-inline mx-3">{{ userName || 'User' }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><router-link to="/profile" class="dropdown-item">Profile</router-link></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#" @click="logout">Sign out</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Navigation Menu -->
-                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start w-100"
-                        id="menu">
-                        <!-- 主頁面 -->
-                        <li class="nav-item w-100">
-                            <router-link to="/" class="nav-link menu-link">
-                                <div class="d-flex align-items-center">
-                                    <font-awesome-icon :icon="['fas', 'house']" size="xl" />
-                                    <span class="ms-3 d-none d-sm-inline">主頁面</span>
-                                </div>
-                            </router-link>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><router-link to="/profile" class="dropdown-item">Profile</router-link></li>
+                        <li>
+                            <hr class="dropdown-divider">
                         </li>
-
-                        <!-- 管理維護系統 -->
-                        <li class="nav-item w-100">
-                            <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu1')"
-                                :aria-expanded="isSubmenuOpen.submenu1">
-                                <div class="d-flex align-items-center justify-content-between w-100">
-                                    <div class="d-flex align-items-center">
-                                        <font-awesome-icon :icon="['fas', 'computer']" size="xl" />
-                                        <span class="ms-3 d-none d-sm-inline">管理維護系統</span>
-                                    </div>
-                                    <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
-                                        class="d-none d-sm-inline submenu-icon"
-                                        :class="{ 'rotated': isSubmenuOpen.submenu1 }" />
-                                </div>
-                            </a>
-                            <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu1 }">
-                                <ul class="nav flex-column ms-4 submenu-items">
-                                    <li class="w-100" v-for="item in filteredManagementItems" :key="item.name">
-                                        <router-link :to="item.url" class="submenu-link"
-                                            :class="{ 'active': $route.path === item.url }">
-                                            <span class="d-none d-sm-inline">{{ item.name }}</span>
-                                        </router-link>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <!-- 人事管理系統 -->
-                        <li class="nav-item w-100">
-                            <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu2')"
-                                :aria-expanded="isSubmenuOpen.submenu2">
-                                <div class="d-flex align-items-center justify-content-between w-100">
-                                    <div class="d-flex align-items-center">
-                                        <font-awesome-icon :icon="['fas', 'people-group']" size="xl" />
-                                        <span class="ms-3 d-none d-sm-inline">人事管理系統</span>
-                                    </div>
-                                    <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
-                                        class="d-none d-sm-inline submenu-icon"
-                                        :class="{ 'rotated': isSubmenuOpen.submenu2 }" />
-                                </div>
-                            </a>
-                            <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu2 }">
-                                <ul class="nav flex-column ms-4 submenu-items">
-                                    <li class="w-100" v-for="item in filteredHumanResourcesItems" :key="item.name">
-                                        <router-link :to="item.url" class="submenu-link"
-                                            :class="{ 'active': $route.path === item.url }">
-                                            <span class="d-none d-sm-inline">{{ item.name }}</span>
-                                        </router-link>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <!-- 會計總帳系統 -->
-                        <li class="nav-item w-100">
-                            <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu3')"
-                                :aria-expanded="isSubmenuOpen.submenu3">
-                                <div class="d-flex align-items-center justify-content-between w-100">
-                                    <div class="d-flex align-items-center">
-                                        <font-awesome-icon :icon="['fas', 'piggy-bank']" size="xl" />
-                                        <span class="ms-3 d-none d-sm-inline">會計總帳系統</span>
-                                    </div>
-                                    <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
-                                        class="d-none d-sm-inline submenu-icon"
-                                        :class="{ 'rotated': isSubmenuOpen.submenu3 }" />
-                                </div>
-                            </a>
-                        </li>
+                        <li><a class="dropdown-item" href="#" @click="logout">Sign out</a></li>
                     </ul>
+                </div>
 
-                    <div class="sidebar-footer w-100">
-                        <div class="text-center p-3 small text-white-50">
-                            <div class="mb-1">
-                                <font-awesome-icon :icon="['far', 'clock']" class="me-2" />
-                                {{ currentTime }}
+                <!-- Navigation Menu -->
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start w-100"
+                    id="menu">
+                    <!-- 主頁面 -->
+                    <li class="nav-item w-100">
+                        <router-link to="/" class="nav-link menu-link" @click="closeMobileNav">
+                            <div class="d-flex align-items-center">
+                                <font-awesome-icon :icon="['fas', 'house']" size="xl" />
+                                <span class="ms-3">主頁面</span>
                             </div>
-                            <div>
-                                {{ currentDate }}
+                        </router-link>
+                    </li>
+
+                    <!-- 管理維護系統 -->
+                    <li class="nav-item w-100">
+                        <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu1')"
+                            :aria-expanded="isSubmenuOpen.submenu1">
+                            <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="d-flex align-items-center">
+                                    <font-awesome-icon :icon="['fas', 'computer']" size="xl" />
+                                    <span class="ms-3">管理維護系統</span>
+                                </div>
+                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
+                                    class="submenu-icon"
+                                    :class="{ 'rotated': isSubmenuOpen.submenu1 }" />
                             </div>
+                        </a>
+                        <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu1 }">
+                            <ul class="nav flex-column ms-4 submenu-items">
+                                <li class="w-100" v-for="item in filteredManagementItems" :key="item.name">
+                                    <router-link :to="item.url" class="submenu-link"
+                                        :class="{ 'active': $route.path === item.url }" @click="closeMobileNav">
+                                        <span>{{ item.name }}</span>
+                                    </router-link>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <!-- 人事管理系統 -->
+                    <li class="nav-item w-100">
+                        <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu2')"
+                            :aria-expanded="isSubmenuOpen.submenu2">
+                            <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="d-flex align-items-center">
+                                    <font-awesome-icon :icon="['fas', 'people-group']" size="xl" />
+                                    <span class="ms-3">人事管理系統</span>
+                                </div>
+                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
+                                    class="submenu-icon"
+                                    :class="{ 'rotated': isSubmenuOpen.submenu2 }" />
+                            </div>
+                        </a>
+                        <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu2 }">
+                            <ul class="nav flex-column ms-4 submenu-items">
+                                <li class="w-100" v-for="item in filteredHumanResourcesItems" :key="item.name">
+                                    <router-link :to="item.url" class="submenu-link"
+                                        :class="{ 'active': $route.path === item.url }" @click="closeMobileNav">
+                                        <span>{{ item.name }}</span>
+                                    </router-link>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <!-- 會計總帳系統 -->
+                    <li class="nav-item w-100">
+                        <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu3')"
+                            :aria-expanded="isSubmenuOpen.submenu3">
+                            <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="d-flex align-items-center">
+                                    <font-awesome-icon :icon="['fas', 'piggy-bank']" size="xl" />
+                                    <span class="ms-3">會計總帳系統</span>
+                                </div>
+                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
+                                    class="submenu-icon"
+                                    :class="{ 'rotated': isSubmenuOpen.submenu3 }" />
+                            </div>
+                        </a>
+                        <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu3 }">
+                            <ul class="nav flex-column ms-4 submenu-items">
+                                <!-- 可以添加會計系統的子選項 -->
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- Sidebar Footer -->
+                <div class="sidebar-footer w-100 mt-auto">
+                    <div class="text-center p-3 small text-white-50">
+                        <div class="mb-1">
+                            <font-awesome-icon :icon="['far', 'clock']" class="me-2" />
+                            {{ currentTime }}
+                        </div>
+                        <div>
+                            {{ currentDate }}
                         </div>
                     </div>
-
-                    <hr>
                 </div>
+
+                <hr>
             </div>
         </div>
     </div>
@@ -139,6 +147,7 @@ export default {
     data() {
         return {
             userFile: null,
+            isMobileNavOpen: false,
             isSubmenuOpen: {
                 submenu1: false,
                 submenu2: false,
@@ -224,6 +233,12 @@ export default {
         toggleSubmenu(menuId) {
             this.isSubmenuOpen[menuId] = !this.isSubmenuOpen[menuId]
         },
+        toggleMobileNav() {
+            this.isMobileNavOpen = !this.isMobileNavOpen;
+        },
+        closeMobileNav() {
+            this.isMobileNavOpen = false;
+        },
 
         updateTime() {
             const now = new Date()
@@ -284,6 +299,39 @@ export default {
 </script>
 
 <style scoped>
+.sidebar-wrapper {
+    position: relative;
+    height: 100%;
+}
+
+.sidebar-container {
+    background-color: #334255;
+    height: 100vh;
+    transition: all 0.3s ease;
+}
+
+.sidebar-content {
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 導航按鈕樣式 */
+.navbar-toggler {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1060;
+    display: none;
+    background-color: #334255;
+    border: none;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+/* 選單連結樣式 */
 .menu-link {
     color: #ffffff;
     padding: 12px 15px;
@@ -297,6 +345,7 @@ export default {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* 子選單連結樣式 */
 .submenu-link {
     color: #ffffff;
     text-decoration: none;
@@ -312,6 +361,12 @@ export default {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.submenu-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #FFCD50;
+}
+
+/* 子選單容器樣式 */
 .submenu-container {
     max-height: 0;
     overflow: hidden;
@@ -334,6 +389,7 @@ export default {
     transform: translateY(0);
 }
 
+/* 箭頭圖標樣式 */
 .submenu-icon {
     transition: transform 0.3s ease;
 }
@@ -342,6 +398,7 @@ export default {
     transform: rotate(180deg);
 }
 
+/* 下拉選單樣式 */
 .dropdown-menu {
     background-color: #334255;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -356,36 +413,75 @@ export default {
     color: #FFCD50;
 }
 
+/* 分隔線樣式 */
 hr {
     width: 100%;
     background-color: rgba(255, 255, 255, 0.1);
     margin: 1rem 0;
 }
 
-/* 在原有的 style 中添加 */
-.col-auto {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    /* 全屏高度 */
-    z-index: 1050;
-    /* 確保優先層級 */
-    width: 240px;
-    /* 固定寬度 */
-    background-color: #334255;
-    /* 確保背景色一致 */
+/* 頁尾樣式 */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 1rem;
 }
 
-/* 修改 container-fluid 的樣式 */
-.container-fluid {
-    padding-left: 0;
-    padding-right: 0;
+/* 響應式設計 */
+@media (max-width: 991.98px) {
+    .navbar-toggler {
+        display: block;
+    }
+
+    .sidebar-container {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 250px;
+        z-index: 1055;
+        overflow-y: auto;
+    }
+
+    .sidebar-container.mobile-active {
+        left: 0;
+    }
+
+    /* 遮罩效果 */
+    .sidebar-container.mobile-active::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: -1;
+    }
 }
 
-/* 確保 row 不會溢出 */
-.row {
-    margin-left: 0;
-    margin-right: 0;
+/* 滾動條樣式 */
+.sidebar-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.sidebar-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 輔助類 */
+.w-100 {
+    width: 100% !important;
+}
+
+.mt-auto {
+    margin-top: auto !important;
 }
 </style>
