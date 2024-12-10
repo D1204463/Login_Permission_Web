@@ -6,6 +6,12 @@
             <font-awesome-icon :icon="['fas', 'bars']" />
         </button>
 
+        <!-- 添加遮罩層 -->
+        <div v-if="isMobileNavOpen" 
+             class="sidebar-overlay"
+             @click="closeMobileNav">
+        </div>
+
         <div :class="['sidebar-container', {'mobile-active': isMobileNavOpen}]">
             <div class="sidebar-content">
                 <!-- Logo -->
@@ -322,6 +328,18 @@ export default {
     flex-direction: column;
 }
 
+/* 遮罩層樣式 */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1054; /* 比 sidebar-container 的 z-index 小 1 */
+    display: none;
+}
+
 /* 導航按鈕樣式 */
 .navbar-toggler {
     position: fixed;
@@ -450,17 +468,18 @@ hr {
         left: 0;
     }
 
-    /* 遮罩效果 */
-    .sidebar-container.mobile-active::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: -1;
+    /* 在小螢幕時顯示遮罩層 */
+    .sidebar-overlay {
+        display: block;
     }
+
+    .fs-5 {
+        margin-top: 30px;
+    }
+}
+
+.sidebar-container.mobile-active::before {
+    display: none;
 }
 
 /* 滾動條樣式 */
