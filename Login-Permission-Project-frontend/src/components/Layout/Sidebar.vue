@@ -306,13 +306,18 @@ export default {
 
 .sidebar-container {
     background-color: #334255;
-    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 250px;  /* 固定寬度 */
+    overflow-y: auto;
     transition: all 0.3s ease;
 }
 
 .sidebar-content {
     padding: 1.5rem;
-    height: 100%;
+    min-height: 100vh; /* 最小高度設為視窗高度 */
     display: flex;
     flex-direction: column;
 }

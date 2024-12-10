@@ -23,7 +23,8 @@ import positionComponent from '@/components/ManagementPage/Position/Position.vue
     background: #f8f9fa;
     flex: 1;
     padding: 1rem;
-    margin-left: 30px; /* Sidebar 寬度 */
+    margin-left: 260px; /* 與 sidebar 寬度相同 */
+    min-height: 100vh;
 }
 
 /* 響應式設計 */
