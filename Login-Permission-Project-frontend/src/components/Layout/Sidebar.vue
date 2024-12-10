@@ -57,11 +57,9 @@
                             <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu1 }">
                                 <ul class="nav flex-column ms-4 submenu-items">
                                     <li class="w-100" v-for="item in filteredManagementItems" :key="item.name">
-                                        <router-link :to="item.url" class="submenu-link" v-slot="{ navigate }" custom>
-                                            <a @click="navigate" class="submenu-link"
-                                                :class="{ 'active': $route.path === item.url }">
-                                                <span class="d-none d-sm-inline">{{ item.name }}</span>
-                                            </a>
+                                        <router-link :to="item.url" class="submenu-link"
+                                            :class="{ 'active': $route.path === item.url }">
+                                            <span class="d-none d-sm-inline">{{ item.name }}</span>
                                         </router-link>
                                     </li>
                                 </ul>
@@ -85,11 +83,9 @@
                             <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu2 }">
                                 <ul class="nav flex-column ms-4 submenu-items">
                                     <li class="w-100" v-for="item in filteredHumanResourcesItems" :key="item.name">
-                                        <router-link :to="item.url" class="submenu-link" v-slot="{ navigate }" custom>
-                                            <a @click="navigate" class="submenu-link"
-                                                :class="{ 'active': $route.path === item.url }">
-                                                <span class="d-none d-sm-inline">{{ item.name }}</span>
-                                            </a>
+                                        <router-link :to="item.url" class="submenu-link"
+                                            :class="{ 'active': $route.path === item.url }">
+                                            <span class="d-none d-sm-inline">{{ item.name }}</span>
                                         </router-link>
                                     </li>
                                 </ul>
@@ -194,8 +190,9 @@ export default {
             ],
             currentTime: '',
             currentDate: '',
+            timer: null, // 保存計時器 ID
             userPermissions: [],
-        }
+        };
     },
 
     computed: {
@@ -275,20 +272,13 @@ export default {
         }
     },
     mounted() {
-        // this.parseToken();
         this.initializeUserPermissions();
         this.updateTime() // 初始化時間
         // 每秒更新一次時間
-        setInterval(this.updateTime, 1000)
-
-        // try {
-        //     const userData = localStorage.getItem("userData");
-        //     if (userData) {
-        //         this.userFile = JSON.parse(userData);
-        //     }
-        // } catch (error) {
-        //     console.error('解析用戶數據失敗：', error);
-        // }
+        this.timer = setInterval(this.updateTime, 1000)
+    },
+    beforeUnmount() {
+        clearInterval(this.timer); // 清除計時器
     }
 }
 </script>
@@ -329,7 +319,7 @@ export default {
 }
 
 .submenu-container.show {
-    max-height: 500px;
+    max-height: max-content;
     transition: max-height 0.3s ease-in;
 }
 
@@ -375,10 +365,16 @@ hr {
 /* 在原有的 style 中添加 */
 .col-auto {
     position: fixed;
+    top: 0;
+    left: 0;
     height: 100vh;
-    z-index: 1000;
+    /* 全屏高度 */
+    z-index: 1050;
+    /* 確保優先層級 */
     width: 240px;
     /* 固定寬度 */
+    background-color: #334255;
+    /* 確保背景色一致 */
 }
 
 /* 修改 container-fluid 的樣式 */
