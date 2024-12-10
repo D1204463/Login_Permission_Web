@@ -32,13 +32,11 @@
                         id="menu">
                         <!-- 主頁面 -->
                         <li class="nav-item w-100">
-                            <router-link to="/">
-                                <a class="nav-link menu-link">
-                                    <div class="d-flex align-items-center">
-                                        <font-awesome-icon :icon="['fas', 'house']" size="xl" />
-                                        <span class="ms-3 d-none d-sm-inline">主頁面</span>
-                                    </div>
-                                </a>
+                            <router-link to="/" class="nav-link menu-link">
+                                <div class="d-flex align-items-center">
+                                    <font-awesome-icon :icon="['fas', 'house']" size="xl" />
+                                    <span class="ms-3 d-none d-sm-inline">主頁面</span>
+                                </div>
                             </router-link>
                         </li>
 
