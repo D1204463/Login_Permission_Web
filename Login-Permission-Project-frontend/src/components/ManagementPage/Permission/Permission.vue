@@ -9,11 +9,11 @@
 
         <div class="content-wrapper">
             <div class="row g-3 align-items-center">
-                <div v-if="canReadPerm">
+                <!-- <div v-if="canReadPerm"> -->
                     <!-- 新增權限按鈕，點擊會出現Model -->
                     <div class="col-auto">
                         <button type="button" class="btn add-permission-btn" style="margin-bottom:20px;"
-                            data-bs-toggle="modal" data-bs-target="#createPermissionModal" v-if="canCreatePerm">
+                            data-bs-toggle="modal" data-bs-target="#createPermissionModal" >
                             <font-awesome-icon :icon="['fas', 'plus']" size="2xl" class="me-2" />
                             新增權限
                         </button>
@@ -56,7 +56,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                <!-- </div> -->
 
                 <!-- 部門資料表格 -->
                 <div class="table-responsive">
@@ -78,7 +78,7 @@
                                     <!-- 點擊 Button 出現 Edit Permission Modal -->
                                     <button type="button" class="btn btn-link" data-bs-toggle="modal"
                                         data-bs-target="#editPermissionModal"
-                                        v-on:click="onUpdatePermission(permission)" v-if="canUpdatePerm">
+                                        v-on:click="onUpdatePermission(permission)" >
                                         <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
                                     </button>
                                 </td>
@@ -90,7 +90,7 @@
                                     <!-- 點擊 Button 出現 Delete Permission Modal -->
                                     <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
                                         data-bs-target="#deletePermissionModal"
-                                        v-on:click="onSelectPermission(permission)" v-if="canDeletePerm">
+                                        v-on:click="onSelectPermission(permission)" >
                                         <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
                                     </button>
                                 </td>
@@ -347,18 +347,18 @@ export default {
                 );
             });
         },
-        canReadPerm() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_READ);
-        },
-        canCreatePerm() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_CREATE);
-        },
-        canUpdatePerm() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_UPDATE);
-        },
-        canDeletePerm() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_DELETE);
-        },
+        // canReadPerm() {
+        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_READ);
+        // },
+        // canCreatePerm() {
+        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_CREATE);
+        // },
+        // canUpdatePerm() {
+        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_UPDATE);
+        // },
+        // canDeletePerm() {
+        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_DELETE);
+        // },
     },
 }
 </script>
