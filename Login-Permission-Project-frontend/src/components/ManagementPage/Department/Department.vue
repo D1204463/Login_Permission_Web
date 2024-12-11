@@ -1,13 +1,5 @@
 <template>
-    <div class="container">
-        <!-- 部門管理頁籤 -->
-        <ul class="nav nav-tabs mb-2">
-            <li class="nav-item">
-                <a class="nav-link active" href="#">部門管理</a>
-            </li>
-        </ul>
-
-        <div class="content-wrapper">
+    <div class="content-wrapper">
             <div class="row g-3 align-items-center">
                 <div v-if="canReadDept">
                     <!-- 新增部門按鈕，點擊會出現Model -->
@@ -134,7 +126,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- 修改職位 Modal -->
     <div class="modal fade" id="editDepartmentModal" tabindex="-1" aria-labelledby="editDepartmentModalLabel"

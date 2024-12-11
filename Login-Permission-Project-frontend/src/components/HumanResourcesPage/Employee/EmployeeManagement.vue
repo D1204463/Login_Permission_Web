@@ -181,7 +181,14 @@ export default {
     methods: {
         async fetchEmployees() {
             try {
-                let response = await fetch("http://localhost:8085/employee/test/getAllEmployeeInfo");
+                console.log(localStorage.getItem('JWT_Token'))
+                let response = await fetch("http://localhost:8085/employee/test/getAllEmployeeInfo",{
+                    method:"GET",
+                    headers:{
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem('JWT_Token')
+                    }
+                });
                 if (response.ok) {
                     this.employeeInfo = await response.json();
                     console.log(this.employeeInfo);

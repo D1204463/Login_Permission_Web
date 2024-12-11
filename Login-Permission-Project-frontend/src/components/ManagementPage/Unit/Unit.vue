@@ -1,11 +1,4 @@
 <template>
-    <div class="unit-container">
-        <!-- 頁籤 -->
-        <ul class="nav nav-tabs mb-4">
-            <li class="nav-item">
-                <a class="nav-link active" href="#">科別管理</a>
-            </li>
-        </ul>
         <div v-if="canReadUnit">
             <div class="content-wrapper">
                 <div class="row g-3 align-items-center">
@@ -102,7 +95,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    
 
     <!-- 新增科別 Modal -->
     <div class="modal fade" id="createUnitModal" aria-labelledby="createUnitModalLabel" aria-hidden="true">

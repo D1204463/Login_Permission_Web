@@ -3,6 +3,7 @@
     <div class="container-fluid">
         <div class="row flex-nowrap">
             <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0" style="background-color: #334255;">
+                <a href="/login">login</a>
                 <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
                     <!-- Logo -->
                     <a href="/"
@@ -197,6 +198,7 @@ export default {
             currentTime: '',
             currentDate: '',
             userPermissions: [],
+            currentPath: this.$route.path,
         }
     },
 
@@ -223,6 +225,16 @@ export default {
                 return this.hasAnyPermission(item.requiredPermissions);
             });
         },
+    },
+
+    watch: {
+        '$route': {
+            handler(to) {
+                this.currentPath = to.path;
+                this.setActiveSubmenu(to.path);
+            },
+            immediate: true
+        }
     },
 
     methods: {
@@ -274,6 +286,20 @@ export default {
         },
         async logout() {
             await this.$store.dispatch('auth/logout')
+        },
+        setActiveSubmenu(path) {
+            // 檢查管理維護系統選單
+            if (this.managementItems.some(item => item.url === path)) {
+                this.isSubmenuOpen.submenu1 = true;
+            }
+            // 檢查人事管理系統選單
+            if (this.hrItems.some(item => item.url === path)) {
+                this.isSubmenuOpen.submenu2 = true;
+            }
+        },
+
+        isActiveRoute(url) {
+            return this.currentPath === url;
         }
     },
     mounted() {
@@ -309,6 +335,11 @@ export default {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.menu-link.active {
+    color: #FFCD50 !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 .submenu-link {
     color: #ffffff;
     text-decoration: none;
@@ -322,6 +353,12 @@ export default {
 .submenu-link:hover {
     color: #FFCD50;
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.submenu-link.active {
+    color: #FFCD50 !important;
+    background-color: rgba(255, 255, 255, 0.1);
+    font-weight: 500;
 }
 
 .submenu-container {

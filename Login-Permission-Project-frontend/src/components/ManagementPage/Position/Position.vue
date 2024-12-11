@@ -1,114 +1,105 @@
 <template>
-    <div class="container">
-        <!-- 職位管理頁籤 -->
-        <ul class="nav nav-tabs mb-2">
-            <li class="nav-item">
-                <a class="nav-link active" href="#">職位管理</a>
-            </li>
-        </ul>
+    <div class="content-wrapper">
+        <div class="row g-3 align-items-center">
+            <!-- 新增職位按鈕，點擊會出現Model -->
+            <div class="col-auto">
+                <button type="button" class="btn add-position-btn" style="margin-bottom:20px;" data-bs-toggle="modal"
+                    data-bs-target="#createPositionModal">
+                    <font-awesome-icon :icon="['fas', 'plus']" size="2xl" class="me-2" />
+                    新增職位
+                </button>
+            </div>
 
-        <div class="content-wrapper">
-            <div class="row g-3 align-items-center">
-                <!-- 新增職位按鈕，點擊會出現Model -->
-                <div class="col-auto">
-                    <button type="button" class="btn add-position-btn" style="margin-bottom:20px;"
-                        data-bs-toggle="modal" data-bs-target="#createPositionModal">
-                        <font-awesome-icon :icon="['fas', 'plus']" size="2xl" class="me-2" />
-                        新增職位
-                    </button>
-                </div>
-
-                <div class="col">
-                    <div class="card w-100 mb-4 border-0">
-                        <div class="card-body">
-                            <!-- 搜尋表單，用於搜尋科別、職位 -->
-                            <div class="col">
-                                <form>
-                                    <div class="row g-3 align-items-center">
-                                        <div class="col-md">
-                                            <div class="form-floating">
-                                                <!-- 搜尋科別 -->
-                                                <select class="form-select" id="unitSelect" v-model="searchByUnitId">
-                                                    <option selected value="">選擇科別</option>
-                                                    <option v-for="unit in units" :key="unit.unit_id"
-                                                        :value="unit.unit_id">
-                                                        ({{ unit.unit_id }}) {{ unit.unit_name }}
-                                                    </option>
-                                                </select>
-                                                <label for="unitSelect">科別查詢</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md">
-                                            <div class="form-floating">
-                                                <!-- 搜尋職位 -->
-                                                <select class="form-select" id="positionSelect"
-                                                    v-model="searchByPositionId">
-                                                    <option selected value="">選擇職位</option>
-                                                    <option v-for="position in positionOptions"
-                                                        :key="position.position_id" :value="position.position_id">
-                                                        ({{ position.position_id }}) {{ position.position }}
-                                                    </option>
-                                                </select>
-                                                <label for="positionSelect">職位查詢</label>
-                                            </div>
-                                        </div>
-                                        <!-- 搜尋按鈕 -->
-                                        <div class="col-auto d-flex align-items-center">
-                                            <button type="button" class="btn btn-primary search-btn me-2"
-                                                v-on:click="search">
-                                                <font-awesome-icon :icon="['fas', 'magnifying-glass']" size="lg" />
-                                            </button>
-                                            <!-- 新增重置按鈕 -->
-                                            <button type="button" class="btn btn-secondary search-btn" v-on:click="resetSearch">
-                                                <font-awesome-icon :icon="['fas', 'rotate']" size="lg" />
-                                            </button>
+            <div class="col">
+                <div class="card w-100 mb-4 border-0">
+                    <div class="card-body">
+                        <!-- 搜尋表單，用於搜尋科別、職位 -->
+                        <div class="col">
+                            <form>
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md">
+                                        <div class="form-floating">
+                                            <!-- 搜尋科別 -->
+                                            <select class="form-select" id="unitSelect" v-model="searchByUnitId">
+                                                <option selected value="">選擇科別</option>
+                                                <option v-for="unit in units" :key="unit.unit_id" :value="unit.unit_id">
+                                                    ({{ unit.unit_id }}) {{ unit.unit_name }}
+                                                </option>
+                                            </select>
+                                            <label for="unitSelect">科別查詢</label>
                                         </div>
                                     </div>
-                                </form>
-                            </div>
+                                    <div class="col-md">
+                                        <div class="form-floating">
+                                            <!-- 搜尋職位 -->
+                                            <select class="form-select" id="positionSelect"
+                                                v-model="searchByPositionId">
+                                                <option selected value="">選擇職位</option>
+                                                <option v-for="position in positionOptions" :key="position.position_id"
+                                                    :value="position.position_id">
+                                                    ({{ position.position_id }}) {{ position.position }}
+                                                </option>
+                                            </select>
+                                            <label for="positionSelect">職位查詢</label>
+                                        </div>
+                                    </div>
+                                    <!-- 搜尋按鈕 -->
+                                    <div class="col-auto d-flex align-items-center">
+                                        <button type="button" class="btn btn-primary search-btn me-2"
+                                            v-on:click="search">
+                                            <font-awesome-icon :icon="['fas', 'magnifying-glass']" size="lg" />
+                                        </button>
+                                        <!-- 新增重置按鈕 -->
+                                        <button type="button" class="btn btn-secondary search-btn"
+                                            v-on:click="resetSearch">
+                                            <font-awesome-icon :icon="['fas', 'rotate']" size="lg" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- 職位資料表格 -->
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <!-- 表頭 -->
-                    <thead>
-                        <tr>
-                            <th class="text-center" style="width: 80px">編輯</th>
-                            <th class="text-center">職位編號</th>
-                            <th class="text-center">職位名稱</th>
-                            <th class="text-center">科別代號</th>
-                            <th class="text-center">科別名稱</th>
-                            <th class="text-center" style="width: 80px">刪除</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="position in positions" v-bind:key="position.position_id">
-                            <td class="text-center">
-                                <!-- 點擊 Button 出現 Edit Position Modal -->
-                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#editPositionModal" v-on:click="onUpdatePosition(position)">
-                                    <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
-                                </button>
-                            </td>
-                            <td class="text-center">{{ position.position_id }}</td>
-                            <td class="text-center">{{ position.position }}</td>
-                            <td class="text-center">{{ position.unit_id }}</td>
-                            <td class="text-center">{{ position.unit.unit_name }}</td>
-                            <td class="text-center">
-                                <!-- 點擊 Button 出現 Delete Position Modal -->
-                                <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
-                                    data-bs-target="#deletePositionModal" v-on:click="onSelectPosition(position)">
-                                    <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <!-- 職位資料表格 -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <!-- 表頭 -->
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 80px">編輯</th>
+                        <th class="text-center">職位編號</th>
+                        <th class="text-center">職位名稱</th>
+                        <th class="text-center">科別代號</th>
+                        <th class="text-center">科別名稱</th>
+                        <th class="text-center" style="width: 80px">刪除</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="position in positions" v-bind:key="position.position_id">
+                        <td class="text-center">
+                            <!-- 點擊 Button 出現 Edit Position Modal -->
+                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#editPositionModal" v-on:click="onUpdatePosition(position)">
+                                <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
+                            </button>
+                        </td>
+                        <td class="text-center">{{ position.position_id }}</td>
+                        <td class="text-center">{{ position.position }}</td>
+                        <td class="text-center">{{ position.unit_id }}</td>
+                        <td class="text-center">{{ position.unit.unit_name }}</td>
+                        <td class="text-center">
+                            <!-- 點擊 Button 出現 Delete Position Modal -->
+                            <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
+                                data-bs-target="#deletePositionModal" v-on:click="onSelectPosition(position)">
+                                <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -389,7 +380,8 @@ export default {
 .content-wrapper {
     background-color: #ffffff;
     border-radius: 8px;
-    padding: 0 1.5rem; /* 只保留左右間距 */
+    padding: 0 1.5rem;
+    /* 只保留左右間距 */
     margin-right: 5%;
     margin-top: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
