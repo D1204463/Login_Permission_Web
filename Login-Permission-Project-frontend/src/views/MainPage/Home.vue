@@ -1,18 +1,11 @@
 <template>
-    <div class="container-fluid">
-        <div class="row">
-        <div class="col-3">
-        <!-- 左側 Sidebar -->
-        <Sidebar />
-        </div>
-        <div class="col-8">
-            <HomePage />
-        </div>
-    </div>
-    </div>
-
+  <div class="layout-container">
+      <Sidebar />
+      <div class="main-content">
+          <HomePage />
+      </div>
+  </div>
 </template>
-
 
 <script setup>
 import Sidebar from '@/components/layout/Sidebar.vue';
@@ -20,15 +13,25 @@ import HomePage from '@/components/MainPage/homePage/HomePage.vue';
 </script>
 
 <style scoped>
-.container-fluid {
-  padding: 0;
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f8f9fa;
 }
 
-.row {
-  margin: 0;
+.main-content {
+  background: #f8f9fa;
+  flex: 1;
+  padding: 1rem;
+  margin-left: 260px; /* 與 sidebar 寬度相同 */
+  min-height: 100vh;
 }
 
-.col-3, .col-9 {
-  padding: 0;
+/* 響應式設計 */
+@media (max-width: 991.98px) {
+  .main-content {
+      margin-left: 0;
+      padding-top: 4rem; /* 為菜單按鈕留出空間 */
+  }
 }
 </style>
