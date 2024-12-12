@@ -1,15 +1,10 @@
 <template>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-3">
-                <Sidebar />
-            </div>
-            <div class="col-8">
-                <!-- 使用 router-view 來顯示路由組件 -->
-                <Profile />
-            </div>
-        </div>
-    </div>
+  <div class="layout-container">
+      <Sidebar />
+      <div class="main-content">
+          <Profile />
+      </div>
+  </div>
 </template>
 
 <script setup>
@@ -18,15 +13,25 @@ import Profile from '@/components/MainPage/Profile/Profile.vue';
 </script>
 
 <style scoped>
-.container-fluid {
-  padding: 0;
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f8f9fa;
 }
 
-.row {
-  margin: 0;
+.main-content {
+  background: #f8f9fa;
+  flex: 1;
+  padding: 1rem;
+  margin-left: 260px; /* 與 sidebar 寬度相同 */
+  min-height: 100vh;
 }
 
-.col-3, .col-9 {
-  padding: 0;
+/* 響應式設計 */
+@media (max-width: 991.98px) {
+  .main-content {
+      margin-left: 0;
+      padding-top: 4rem; /* 為菜單按鈕留出空間 */
+  }
 }
 </style>

@@ -13,18 +13,19 @@
         <div :class="['sidebar-container', { 'mobile-active': isMobileNavOpen }]">
             <div class="sidebar-content">
                 <!-- Logo -->
-                <a href="/Home" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <a href="/Home"
+                    class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                     <span class="fs-5">Bank</span>
                 </a>
 
                 <!-- User Profile -->
                 <div class="dropdown pb-4">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        @click.prevent="toggleDropdown" ref="dropdownToggle">
                         <font-awesome-icon :icon="['fas', 'circle-user']" size="2xl" />
                         <span class="mx-3">{{ userName || 'User' }}</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow" :class="{ 'show': isDropdownOpen }">
                         <li><a class="dropdown-item" href="#">Settings</a></li>
                         <li><router-link to="/profile" class="dropdown-item">Profile</router-link></li>
                         <li>
@@ -148,6 +149,7 @@ export default {
     data() {
         return {
             userFile: null,
+            isDropdownOpen: false,
             isMobileNavOpen: false,
             isSubmenuOpen: {
                 submenu1: false,
@@ -230,6 +232,14 @@ export default {
     },
 
     methods: {
+        toggleDropdown() {
+            this.isDropdownOpen = !this.isDropdownOpen;
+        },
+        closeDropdown(e) {
+            if (!this.$refs.dropdownToggle.contains(e.target)) {
+                this.isDropdownOpen = false;
+            }
+        },
         toggleSubmenu(menuId) {
             this.isSubmenuOpen[menuId] = !this.isSubmenuOpen[menuId]
         },
@@ -285,12 +295,14 @@ export default {
         }
     },
     mounted() {
+        document.addEventListener('click', this.closeDropdown);
         this.initializeUserPermissions();
         this.updateTime() // 初始化時間
         // 每秒更新一次時間
         this.timer = setInterval(this.updateTime, 1000)
     },
     beforeUnmount() {
+        document.removeEventListener('click', this.closeDropdown);
         clearInterval(this.timer); // 清除計時器
     }
 }
