@@ -7,15 +7,13 @@
         </button>
 
         <!-- 添加遮罩層 -->
-        <div v-if="isMobileNavOpen" 
-             class="sidebar-overlay"
-             @click="closeMobileNav">
+        <div v-if="isMobileNavOpen" class="sidebar-overlay" @click="closeMobileNav">
         </div>
 
-        <div :class="['sidebar-container', {'mobile-active': isMobileNavOpen}]">
+        <div :class="['sidebar-container', { 'mobile-active': isMobileNavOpen }]">
             <div class="sidebar-content">
                 <!-- Logo -->
-                <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <a href="/Home" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                     <span class="fs-5">Bank</span>
                 </a>
 
@@ -41,7 +39,7 @@
                     id="menu">
                     <!-- 主頁面 -->
                     <li class="nav-item w-100">
-                        <router-link to="/" class="nav-link menu-link" @click="closeMobileNav">
+                        <router-link to="/Home" class="nav-link menu-link" @click="closeMobileNav">
                             <div class="d-flex align-items-center">
                                 <font-awesome-icon :icon="['fas', 'house']" size="xl" />
                                 <span class="ms-3">主頁面</span>
@@ -58,8 +56,7 @@
                                     <font-awesome-icon :icon="['fas', 'computer']" size="xl" />
                                     <span class="ms-3">管理維護系統</span>
                                 </div>
-                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
-                                    class="submenu-icon"
+                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs" class="submenu-icon"
                                     :class="{ 'rotated': isSubmenuOpen.submenu1 }" />
                             </div>
                         </a>
@@ -84,8 +81,7 @@
                                     <font-awesome-icon :icon="['fas', 'people-group']" size="xl" />
                                     <span class="ms-3">人事管理系統</span>
                                 </div>
-                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
-                                    class="submenu-icon"
+                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs" class="submenu-icon"
                                     :class="{ 'rotated': isSubmenuOpen.submenu2 }" />
                             </div>
                         </a>
@@ -110,8 +106,7 @@
                                     <font-awesome-icon :icon="['fas', 'piggy-bank']" size="xl" />
                                     <span class="ms-3">會計總帳系統</span>
                                 </div>
-                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs"
-                                    class="submenu-icon"
+                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs" class="submenu-icon"
                                     :class="{ 'rotated': isSubmenuOpen.submenu3 }" />
                             </div>
                         </a>
@@ -206,7 +201,6 @@ export default {
             currentTime: '',
             currentDate: '',
             timer: null, // 保存計時器 ID
-            userPermissions: [],
         };
     },
 
@@ -271,20 +265,18 @@ export default {
                 return true;
             }
             // 檢查用戶是否擁有任一必要權限
-            return item.requiredPermissions.some(permission =>
-                this.userPermissions.includes(permission)
-            );
+            // 使用 Vuex 的 getter
+            return this.hasAnyPermission(item.requiredPermissions);
         },
         initializeUserPermissions() {  //在組件掛載時從 JWT 獲取權限
             const token = localStorage.getItem("JWT_Token");
             if (token) {
                 const decodedToken = parseJwt(token);
                 if (decodedToken && decodedToken.permissionCode) {
-                    this.userPermissions = decodedToken.permissionCode;
-                    console.log('User permissions:', this.userPermissions);
                     // 同步到 Vuex store
                     this.$store.dispatch('auth/setPermissions', decodedToken.permissionCode);
-                    console.log('User permissions initialized:', this.userPermissions);
+                    console.log('JWT Token permissions:', decodedToken.permissionCode);
+                    console.log('Current Vuex userPermissions:', this.userPermissions);
                 }
             }
         },
@@ -316,14 +308,16 @@ export default {
     top: 0;
     left: 0;
     bottom: 0;
-    width: 250px;  /* 固定寬度 */
+    width: 250px;
+    /* 固定寬度 */
     overflow-y: auto;
     transition: all 0.3s ease;
 }
 
 .sidebar-content {
     padding: 1.5rem;
-    min-height: 100vh; /* 最小高度設為視窗高度 */
+    min-height: 100vh;
+    /* 最小高度設為視窗高度 */
     display: flex;
     flex-direction: column;
 }
@@ -336,7 +330,8 @@ export default {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1054; /* 比 sidebar-container 的 z-index 小 1 */
+    z-index: 1054;
+    /* 比 sidebar-container 的 z-index 小 1 */
     display: none;
 }
 

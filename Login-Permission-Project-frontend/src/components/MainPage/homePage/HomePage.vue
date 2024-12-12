@@ -33,7 +33,7 @@
       </div>
 
       <!-- 首頁顯示兩個公告 -->
-      <template v-if="$route.path === '/' || $route.path === '/home'">
+      <template v-if="$route.path === '/Home' || $route.path === '/home'">
         <!-- 公司公告 -->
         <div class="announcement-section mb-5">
           <div class="section-header mb-4">

@@ -51,6 +51,9 @@ export default {
         setAuthenticated(state, isAuthenticated) {
             state.isAuthenticated = isAuthenticated;
         },
+        setPermissions(state, permissions){
+            state.userInfo.permissionCode = permissions;
+        },
         // 清除使用者資訊
         clearUserInfo(state) {
             state.userInfo = {
@@ -140,6 +143,9 @@ export default {
             } catch (error) {
                 console.log("獲取登錄紀錄失敗,請檢查連線是否正常");
             }
+        },
+        setPermissions({ commit }, permissions) {
+            commit('setPermissions', permissions);
         }
     },
     getters: {

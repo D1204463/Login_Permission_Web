@@ -114,7 +114,7 @@ export default {
           // 登入成功，向後端再發送一次請求拿取登錄紀錄,導向首頁
           await  store.dispatch('auth/getLoginRecord');
           console.log(store.state.loginRecords);
-          router.push('/');
+          router.push('/Home');
         } else {
           // 顯示錯誤訊息
           errorMessage.value = result.message;

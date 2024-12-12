@@ -18,7 +18,7 @@ import { PERMISSIONS } from "@/utils/jwt";
 
 const routes = [
     {
-        path: '/',
+        path: '/Home',
         name: 'Home',
         component: Home
     },
@@ -38,7 +38,7 @@ const routes = [
         component: Home
     },
     {
-        path: '/login',
+        path: '/',
         name: 'LoginPage',
         component: Login,
         meta: { requiresAuth: false }

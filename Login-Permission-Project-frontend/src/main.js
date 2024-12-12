@@ -12,7 +12,6 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 
 library.add(fas, far, fab);
 const app = createApp(App)
-store.dispatch('loadPermissions'); // 初始化 Vuex 權限
 app.use(store);
 
 app.component('font-awesome-icon', FontAwesomeIcon);
