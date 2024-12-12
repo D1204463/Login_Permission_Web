@@ -181,15 +181,20 @@ export default {
     methods: {
         async fetchEmployees() {
             try {
+                console.log("開始獲取員工資料");
                 let response = await fetch("http://localhost:8085/employee/test/getAllEmployeeInfo");
+                console.log("API 回應:", response);
+
                 if (response.ok) {
-                    this.employeeInfo = await response.json();
-                    console.log(this.employeeInfo);
+                    const data = await response.json();
+                    console.log("解析後資料:", data);
+                    this.employeeInfo = data;
+                    console.log("設置後的 employeeInfo:", this.employeeInfo);
                 } else {
-                    console.error("Error fetching employees:", response.statusText);
+                    console.error("API 錯誤回應:", response.statusText);
                 }
             } catch (error) {
-                console.log("Error fetching employees:", error);
+                console.log("獲取資料錯誤:", error);
             }
         },
 
