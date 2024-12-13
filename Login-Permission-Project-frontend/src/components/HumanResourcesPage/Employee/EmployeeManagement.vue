@@ -134,6 +134,7 @@
 <script>
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
+import { mapGetters } from 'vuex'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -181,8 +182,16 @@ export default {
     methods: {
         async fetchEmployees() {
             try {
+                const token = localStorage.getItem('JWT_Token');
                 console.log("開始獲取員工資料");
-                let response = await fetch("http://localhost:8085/employee/test/getAllEmployeeInfo");
+                let response = await fetch("http://localhost:8085/employee/test/getEmployeeById/"+ this.userId, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`
+                     },
+                    //  body: JSON.stringify(this.newEmployee)
+                });
                 console.log("API 回應:", response);
 
                 if (response.ok) {
@@ -296,6 +305,9 @@ export default {
         this.addPosition();
         this.addStatus();
     },
+    computed: {
+        ...mapGetters('auth', ['userId'])
+    }
 };
 </script>
 

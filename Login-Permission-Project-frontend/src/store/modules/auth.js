@@ -153,6 +153,9 @@ export default {
         isAuthenticated: (state) => {
             return state.isAuthenticated;
         },
+        userId: (state) => {
+            return state.userInfo.userId;
+        },
         userName: (state) => {
             return state.userInfo.userName;
         },

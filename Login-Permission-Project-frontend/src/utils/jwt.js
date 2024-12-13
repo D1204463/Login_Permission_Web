@@ -39,13 +39,13 @@ export function parseJwt(token) {
         // 返回需要的資料
         return {
             sub: payload.sub || null,  // - 使用者ID (sub)
-            userName: payload.userName || '', //  - 使用者名稱 (userName)，特別處理中文編碼
-            userEmail: payload.userEmail || '', // - 電子郵件 (userEmail)
-            userPhone: payload.userPhone || '',  // - 電話 (userPhone)
-            userStatusId: payload.userStatusId || null,  // - 狀態ID (userStatusId)
-            permissionCode: Array.isArray(payload.permissionCode) ? payload.permissionCode : [],  // - 權限ID列表 (permissionId)
+            // userName: payload.userName || '', //  - 使用者名稱 (userName)，特別處理中文編碼
+            // userEmail: payload.userEmail || '', // - 電子郵件 (userEmail)
+            // userPhone: payload.userPhone || '',  // - 電話 (userPhone)
+            // userStatusId: payload.userStatusId || null,  // - 狀態ID (userStatusId)
+            // permissionCode: Array.isArray(payload.permissionCode) ? payload.permissionCode : [],  // - 權限ID列表 (permissionId)
             loginRecordId: payload.loginRecordId || null,  // - 登入記錄ID (loginRecordId)
-            departmentAndUnit: payload.departmentAndUnit || null
+            // departmentAndUnit: payload.departmentAndUnit || null
         };
     } catch(e) {
         console.error('JWT 解析錯誤:', e);
