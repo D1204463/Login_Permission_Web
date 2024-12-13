@@ -121,6 +121,7 @@ const router = createRouter({
 
 //路由守衛
 router.beforeEach((to, from, next) => {
+    // store.commit('auth/setUserInfo', localStorage.getItem('JWT_Token'));
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     const isAuthenticated = store.state.auth.isAuthenticated;
 

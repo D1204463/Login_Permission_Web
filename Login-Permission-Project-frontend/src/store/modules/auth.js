@@ -35,6 +35,9 @@ export default {
                     permissionCode: Array.isArray(user.permissionCode) ? user.permissionCode : [], // 確保是陣列
                     departmentAndUnit: Array.isArray(user.departmentAndUnit) ? user.departmentAndUnit : [],
                 };
+                state.isAuthenticated = true;
+            } else {
+                console.log("JWT missing");
             }
         },
         setFailRecordMessage(state, message) {

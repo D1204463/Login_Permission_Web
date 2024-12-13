@@ -31,7 +31,7 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="#" @click="logout">Sign out</a></li>
+                        <li><router-link to="/" class="dropdown-item" @click="logout">Sign out</router-link></li>
                     </ul>
                 </div>
 
