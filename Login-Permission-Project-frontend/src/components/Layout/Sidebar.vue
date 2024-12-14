@@ -65,7 +65,7 @@
                             <ul class="nav flex-column ms-4 submenu-items">
                                 <li class="w-100" v-for="item in filteredManagementItems" :key="item.name">
                                     <router-link :to="item.url" class="submenu-link"
-                                        :class="{ 'active': $route.path === item.url }" @click="closeMobileNav">
+                                        :class="{ 'active': $route.path === item.url }">
                                         <span>{{ item.name }}</span>
                                     </router-link>
                                 </li>
@@ -90,7 +90,7 @@
                             <ul class="nav flex-column ms-4 submenu-items">
                                 <li class="w-100" v-for="item in filteredHumanResourcesItems" :key="item.name">
                                     <router-link :to="item.url" class="submenu-link"
-                                        :class="{ 'active': $route.path === item.url }" @click="closeMobileNav">
+                                        :class="{ 'active': $route.path === item.url }">
                                         <span>{{ item.name }}</span>
                                     </router-link>
                                 </li>
@@ -156,6 +156,11 @@ export default {
                 submenu2: false,
                 submenu3: false
             },
+            submenuRoutes: {
+                submenu1: ['/role', '/Department', '/unit', '/position', '/permission', '/employee-status'],
+                submenu2: ['/employee', '/loginRecord'],
+                submenu3: [] // 會計總帳系統
+            },
             managementItems: [
                 {
                     name: '角色管理',
@@ -205,7 +210,15 @@ export default {
             timer: null, // 保存計時器 ID
         };
     },
-
+    watch: {
+        // Watch for route changes
+        '$route': {
+            immediate: true,
+            handler(newRoute) {
+                this.updateSubmenuState(newRoute.path);
+            }
+        }
+    },
     computed: {
         ...mapGetters('auth', [
             'userName',
@@ -241,7 +254,10 @@ export default {
             }
         },
         toggleSubmenu(menuId) {
-            this.isSubmenuOpen[menuId] = !this.isSubmenuOpen[menuId]
+            // Only toggle if clicking on a different route than current
+            if (!this.submenuRoutes[menuId].includes(this.$route.path)) {
+                this.isSubmenuOpen[menuId] = !this.isSubmenuOpen[menuId];
+            }
         },
         toggleMobileNav() {
             this.isMobileNavOpen = !this.isMobileNavOpen;
@@ -249,7 +265,14 @@ export default {
         closeMobileNav() {
             this.isMobileNavOpen = false;
         },
-
+        updateSubmenuState(currentPath) {
+            // Check each submenu's routes and update its state
+            Object.keys(this.submenuRoutes).forEach(submenuKey => {
+                if (this.submenuRoutes[submenuKey].includes(currentPath)) {
+                    this.isSubmenuOpen[submenuKey] = true;
+                }
+            });
+        },
         updateTime() {
             const now = new Date()
 
@@ -299,7 +322,8 @@ export default {
         this.initializeUserPermissions();
         this.updateTime() // 初始化時間
         // 每秒更新一次時間
-        this.timer = setInterval(this.updateTime, 1000)
+        this.timer = setInterval(this.updateTime, 1000);
+        this.updateSubmenuState(this.$route.path);
     },
     beforeUnmount() {
         document.removeEventListener('click', this.closeDropdown);
