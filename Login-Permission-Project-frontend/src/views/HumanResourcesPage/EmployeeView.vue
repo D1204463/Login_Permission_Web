@@ -1,4 +1,4 @@
- <!-- <template>
+<!-- <template>
     <div class="row">
         <div class="col-3">
             <Sidebar />
@@ -86,7 +86,9 @@ export default {
                         @click.prevent="switchTab('employee')">員工管理</a>
                 </li>
             </ul>
-            <EmployeeManagement v-if="activeTab === 'employee'" />
+            <div class="content-wrapper">
+                <EmployeeManagement v-if="activeTab === 'employee'" />
+            </div>
         </div>
     </div>
 </template>
@@ -130,9 +132,24 @@ export default {
     background: #f8f9fa;
     flex: 1;
     padding: 1rem;
-    margin-left: 260px;
+    margin-left: 280px;
     /* 與 sidebar 寬度相同 */
     min-height: 100vh;
+}
+
+.content-wrapper {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 0 1.5rem;
+    /* 只保留左右間距 */
+    margin-right: 5%;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.nav-tabs {
+    margin-right: 5%;
+    margin-top: 30px;
 }
 
 .nav-tabs .nav-link {
@@ -146,14 +163,14 @@ export default {
 .nav-tabs .nav-link.active {
     color: #334255;
     font-weight: 600;
-    border-bottom: 2px solid #334255;
+    border-bottom: 4px solid #334255;
     background: none;
 }
 
 /* 響應式設計 */
 @media (max-width: 991.98px) {
     .main-content {
-        margin-left: 0;
+        margin-left: 5%;
         padding-top: 4rem;
         /* 為菜單按鈕留出空間 */
     }
