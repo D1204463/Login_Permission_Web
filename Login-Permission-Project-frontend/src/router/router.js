@@ -137,7 +137,7 @@ router.beforeEach((to, from, next) => {
     if (requiresAuth && !isAuthenticated) {
         console.log('Authentication required, redirecting to login');
         //如果沒有 admin 權限，就跳轉到其他頁面
-        next('/login');
+        next('/');
         return;
     }
 
