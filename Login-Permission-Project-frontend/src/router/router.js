@@ -54,12 +54,12 @@ const routes = [
         component: Unit,
         meta: {
             requiresAuth: true,
-            permissions: [
-                PERMISSIONS.UNIT_READ,
-                PERMISSIONS.UNIT_UPDATE,
-                PERMISSIONS.UNIT_CREATE,
-                PERMISSIONS.UNIT_DELETE
-            ]
+            // permissions: [
+            //     PERMISSIONS.UNIT_READ,
+            //     PERMISSIONS.UNIT_UPDATE,
+            //     PERMISSIONS.UNIT_CREATE,
+            //     PERMISSIONS.UNIT_DELETE
+            // ]
         }
     },
     {
@@ -93,12 +93,12 @@ const routes = [
         component: Department,
         meta: {
             requiresAuth: true,
-            permissions: [
-                PERMISSIONS.DEPT_READ,
-                PERMISSIONS.DEPT_UPDATE,
-                PERMISSIONS.DEPT_CREATE,
-                PERMISSIONS.DEPT_DELETE
-            ]
+            // permissions: [
+            //     PERMISSIONS.DEPT_READ,
+            //     PERMISSIONS.DEPT_UPDATE,
+            //     PERMISSIONS.DEPT_CREATE,
+            //     PERMISSIONS.DEPT_DELETE
+            // ]
         }
     },
     {

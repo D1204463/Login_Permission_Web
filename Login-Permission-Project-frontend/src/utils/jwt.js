@@ -28,10 +28,6 @@ export function parseJwt(token) {
         }
         const decodedString = decoder.decode(uint8Array); // 解碼為 UTF-8 字串
 
-        // 處理填充
-        // const pad = '='.repeat((4 - base64.length % 4) % 4);
-        // const jsonPayload = atob(base64 + pad);
-
         // 解析 JSON 並確保正確的中文編碼
         const payload = JSON.parse(decodedString);
         console.log('Parsed JWT payload:', payload);
@@ -39,13 +35,8 @@ export function parseJwt(token) {
         // 返回需要的資料
         return {
             sub: payload.sub || null,  // - 使用者ID (sub)
-            // userName: payload.userName || '', //  - 使用者名稱 (userName)，特別處理中文編碼
-            // userEmail: payload.userEmail || '', // - 電子郵件 (userEmail)
-            // userPhone: payload.userPhone || '',  // - 電話 (userPhone)
-            // userStatusId: payload.userStatusId || null,  // - 狀態ID (userStatusId)
-            // permissionCode: Array.isArray(payload.permissionCode) ? payload.permissionCode : [],  // - 權限ID列表 (permissionId)
             loginRecordId: payload.loginRecordId || null,  // - 登入記錄ID (loginRecordId)
-            // departmentAndUnit: payload.departmentAndUnit || null
+            permissionCode: Array.isArray(payload.permissionCode) ? payload.permissionCode : [],  // - 權限ID列表 (permissionId)
         };
     } catch(e) {
         console.error('JWT 解析錯誤:', e);
@@ -73,12 +64,6 @@ export function checkAnyPermission(requiredPermissions, userPermissions) {
 }
 
 // 定義權限常量
-// export const PERMISSIONS = {
-//     DEPT_FULL_ACCESS: 1,     // 部門完整權限
-//     DEPT_PARTIAL_ACCESS: 4,  // 部門部分權限
-//     UNIT_FULL_ACCESS: 2,     // 科別完整權限
-//     LOGIN_RECORD_ACCESS: 3   // 登入記錄權限
-// }
 export const PERMISSIONS = {
     // 部門管理權限
     DEPT_NONE: 'dept_mgt_false',

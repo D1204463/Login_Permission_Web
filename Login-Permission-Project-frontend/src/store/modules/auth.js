@@ -2,6 +2,7 @@ import { parseJwt } from '../../utils/jwt';
 import { getLoginRecord } from "../../utils/loginRecordUtils.js";
 import { login } from "../../utils/loginUtils.js";
 import { handleError } from "../../utils/handleError.js";
+import { getPermissions } from '../../utils/permissionUtils.js';
 
 export default {
     namespaced: true, // 添加命名空間
@@ -54,7 +55,7 @@ export default {
         setAuthenticated(state, isAuthenticated) {
             state.isAuthenticated = isAuthenticated;
         },
-        setPermissions(state, permissions){
+        setPermissions(state, permissions) {
             state.userInfo.permissionCode = permissions;
         },
         // 清除使用者資訊
@@ -96,6 +97,18 @@ export default {
                     // 設置認證狀態
                     commit('setAuthenticated', true);
 
+                    // 從 token 中解析出的用戶訊息中獲取 userId
+                    const userData = parseJwt(token);
+                    const userId = userData.sub;  // sub 是 userId
+                    // 登入成功後，使用 userId 立即獲取權限
+                    try {
+                        const permissions = await getPermissions(token, userId);
+                        commit('setPermissions', permissions);
+                        console.log('Permissions fetched successfully:', permissions);
+                    } catch (permError) {
+                        console.log("獲取權限失敗:", permError);
+                    }
+
                     return { success: true, message: "登錄成功" };
 
                 } else {
@@ -105,6 +118,25 @@ export default {
             } catch (error) {
                 console.error("登錄請求失敗:", error);
                 return { success: false, message: "登錄失敗，請檢查網路是否連線正常" };
+            }
+        },
+        async refreshPermissions({ state, commit }) {
+            const token = localStorage.getItem('JWT_Token');
+            if (!token) {
+                throw new Error('No token found');
+            }
+
+            const userId = state.userInfo.userId;
+            if(!userId) {
+                throw new Error('No user ID found');
+            }
+            try {
+                const permissions = await getPermissions(token, userId);
+                commit('setPermissions', permissions);
+                return permissions;
+            } catch (error) {
+                console.log("更新權限失敗:", error);
+                throw error;
             }
         },
         async logout({ commit }) {
