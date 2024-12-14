@@ -312,17 +312,6 @@ export default {
 </script>
 
 <style scoped>
-.container {
-    padding: 20px;
-}
-
-.content-wrapper {
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
 .nav-tabs .nav-link {
     color: #334255;
     border: none;
@@ -420,13 +409,6 @@ export default {
 }
 
 @media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-
-    .content-wrapper {
-        padding: 1rem;
-    }
 
     .form-floating {
         margin-bottom: 1rem;

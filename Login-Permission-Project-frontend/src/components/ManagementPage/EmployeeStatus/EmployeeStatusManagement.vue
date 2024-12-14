@@ -418,16 +418,25 @@ export default {
 <style scoped>
 .content-wrapper {
   background-color: #ffffff;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    padding: 0 1.5rem;
+    /* 只保留左右間距 */
+    margin-right: 5%;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.nav-tabs {
+    margin-right: 5%;
+    margin-top: 15px;
 }
 
 .nav-tabs .nav-link {
   color: #334255;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  font-size: 1.1rem;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    position: relative;
 }
 
 .nav-tabs .nav-link.active {
@@ -435,6 +444,16 @@ export default {
   font-weight: 600;
   border-bottom: 2px solid #334255;
   background: none;
+}
+
+.nav-tabs .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #334255;
 }
 
 .btn-link {
@@ -449,11 +468,14 @@ export default {
 }
 .add-status-btn {
   color: #334255;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  border: 2px solid #334255;
-  border-radius: 6px;
-  transition: all 0.3s ease;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border: 2px solid #334255;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    height: 58px;
+    /* 與表單元素等高 */
+    white-space: nowrap;
 }
 .add-status-btn:hover {
   background-color: #334255;
