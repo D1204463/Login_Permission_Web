@@ -63,26 +63,3 @@ export function checkAnyPermission(requiredPermissions, userPermissions) {
     return requiredPermissions.some(permission => userPermissions.includes(permission));
 }
 
-// 定義權限常量
-export const PERMISSIONS = {
-    // 部門管理權限
-    DEPT_NONE: 'dept_mgt_false',
-    DEPT_READ: 'dept_mgt_read',
-    DEPT_UPDATE: 'dept_mgt_update',
-    DEPT_CREATE: 'dept_mgt_create',
-    DEPT_DELETE: 'dept_mgt_delete',
-
-    // 科別管理權限
-    UNIT_NONE: 'unit_mgt_false',
-    UNIT_READ: 'unit_mgt_read',
-    UNIT_UPDATE: 'unit_mgt_update',
-    UNIT_CREATE: 'unit_mgt_create',
-    UNIT_DELETE: 'unit_mgt_delete',
-
-    // 登入記錄權限
-    LOGIN_RECORD_NONE: 'login_rec_false',
-    LOGIN_RECORD_READ: 'login_rec_read',
-    LOGIN_RECORD_UPDATE: 'login_rec_update',
-    LOGIN_RECORD_CREATE: 'login_rec_create',
-    LOGIN_RECORD_DELETE: 'login_rec_delete'
-};

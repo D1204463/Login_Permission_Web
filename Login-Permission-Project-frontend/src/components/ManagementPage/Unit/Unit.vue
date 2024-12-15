@@ -251,7 +251,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 // 添加圖標
 library.add(faPlus, faPenToSquare, faTrashCan, faMagnifyingGlass)
 
-import { PERMISSIONS } from '@/utils/jwt';
+import { PERMISSIONS } from '@/constants/permissions';
 
 export default {
     components: {

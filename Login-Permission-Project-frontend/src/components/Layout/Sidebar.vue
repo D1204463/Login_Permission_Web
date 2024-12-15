@@ -141,7 +141,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { parseJwt, PERMISSIONS } from '@/utils/jwt'
+import { PERMISSIONS } from '@/constants/permissions';
+import { parseJwt } from '@/utils/jwt'
 
 export default {
     name: 'MyComponent',
@@ -170,39 +171,48 @@ export default {
                 {
                     name: '部門管理',
                     url: '/Department',
-                    requiredPermissions: [PERMISSIONS.DEPT_READ, PERMISSIONS.DEPT_UPDATE, PERMISSIONS.DEPT_CREATE, PERMISSIONS.DEPT_DELETE]
+                    requiredPermissions: [
+                            PERMISSIONS.DEPT.READ,
+                            PERMISSIONS.DEPT.UPDATE,
+                            PERMISSIONS.DEPT.CREATE,
+                            PERMISSIONS.DEPT.DELETE,
+                            PERMISSIONS.DEPT.CB.READ,
+                            PERMISSIONS.DEPT.CB.UPDATE,
+                            PERMISSIONS.DEPT.CB.CREATE,
+                            PERMISSIONS.DEPT.CB.DELETE
+                    ]
                 },
                 {
                     name: '科別管理',
                     url: '/unit',
-                    requiredPermissions: [PERMISSIONS.UNIT_READ, PERMISSIONS.UNIT_UPDATE, PERMISSIONS.UNIT_CREATE, PERMISSIONS.UNIT_DELETE]
+                    requiredPermissions: [PERMISSIONS.UNIT.READ, PERMISSIONS.UNIT.UPDATE, PERMISSIONS.UNIT.CREATE, PERMISSIONS.UNIT.DELETE]
                 },
                 {
                     name: '職位管理',
                     url: '/position',
-                    requiredPermissions: []
+                    requiredPermissions: [PERMISSIONS.POS.READ, PERMISSIONS.POS.UPDATE, PERMISSIONS.POS.CREATE, PERMISSIONS.POS.DELETE]
                 },
                 {
                     name: '權限管理',
                     url: '/permission',
-                    requiredPermissions: []
+                    requiredPermissions: [PERMISSIONS.PERM.READ, PERMISSIONS.PERM.UPDATE, PERMISSIONS.PERM.CREATE, PERMISSIONS.PERM.DELETE]
                 },
                 {
                     name: '狀態管理',
                     url: '/employee-status',
-                    requiredPermissions: []
+                    requiredPermissions: [PERMISSIONS.STATUS.READ, PERMISSIONS.STATUS.UPDATE, PERMISSIONS.STATUS.CREATE, PERMISSIONS.STATUS.DELETE]
                 },
             ],
             hrItems: [
                 {
                     name: '員工管理',
                     url: '/employee',
-                    requiredPermissions: [] // 所有人都可以看到
+                    // requiredPermissions: [PERMISSIONS.EMP.READ, PERMISSIONS.EMP.UPDATE, PERMISSIONS.EMP.CREATE, PERMISSIONS.EMP.DELETE]
                 },
                 {
                     name: '登入記錄',
                     url: '/loginRecord',
-                    requiredPermissions: [PERMISSIONS.LOGIN_RECORD_READ]
+                    // requiredPermissions: [PERMISSIONS.RECORD.READ]
                 },
             ],
             currentTime: '',

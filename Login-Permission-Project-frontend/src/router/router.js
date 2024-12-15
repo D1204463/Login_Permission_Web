@@ -13,7 +13,7 @@ import Employee from "@/views/HumanResourcesPage/EmployeeView.vue";
 import LoginRecord from "@/views/HumanResourcesPage/LoginRecord.vue";
 
 import store from '@/store';
-import { PERMISSIONS } from "@/utils/jwt";
+import { PERMISSIONS } from '@/constants/permissions';
 
 
 const routes = [
@@ -46,7 +46,8 @@ const routes = [
     {
         path: '/register',
         name: 'Register',
-        component: Register
+        component: Register,
+        meta: { requiresAuth: false }
     },
     {
         path: '/unit',
@@ -54,38 +55,80 @@ const routes = [
         component: Unit,
         meta: {
             requiresAuth: true,
-            // permissions: [
-            //     PERMISSIONS.UNIT_READ,
-            //     PERMISSIONS.UNIT_UPDATE,
-            //     PERMISSIONS.UNIT_CREATE,
-            //     PERMISSIONS.UNIT_DELETE
-            // ]
+            permissions: [
+                PERMISSIONS.UNIT.READ,
+                PERMISSIONS.UNIT.UPDATE,
+                PERMISSIONS.UNIT.CREATE,
+                PERMISSIONS.UNIT.DELETE
+            ]
         }
     },
     {
         path: '/loginRecord',
         name: 'LoginRecordPage',
-        component: LoginRecord
+        component: LoginRecord,
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.RECORD.READ,
+            ]
+        }
     },
     {
         path: '/position',
         name: 'Position',
-        component: Position
+        component: Position,
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.POS.READ,
+                PERMISSIONS.POS.UPDATE,
+                PERMISSIONS.POS.CREATE,
+                PERMISSIONS.POS.DELETE
+            ]
+        }
     },
     {
         path: '/employee',
         name: 'Employee',
         component: Employee,
+        // meta: {
+        //     requiresAuth: true,
+        //     permissions: [
+        //         PERMISSIONS.EMP.READ,
+        //         PERMISSIONS.EMP.UPDATE,
+        //         PERMISSIONS.EMP.CREATE,
+        //         PERMISSIONS.EMP.DELETE
+        //     ]
+        // }
     },
     {
         path: '/permission',
         name: 'Permission',
-        component: Permission
+        component: Permission,
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.PERM.READ,
+                PERMISSIONS.PERM.UPDATE,
+                PERMISSIONS.PERM.CREATE,
+                PERMISSIONS.PERM.DELETE
+            ]
+        }
     },
     {
         path: '/employee-status',
         name: 'EmployeeStatus',
-        component: EmployeeStatusView
+        component: EmployeeStatusView,
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.STATUS.READ,
+                PERMISSIONS.STATUS.UPDATE,
+                PERMISSIONS.STATUS.CREATE,
+                PERMISSIONS.STATUS.DELETE
+            ]
+        }
     },
     {
         path: '/Department',
@@ -93,12 +136,17 @@ const routes = [
         component: Department,
         meta: {
             requiresAuth: true,
-            // permissions: [
-            //     PERMISSIONS.DEPT_READ,
-            //     PERMISSIONS.DEPT_UPDATE,
-            //     PERMISSIONS.DEPT_CREATE,
-            //     PERMISSIONS.DEPT_DELETE
-            // ]
+            permissions: [
+                PERMISSIONS.DEPT.READ,
+                PERMISSIONS.DEPT.UPDATE,
+                PERMISSIONS.DEPT.CREATE,
+                PERMISSIONS.DEPT.DELETE,
+                // 添加消金部權限
+                PERMISSIONS.DEPT.CB.READ,
+                PERMISSIONS.DEPT.CB.UPDATE,
+                PERMISSIONS.DEPT.CB.CREATE,
+                PERMISSIONS.DEPT.CB.DELETE
+            ]
         }
     },
     {
@@ -109,7 +157,16 @@ const routes = [
     {
         path: '/Role',
         name: 'Role',
-        component: RoleView
+        component: RoleView,
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.ROLE.READ,
+                PERMISSIONS.ROLE.UPDATE,
+                PERMISSIONS.ROLE.CREATE,
+                PERMISSIONS.ROLE.DELETE
+            ]
+        }
     },
 
 ]
@@ -141,8 +198,17 @@ router.beforeEach((to, from, next) => {
         return;
     }
 
+    // 如果已認證但沒有權限，嘗試重新獲取
+    // if (isAuthenticated && store.state.auth.userInfo.permissionCode.length === 0) {
+    //     try {
+    //         await store.dispatch('auth/refreshPermissions');
+    //     } catch (error) {
+    //         console.error('Failed to refresh permissions:', error);
+    //     }
+    // }
+
     // 檢查權限
-    if (to.meta.permissions) {
+    if (to.meta.permissions && isAuthenticated) {
         // 使用命名空間的 getter
         const hasRequiredPermission = store.getters['auth/hasAnyPermission'](to.meta.permissions);
         console.log('Permission check:', {
@@ -152,7 +218,8 @@ router.beforeEach((to, from, next) => {
         });
 
         if (!hasRequiredPermission) {
-            next('/403');
+            console.log('Permission denied');
+            next('/403'); // 要有一個 403 頁面
             return;
         }
     }

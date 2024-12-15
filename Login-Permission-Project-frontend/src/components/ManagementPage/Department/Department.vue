@@ -208,7 +208,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 // 添加圖標
 library.add(faPlus, faPenToSquare, faTrashCan, faMagnifyingGlass)
 
-import { PERMISSIONS } from '@/utils/jwt';
+import { PERMISSIONS } from '@/constants/permissions';
 
 export default {
     components: {
@@ -340,16 +340,20 @@ export default {
             });
         },
         canReadDept() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT_READ);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.READ) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.READ);
         },
         canCreateDept() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT_CREATE);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CREATE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.CREATE);
         },
         canUpdateDept() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT_UPDATE);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.UPDATE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.UPDATE);
         },
         canDeleteDept() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT_DELETE);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.DELETE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.DELETE);
         },
     },
 }
