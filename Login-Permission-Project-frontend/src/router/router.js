@@ -158,15 +158,15 @@ const routes = [
         path: '/Role',
         name: 'Role',
         component: RoleView,
-        meta: {
-            requiresAuth: true,
-            permissions: [
-                PERMISSIONS.ROLE.READ,
-                PERMISSIONS.ROLE.UPDATE,
-                PERMISSIONS.ROLE.CREATE,
-                PERMISSIONS.ROLE.DELETE
-            ]
-        }
+        // meta: {
+        //     requiresAuth: true,
+        //     permissions: [
+        //         PERMISSIONS.ROLE.READ,
+        //         PERMISSIONS.ROLE.UPDATE,
+        //         PERMISSIONS.ROLE.CREATE,
+        //         PERMISSIONS.ROLE.DELETE
+        //     ]
+        // }
     },
 
 ]

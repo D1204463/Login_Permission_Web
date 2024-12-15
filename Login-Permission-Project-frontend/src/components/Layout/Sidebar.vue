@@ -49,74 +49,31 @@
                     </li>
 
                     <!-- 管理維護系統 -->
-                    <li class="nav-item w-100">
-                        <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu1')"
-                            :aria-expanded="isSubmenuOpen.submenu1">
-                            <div class="d-flex align-items-center justify-content-between w-100">
-                                <div class="d-flex align-items-center">
-                                    <font-awesome-icon :icon="['fas', 'computer']" size="xl" />
-                                    <span class="ms-3">管理維護系統</span>
+                    <template v-for="(section, key) in sections" :key="key">
+                        <li v-if="visibleSections[key]" class="nav-item w-100">
+                            <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu(section.submenuId)"
+                                :aria-expanded="isSubmenuOpen[section.submenuId]">
+                                <div class="d-flex align-items-center justify-content-between w-100">
+                                    <div class="d-flex align-items-center">
+                                        <font-awesome-icon :icon="section.icon" size="xl" />
+                                        <span class="ms-3">{{ section.title }}</span>
+                                    </div>
+                                    <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs" class="submenu-icon"
+                                        :class="{ 'rotated': isSubmenuOpen[section.submenuId] }" />
                                 </div>
-                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs" class="submenu-icon"
-                                    :class="{ 'rotated': isSubmenuOpen.submenu1 }" />
+                            </a>
+                            <div class="submenu-container" :class="{ 'show': isSubmenuOpen[section.submenuId] }">
+                                <ul class="nav flex-column ms-4 submenu-items">
+                                    <li class="w-100" v-for="item in filteredSectionItems[key]" :key="item.name">
+                                        <router-link :to="item.url" class="submenu-link"
+                                            :class="{ 'active': $route.path === item.url }">
+                                            <span>{{ item.name }}</span>
+                                        </router-link>
+                                    </li>
+                                </ul>
                             </div>
-                        </a>
-                        <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu1 }">
-                            <ul class="nav flex-column ms-4 submenu-items">
-                                <li class="w-100" v-for="item in filteredManagementItems" :key="item.name">
-                                    <router-link :to="item.url" class="submenu-link"
-                                        :class="{ 'active': $route.path === item.url }">
-                                        <span>{{ item.name }}</span>
-                                    </router-link>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-
-                    <!-- 人事管理系統 -->
-                    <li class="nav-item w-100">
-                        <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu2')"
-                            :aria-expanded="isSubmenuOpen.submenu2">
-                            <div class="d-flex align-items-center justify-content-between w-100">
-                                <div class="d-flex align-items-center">
-                                    <font-awesome-icon :icon="['fas', 'people-group']" size="xl" />
-                                    <span class="ms-3">人事管理系統</span>
-                                </div>
-                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs" class="submenu-icon"
-                                    :class="{ 'rotated': isSubmenuOpen.submenu2 }" />
-                            </div>
-                        </a>
-                        <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu2 }">
-                            <ul class="nav flex-column ms-4 submenu-items">
-                                <li class="w-100" v-for="item in filteredHumanResourcesItems" :key="item.name">
-                                    <router-link :to="item.url" class="submenu-link"
-                                        :class="{ 'active': $route.path === item.url }">
-                                        <span>{{ item.name }}</span>
-                                    </router-link>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-
-                    <!-- 會計總帳系統 -->
-                    <li class="nav-item w-100">
-                        <a href="#" class="nav-link menu-link" @click.prevent="toggleSubmenu('submenu3')"
-                            :aria-expanded="isSubmenuOpen.submenu3">
-                            <div class="d-flex align-items-center justify-content-between w-100">
-                                <div class="d-flex align-items-center">
-                                    <font-awesome-icon :icon="['fas', 'piggy-bank']" size="xl" />
-                                    <span class="ms-3">會計總帳系統</span>
-                                </div>
-                                <font-awesome-icon :icon="['fas', 'chevron-down']" size="xs" class="submenu-icon"
-                                    :class="{ 'rotated': isSubmenuOpen.submenu3 }" />
-                            </div>
-                        </a>
-                        <div class="submenu-container" :class="{ 'show': isSubmenuOpen.submenu3 }">
-                            <ul class="nav flex-column ms-4 submenu-items">
-                                <!-- 可以添加會計系統的子選項 -->
-                            </ul>
-                        </div>
-                    </li>
+                        </li>
+                    </template>
                 </ul>
 
                 <!-- Sidebar Footer -->
@@ -161,84 +118,102 @@ export default {
                 submenu2: ['/employee', '/loginRecord'],
                 submenu3: [] // 會計總帳系統
             },
-            managementItems: [
-                {
-                    name: '角色管理',
-                    url: '/role',
-                    requiredPermissions: [] // 所有人都可以看到
-                },
-                {
-                    name: '部門管理',
-                    url: '/Department',
-                    requiredPermissions: [
-                        PERMISSIONS.DEPT.READ,
-                        PERMISSIONS.DEPT.UPDATE,
-                        PERMISSIONS.DEPT.CREATE,
-                        PERMISSIONS.DEPT.DELETE,
-                        PERMISSIONS.DEPT.CB.READ,
-                        PERMISSIONS.DEPT.CB.UPDATE,
-                        PERMISSIONS.DEPT.CB.CREATE,
-                        PERMISSIONS.DEPT.CB.DELETE
+            sections: {
+                management: {
+                    title: '管理維護系統',
+                    icon: ['fas', 'computer'],
+                    submenuId: 'submenu1',
+                    items: [
+                        {
+                            name: '角色管理',
+                            url: '/role',
+                            requiredPermissions: []
+                        },
+                        {
+                            name: '部門管理',
+                            url: '/Department',
+                            requiredPermissions: [
+                                PERMISSIONS.DEPT.READ,
+                                PERMISSIONS.DEPT.UPDATE,
+                                PERMISSIONS.DEPT.CREATE,
+                                PERMISSIONS.DEPT.DELETE,
+                                PERMISSIONS.DEPT.CB.READ,
+                                PERMISSIONS.DEPT.CB.UPDATE,
+                                PERMISSIONS.DEPT.CB.CREATE,
+                                PERMISSIONS.DEPT.CB.DELETE
+                            ]
+                        },
+                        {
+                            name: '科別管理',
+                            url: '/unit',
+                            requiredPermissions: [
+                                PERMISSIONS.UNIT.READ,
+                                PERMISSIONS.UNIT.UPDATE,
+                                PERMISSIONS.UNIT.CREATE,
+                                PERMISSIONS.UNIT.DELETE
+                            ]
+                        },
+                        {
+                            name: '職位管理',
+                            url: '/position',
+                            requiredPermissions: [
+                                PERMISSIONS.POS.READ,
+                                PERMISSIONS.POS.UPDATE,
+                                PERMISSIONS.POS.CREATE,
+                                PERMISSIONS.POS.DELETE
+                            ]
+                        },
+                        {
+                            name: '權限管理',
+                            url: '/permission',
+                            requiredPermissions: [
+                                PERMISSIONS.PERM.READ,
+                                PERMISSIONS.PERM.UPDATE,
+                                PERMISSIONS.PERM.CREATE,
+                                PERMISSIONS.PERM.DELETE
+                            ]
+                        },
+                        {
+                            name: '狀態管理',
+                            url: '/employee-status',
+                            requiredPermissions: [
+                                PERMISSIONS.STATUS.READ,
+                                PERMISSIONS.STATUS.UPDATE,
+                                PERMISSIONS.STATUS.CREATE,
+                                PERMISSIONS.STATUS.DELETE
+                            ]
+                        },
                     ]
                 },
-                {
-                    name: '科別管理',
-                    url: '/unit',
-                    requiredPermissions: [
-                        PERMISSIONS.UNIT.READ, 
-                        PERMISSIONS.UNIT.UPDATE, 
-                        PERMISSIONS.UNIT.CREATE, 
-                        PERMISSIONS.UNIT.DELETE
+                hr: {
+                    title: '人事管理系統',
+                    icon: ['fas', 'people-group'],
+                    submenuId: 'submenu2',
+                    items: [
+                        {
+                            name: '員工管理',
+                            url: '/employee',
+                            requiredPermissions: [
+                                PERMISSIONS.EMP.READ,
+                                PERMISSIONS.EMP.UPDATE,
+                                PERMISSIONS.EMP.CREATE,
+                                PERMISSIONS.EMP.DELETE
+                            ]
+                        },
+                        {
+                            name: '登入記錄',
+                            url: '/loginRecord',
+                            requiredPermissions: [PERMISSIONS.RECORD.READ]
+                        }
                     ]
                 },
-                {
-                    name: '職位管理',
-                    url: '/position',
-                    requiredPermissions: [
-                        PERMISSIONS.POS.READ, 
-                        PERMISSIONS.POS.UPDATE, 
-                        PERMISSIONS.POS.CREATE, 
-                        PERMISSIONS.POS.DELETE
-                    ]
-                },
-                {
-                    name: '權限管理',
-                    url: '/permission',
-                    requiredPermissions: [
-                        PERMISSIONS.PERM.READ, 
-                        PERMISSIONS.PERM.UPDATE, 
-                        PERMISSIONS.PERM.CREATE, 
-                        PERMISSIONS.PERM.DELETE
-                    ]
-                },
-                {
-                    name: '狀態管理',
-                    url: '/employee-status',
-                    requiredPermissions: [
-                        PERMISSIONS.STATUS.READ, 
-                        PERMISSIONS.STATUS.UPDATE, 
-                        PERMISSIONS.STATUS.CREATE, 
-                        PERMISSIONS.STATUS.DELETE
-                    ]
-                },
-            ],
-            hrItems: [
-                {
-                    name: '員工管理',
-                    url: '/employee',
-                    requiredPermissions: [
-                        PERMISSIONS.EMP.READ, 
-                        PERMISSIONS.EMP.UPDATE, 
-                        PERMISSIONS.EMP.CREATE, 
-                        PERMISSIONS.EMP.DELETE
-                    ]
-                },
-                {
-                    name: '登入記錄',
-                    url: '/loginRecord',
-                    requiredPermissions: [PERMISSIONS.RECORD.READ]
-                },
-            ],
+                accounting: {
+                    title: '會計總帳系統',
+                    icon: ['fas', 'piggy-bank'],
+                    submenuId: 'submenu3',
+                    items: []
+                }
+            },
             currentTime: '',
             currentDate: '',
             timer: null, // 保存計時器 ID
@@ -276,6 +251,36 @@ export default {
                 return this.hasAnyPermission(item.requiredPermissions);
             });
         },
+        // 確定每個部分是否應該顯示
+        visibleSections() {
+            const result = {};
+
+            Object.entries(this.sections).forEach(([key, section]) => {
+                // 檢查該部分是否有任何可見的項目
+                const hasVisibleItems = section.items.some(item => {
+                    // 如果項目沒有必要權限，或用戶有任一必要權限，則項目可見
+                    return !item.requiredPermissions.length ||
+                        this.hasAnyPermission(item.requiredPermissions);
+                });
+
+                result[key] = hasVisibleItems;
+            });
+
+            return result;
+        },
+        // 為每個部分提供過濾後的項目
+        filteredSectionItems() {
+            const result = {};
+
+            Object.entries(this.sections).forEach(([key, section]) => {
+                result[key] = section.items.filter(item => {
+                    return !item.requiredPermissions.length ||
+                        this.hasAnyPermission(item.requiredPermissions);
+                });
+            });
+
+            return result;
+        }
     },
 
     methods: {
