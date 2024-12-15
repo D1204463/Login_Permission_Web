@@ -142,7 +142,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import { PERMISSIONS } from '@/constants/permissions';
-import { parseJwt } from '@/utils/jwt'
 
 export default {
     name: 'MyComponent',
@@ -172,47 +171,72 @@ export default {
                     name: '部門管理',
                     url: '/Department',
                     requiredPermissions: [
-                            PERMISSIONS.DEPT.READ,
-                            PERMISSIONS.DEPT.UPDATE,
-                            PERMISSIONS.DEPT.CREATE,
-                            PERMISSIONS.DEPT.DELETE,
-                            PERMISSIONS.DEPT.CB.READ,
-                            PERMISSIONS.DEPT.CB.UPDATE,
-                            PERMISSIONS.DEPT.CB.CREATE,
-                            PERMISSIONS.DEPT.CB.DELETE
+                        PERMISSIONS.DEPT.READ,
+                        PERMISSIONS.DEPT.UPDATE,
+                        PERMISSIONS.DEPT.CREATE,
+                        PERMISSIONS.DEPT.DELETE,
+                        PERMISSIONS.DEPT.CB.READ,
+                        PERMISSIONS.DEPT.CB.UPDATE,
+                        PERMISSIONS.DEPT.CB.CREATE,
+                        PERMISSIONS.DEPT.CB.DELETE
                     ]
                 },
                 {
                     name: '科別管理',
                     url: '/unit',
-                    requiredPermissions: [PERMISSIONS.UNIT.READ, PERMISSIONS.UNIT.UPDATE, PERMISSIONS.UNIT.CREATE, PERMISSIONS.UNIT.DELETE]
+                    requiredPermissions: [
+                        PERMISSIONS.UNIT.READ, 
+                        PERMISSIONS.UNIT.UPDATE, 
+                        PERMISSIONS.UNIT.CREATE, 
+                        PERMISSIONS.UNIT.DELETE
+                    ]
                 },
                 {
                     name: '職位管理',
                     url: '/position',
-                    requiredPermissions: [PERMISSIONS.POS.READ, PERMISSIONS.POS.UPDATE, PERMISSIONS.POS.CREATE, PERMISSIONS.POS.DELETE]
+                    requiredPermissions: [
+                        PERMISSIONS.POS.READ, 
+                        PERMISSIONS.POS.UPDATE, 
+                        PERMISSIONS.POS.CREATE, 
+                        PERMISSIONS.POS.DELETE
+                    ]
                 },
                 {
                     name: '權限管理',
                     url: '/permission',
-                    requiredPermissions: [PERMISSIONS.PERM.READ, PERMISSIONS.PERM.UPDATE, PERMISSIONS.PERM.CREATE, PERMISSIONS.PERM.DELETE]
+                    requiredPermissions: [
+                        PERMISSIONS.PERM.READ, 
+                        PERMISSIONS.PERM.UPDATE, 
+                        PERMISSIONS.PERM.CREATE, 
+                        PERMISSIONS.PERM.DELETE
+                    ]
                 },
                 {
                     name: '狀態管理',
                     url: '/employee-status',
-                    requiredPermissions: [PERMISSIONS.STATUS.READ, PERMISSIONS.STATUS.UPDATE, PERMISSIONS.STATUS.CREATE, PERMISSIONS.STATUS.DELETE]
+                    requiredPermissions: [
+                        PERMISSIONS.STATUS.READ, 
+                        PERMISSIONS.STATUS.UPDATE, 
+                        PERMISSIONS.STATUS.CREATE, 
+                        PERMISSIONS.STATUS.DELETE
+                    ]
                 },
             ],
             hrItems: [
                 {
                     name: '員工管理',
                     url: '/employee',
-                    // requiredPermissions: [PERMISSIONS.EMP.READ, PERMISSIONS.EMP.UPDATE, PERMISSIONS.EMP.CREATE, PERMISSIONS.EMP.DELETE]
+                    requiredPermissions: [
+                        PERMISSIONS.EMP.READ, 
+                        PERMISSIONS.EMP.UPDATE, 
+                        PERMISSIONS.EMP.CREATE, 
+                        PERMISSIONS.EMP.DELETE
+                    ]
                 },
                 {
                     name: '登入記錄',
                     url: '/loginRecord',
-                    // requiredPermissions: [PERMISSIONS.RECORD.READ]
+                    requiredPermissions: [PERMISSIONS.RECORD.READ]
                 },
             ],
             currentTime: '',
@@ -311,16 +335,16 @@ export default {
             // 使用 Vuex 的 getter
             return this.hasAnyPermission(item.requiredPermissions);
         },
-        initializeUserPermissions() {  //在組件掛載時從 JWT 獲取權限
-            const token = localStorage.getItem("JWT_Token");
-            if (token) {
-                const decodedToken = parseJwt(token);
-                if (decodedToken && decodedToken.permissionCode) {
-                    // 同步到 Vuex store
-                    this.$store.dispatch('auth/setPermissions', decodedToken.permissionCode);
-                    console.log('JWT Token permissions:', decodedToken.permissionCode);
-                    console.log('Current Vuex userPermissions:', this.userPermissions);
+        async initializeUserPermissions() {
+            if (!this.userPermissions || this.userPermissions.length === 0) {
+                try {
+                    const permissions = await this.$store.dispatch('auth/refreshPermissions');
+                    console.log('Permissions refreshed:', permissions);
+                } catch (error) {
+                    console.error('Failed to initialize permissions:', error);
                 }
+            } else {
+                console.log('Using existing permissions:', this.userPermissions);
             }
         },
         async logout() {
@@ -338,7 +362,7 @@ export default {
     beforeUnmount() {
         document.removeEventListener('click', this.closeDropdown);
         clearInterval(this.timer); // 清除計時器
-    }
+    },
 }
 </script>
 

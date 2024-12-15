@@ -4,6 +4,8 @@ import { login } from "../../utils/loginUtils.js";
 import { handleError } from "../../utils/handleError.js";
 import { getPermissions } from '../../utils/permissionUtils.js';
 import { getEmployeeIdInfo } from '../../utils/EmployeeInfo.js';
+import { PERMISSIONS } from '../../constants/permissions.js';
+
 
 export default {
     namespaced: true, // 添加命名空間
@@ -126,8 +128,13 @@ export default {
                             getPermissions(token, userId),
                             getEmployeeIdInfo(token, userId)
                         ]);
-                        commit('setPermissions', permissions.data || []);
-                        // 確保只在有資料時更新
+                        // 儲存權限到 Vuex
+                        if (permissions && permissions.data) {
+                            commit('setPermissions', permissions.data);
+                            console.log('Permissions set in Vuex:', permissions.data);
+                        }
+
+                        // 更新員工資訊
                         if (employeeResponse && employeeResponse.data) {
                             commit('updateUserInfo', employeeResponse.data);
                         }
@@ -161,9 +168,11 @@ export default {
                 throw new Error('No user ID found');
             }
             try {
-                const permissions = await getPermissions(token, userId);
-                commit('setPermissions', permissions);
-                return permissions;
+                const response = await getPermissions(token, userId);
+                if (response && response.data) {
+                    commit('setPermissions', response.data);
+                    return response.data;
+                }
             } catch (error) {
                 console.log("更新權限失敗:", error);
                 throw error;
