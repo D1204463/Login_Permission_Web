@@ -201,9 +201,7 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap'
+import { ref, onMounted, computed } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -213,6 +211,9 @@ import {
     faMagnifyingGlass,
     faRotate
 } from '@fortawesome/free-solid-svg-icons';
+import { roleService } from '@/services/api';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap';
 
 library.add(
     faPlus,
@@ -226,195 +227,197 @@ export default {
     components: {
         FontAwesomeIcon
     },
-    data() {
-        return {
-            // 角色管理相關數據
-            newRole: {
+    setup() {
+        // 響應式狀態
+        const roles = ref([]);
+        const availablePermissions = ref([]);
+        const isLoading = ref(false);
+        const errorMessage = ref('');
+        
+        // 搜索條件
+        const searchByRoleId = ref('');
+        const searchByRoleName = ref('');
+        const searchByRoleDepartment = ref('');
+        
+        // 表單數據
+        const newRole = ref({
+            name: '',
+            department: '',
+            permissions: []
+        });
+        const selectedRole = ref(null);
+        const roleToDelete = ref(null);
+
+        // 初始化數據
+        const initializeData = async () => {
+            try {
+                isLoading.value = true;
+                const [rolesData, permissionsData] = await Promise.all([
+                    roleService.getAllRoles(),
+                    roleService.getAllPermissions()
+                ]);
+                roles.value = rolesData;
+                availablePermissions.value = permissionsData;
+            } catch (error) {
+                console.error('Failed to initialize data:', error);
+                errorMessage.value = '載入數據失敗';
+            } finally {
+                isLoading.value = false;
+            }
+        };
+
+        // 重置搜索
+        const resetSearch = () => {
+            searchByRoleId.value = '';
+            searchByRoleName.value = '';
+            searchByRoleDepartment.value = '';
+        };
+
+        // 添加角色
+        const addRole = async () => {
+            try {
+                isLoading.value = true;
+                const response = await roleService.createRole(newRole.value);
+                roles.value.push(response);
+                resetNewRole();
+            } catch (error) {
+                console.error('Failed to add role:', error);
+                errorMessage.value = '新增角色失敗';
+            } finally {
+                isLoading.value = false;
+            }
+        };
+
+        // 更新角色
+        const updateRole = async () => {
+            if (!selectedRole.value) return;
+            
+            try {
+                isLoading.value = true;
+                const updatedRole = await roleService.updateRole(
+                    selectedRole.value.id,
+                    selectedRole.value
+                );
+                const index = roles.value.findIndex(r => r.id === updatedRole.id);
+                if (index !== -1) {
+                    roles.value[index] = updatedRole;
+                }
+                selectedRole.value = null;
+            } catch (error) {
+                console.error('Failed to update role:', error);
+                errorMessage.value = '更新角色失敗';
+            } finally {
+                isLoading.value = false;
+            }
+        };
+
+        // 刪除角色
+        const deleteRole = async () => {
+            if (!roleToDelete.value) return;
+            
+            try {
+                isLoading.value = true;
+                await roleService.deleteRole(roleToDelete.value);
+                roles.value = roles.value.filter(r => r.id !== roleToDelete.value);
+                roleToDelete.value = null;
+            } catch (error) {
+                console.error('Failed to delete role:', error);
+                errorMessage.value = '刪除角色失敗';
+            } finally {
+                isLoading.value = false;
+            }
+        };
+
+        // 重置新角色表單
+        const resetNewRole = () => {
+            newRole.value = {
                 name: '',
                 department: '',
                 permissions: []
-            },
-            selectedRole: null,
-            roleToDelete: null,
-            availablePermissions: [
-                '系統設定',
-                '用戶管理',
-                '權限管理',
-                '日誌查詢',
-                '客戶管理',
-                '業務報表',
-                '績效查看',
-                '帳務處理',
-                '報表查詢',
-                '員工資料管理',
-                '考勤管理',
-                '客訴處理',
-                '服務品質管理',
-                '活動管理',
-                '數據分析',
-                '程式開發',
-                '測試管理',
-                '品質檢測',
-                '異常通報',
-                '採購管理',
-                '供應商管理',
-                '庫存管理',
-                '出貨管理'
-            ],
-            // 角色管理数据
-            searchByRoleId: '',
-            searchByRoleName: '',
-            searchByRoleDepartment: '',
-            roles: [
-                {
-                    id: 'R001',
-                    name: '系統管理人員',
-                    department: '資訊部',
-                    permissions: ['系統設定', '用戶管理', '權限管理', '日誌查詢']
-                },
-                {
-                    id: 'R002',
-                    name: '業務主管',
-                    department: '業務部',
-                    permissions: ['客戶管理', '業務報表', '績效查看']
-                },
-                {
-                    id: 'R003',
-                    name: '財務專員',
-                    department: '財務部',
-                    permissions: ['帳務處理', '報表查詢']
-                },
-                {
-                    id: 'R004',
-                    name: '人資專員',
-                    department: '人資部',
-                    permissions: ['員工資料管理', '考勤管理']
-                },
-                {
-                    id: 'R005',
-                    name: '客服主管',
-                    department: '客服部',
-                    permissions: ['客訴處理', '服務品質管理']
-                },
-                {
-                    id: 'R006',
-                    name: '行銷專員',
-                    department: '行銷部',
-                    permissions: ['活動管理', '數據分析']
-                },
-                {
-                    id: 'R007',
-                    name: '研發工程師',
-                    department: '研發部',
-                    permissions: ['程式開發', '測試管理']
-                },
-                {
-                    id: 'R008',
-                    name: '品管專員',
-                    department: '品管部',
-                    permissions: ['品質檢測', '異常通報']
-                },
-                {
-                    id: 'R009',
-                    name: '採購專員',
-                    department: '採購部',
-                    permissions: ['採購管理', '供應商管理']
-                },
-                {
-                    id: 'R010',
-                    name: '倉管人員',
-                    department: '物流部',
-                    permissions: ['庫存管理', '出貨管理']
-                }
-            ]
+            };
         };
-    },
-    computed: {
-        // 角色管理的計算屬性
-        roleDepartments() {
-            return [...new Set(this.roles.map(role => role.department))];
-        },
-        filteredRoles() {
-            return this.roles.filter(role => {
-                const roleIdMatch = role.id.toLowerCase().includes(this.searchByRoleId.toLowerCase());
-                const roleNameMatch = role.name.toLowerCase().includes(this.searchByRoleName.toLowerCase());
-                const departmentMatch = !this.searchByRoleDepartment || role.department === this.searchByRoleDepartment;
+
+        // 編輯角色
+        const onEditRole = (role) => {
+            selectedRole.value = { ...role };
+        };
+
+        // 準備刪除角色
+        const onDeleteRole = (roleId) => {
+            roleToDelete.value = roleId;
+        };
+
+        // 計算屬性
+        const roleDepartments = computed(() => {
+            // 確保 roles.value 是陣列
+            console.log(roles.value)
+            if (!Array.isArray(roles.value)) {
+                console.warn('roles.value is not an array:', roles.value);
+                return [];
+            }
+            return [...new Set(roles.value.map(role => role.department))];
+        });
+
+        const filteredRoles = computed(() => {
+            return roles.value.filter(role => {
+                const roleIdMatch = role.id.toLowerCase().includes(searchByRoleId.value.toLowerCase());
+                const roleNameMatch = role.name.toLowerCase().includes(searchByRoleName.value.toLowerCase());
+                const departmentMatch = !searchByRoleDepartment.value || role.department === searchByRoleDepartment.value;
                 return roleIdMatch && roleNameMatch && departmentMatch;
             });
-        }
-    },
-    methods: {
-        resetSearch() {
-            this.searchByRoleId = "";
-            this.searchByRoleName = "";
-            this.searchByRoleDepartment = "";
-        },
-
-        addRole() {
-            // 生成新的角色 ID
-            const newId = 'R' + String(this.roles.length + 1).padStart(3, '0');
-
-            const role = {
-                id: newId,
-                name: this.newRole.name,
-                department: this.newRole.department,
-                permissions: [...this.newRole.permissions]
-            };
-
-            this.roles.push(role);
-            this.resetNewRole();
-        },
-
-        updateRole() {
-            const index = this.roles.findIndex(r => r.id === this.selectedRole.id);
-            if (index !== -1) {
-                this.roles[index] = { ...this.selectedRole };
-            }
-            this.selectedRole = null;
-        },
-
-        deleteRole() {
-            if (this.roleToDelete) {
-                const index = this.roles.findIndex(r => r.id === this.roleToDelete);
-                if (index !== -1) {
-                    this.roles.splice(index, 1);
-                }
-                this.closeModal('deleteRoleModal');
-                this.roleToDelete = null;
-            }
-        },
-
-        resetNewRole() {
-            this.newRole = {
-                name: '',
-                department: '',
-                permissions: []
-            };
-        },
-
-        onEditRole(role) {
-            this.selectedRole = { ...role };
-        },
-
-        onDeleteRole(roleId) {
-            this.roleToDelete = roleId;
-        }
-    },
-    mounted() {
-        // 監聽 modal 的顯示和隱藏
-        const modals = ['createRoleModal', 'editRoleModal', 'deleteRoleModal'];
-        modals.forEach(modalId => {
-            const modalElement = document.getElementById(modalId);
-            if (modalElement) {
-                modalElement.addEventListener('show.bs.modal', () => {
-                    modalElement.removeAttribute('inert');
-                });
-                modalElement.addEventListener('hidden.bs.modal', () => {
-                    modalElement.setAttribute('inert', '');
-                });
-            }
         });
-    },
+
+        // 生命週期掛載
+        onMounted(() => {
+            initializeData();
+            
+            // 監聽 modal 的顯示和隱藏
+            const modals = ['createRoleModal', 'editRoleModal', 'deleteRoleModal'];
+            modals.forEach(modalId => {
+                const modalElement = document.getElementById(modalId);
+                if (modalElement) {
+                    modalElement.addEventListener('show.bs.modal', () => {
+                        modalElement.removeAttribute('inert');
+                    });
+                    modalElement.addEventListener('hidden.bs.modal', () => {
+                        modalElement.setAttribute('inert', '');
+                    });
+                }
+            });
+        });
+
+        // 返回要在模板中使用的屬性和方法
+        return {
+            // 狀態
+            roles,
+            availablePermissions,
+            isLoading,
+            errorMessage,
+            
+            // 搜索相關
+            searchByRoleId,
+            searchByRoleName,
+            searchByRoleDepartment,
+            
+            // 表單數據
+            newRole,
+            selectedRole,
+            roleToDelete,
+            
+            // 計算屬性
+            roleDepartments,
+            filteredRoles,
+            
+            // 方法
+            resetSearch,
+            addRole,
+            updateRole,
+            deleteRole,
+            resetNewRole,
+            onEditRole,
+            onDeleteRole
+        };
+    }
 };
 </script>
 
