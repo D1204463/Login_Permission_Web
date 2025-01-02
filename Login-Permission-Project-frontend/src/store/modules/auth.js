@@ -2,7 +2,6 @@ import { parseJwt } from '../../utils/jwt';
 import { getLoginRecord } from "../../utils/loginRecordUtils.js";
 import { login } from "../../utils/loginUtils.js";
 import { handleError } from "../../utils/handleError.js";
-import { getPermissions } from '../../utils/permissionUtils.js';
 import { getEmployeeIdInfo } from '../../utils/EmployeeInfo.js';
 import { PERMISSIONS } from '../../constants/permissions.js';
 
@@ -40,6 +39,7 @@ export default {
                     loginRecordId: user.loginRecordId,
                     userStatusId: user.userStatusId,
                     permissionCode: Array.isArray(user.permissionCode) ? user.permissionCode : [], // 確保是陣列
+                    roles: Array.isArray(user.roles) ? user.roles : [],
                 };
                 state.isAuthenticated = true;
             } else {
@@ -57,6 +57,11 @@ export default {
                 userStatusId: employeeData.status_id,
                 employeeStatus: employeeData.employeeStatus.name,
                 roles: employeeData.roles,
+                // 從員工角色中提取所有權限碼
+                permissionCode: employeeData.roles.reduce((acc, role) => {
+                    const permissions = role.permissions.map(p => p.permission_code);
+                    return [...acc, ...permissions];
+                }, [])
             };
         },
         setFailRecordMessage(state, message) {
@@ -123,30 +128,20 @@ export default {
                     const userId = userData.sub;  // sub 是 userId
                     // 登入成功後，使用 userId 立即獲取權限
                     try {
-                        // 並行獲取權限和員工資訊
-                        const [permissions, employeeResponse] = await Promise.all([
-                            getPermissions(token, userId),
-                            getEmployeeIdInfo(token, userId)
-                        ]);
-                        // 儲存權限到 Vuex
-                        if (permissions && permissions.data) {
-                            commit('setPermissions', permissions.data);
-                            console.log('Permissions set in Vuex:', permissions.data);
-                        }
+                        // 獲取員工資訊
+                        const employeeResponse = await getEmployeeIdInfo(token, userId);
 
-                        // 更新員工資訊
+                        // 更新員工資訊，包括權限
                         if (employeeResponse && employeeResponse.data) {
                             commit('updateUserInfo', employeeResponse.data);
+                            console.log('User info updated successfully:', employeeResponse.data);
                         }
 
-                        console.log('Permissions fetched successfully:', permissions.data);
-                        console.log('User info updated successfully:', employeeResponse.data);
-
-                        // 只有在權限加載完成後才返回成功
+                        // 只有在資訊加載完成後才返回成功
                         return { success: true, message: "登錄成功，權限加載完成" };
-                    } catch (permError) {
-                        console.log("獲取權限失敗:", permError);
-                        throw permError;
+                    } catch (error) {
+                        console.log("獲取員工資訊失敗:", error);
+                        throw error;
                     }
                 } else {
                     let errorMessage = await handleError(response);
@@ -155,27 +150,6 @@ export default {
             } catch (error) {
                 console.error("登錄請求失敗:", error);
                 return { success: false, message: "登錄失敗，請檢查網路是否連線正常" };
-            }
-        },
-        async refreshPermissions({ state, commit }) {
-            const token = localStorage.getItem('JWT_Token');
-            if (!token) {
-                throw new Error('No token found');
-            }
-
-            const userId = state.userInfo.userId;
-            if (!userId) {
-                throw new Error('No user ID found');
-            }
-            try {
-                const response = await getPermissions(token, userId);
-                if (response && response.data) {
-                    commit('setPermissions', response.data);
-                    return response.data;
-                }
-            } catch (error) {
-                console.log("更新權限失敗:", error);
-                throw error;
             }
         },
         async logout({ commit }) {

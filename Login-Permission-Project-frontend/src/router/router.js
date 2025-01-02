@@ -53,40 +53,40 @@ const routes = [
         path: '/unit',
         name: 'Unit',
         component: Unit,
-        meta: {
-            requiresAuth: true,
-            permissions: [
-                PERMISSIONS.UNIT.READ,
-                PERMISSIONS.UNIT.UPDATE,
-                PERMISSIONS.UNIT.CREATE,
-                PERMISSIONS.UNIT.DELETE
-            ]
-        }
+        // meta: {
+        //     requiresAuth: true,
+        //     permissions: [
+        //         PERMISSIONS.UNIT.READ,
+        //         PERMISSIONS.UNIT.UPDATE,
+        //         PERMISSIONS.UNIT.CREATE,
+        //         PERMISSIONS.UNIT.DELETE
+        //     ]
+        // }
     },
     {
         path: '/loginRecord',
         name: 'LoginRecordPage',
         component: LoginRecord,
-        meta: {
-            requiresAuth: true,
-            permissions: [
-                PERMISSIONS.RECORD.READ,
-            ]
-        }
+        // meta: {
+        //     requiresAuth: true,
+        //     permissions: [
+        //         PERMISSIONS.RECORD.READ,
+        //     ]
+        // }
     },
     {
         path: '/position',
         name: 'Position',
         component: Position,
-        meta: {
-            requiresAuth: true,
-            permissions: [
-                PERMISSIONS.POS.READ,
-                PERMISSIONS.POS.UPDATE,
-                PERMISSIONS.POS.CREATE,
-                PERMISSIONS.POS.DELETE
-            ]
-        }
+        // meta: {
+        //     requiresAuth: true,
+        //     permissions: [
+        //         PERMISSIONS.POS.READ,
+        //         PERMISSIONS.POS.UPDATE,
+        //         PERMISSIONS.POS.CREATE,
+        //         PERMISSIONS.POS.DELETE
+        //     ]
+        // }
     },
     {
         path: '/employee',
@@ -106,48 +106,48 @@ const routes = [
         path: '/permission',
         name: 'Permission',
         component: Permission,
-        meta: {
-            requiresAuth: true,
-            permissions: [
-                PERMISSIONS.PERM.READ,
-                PERMISSIONS.PERM.UPDATE,
-                PERMISSIONS.PERM.CREATE,
-                PERMISSIONS.PERM.DELETE
-            ]
-        }
+        // meta: {
+        //     requiresAuth: true,
+        //     permissions: [
+        //         PERMISSIONS.PERM.READ,
+        //         PERMISSIONS.PERM.UPDATE,
+        //         PERMISSIONS.PERM.CREATE,
+        //         PERMISSIONS.PERM.DELETE
+        //     ]
+        // }
     },
     {
         path: '/employee-status',
         name: 'EmployeeStatus',
         component: EmployeeStatusView,
-        meta: {
-            requiresAuth: true,
-            permissions: [
-                PERMISSIONS.STATUS.READ,
-                PERMISSIONS.STATUS.UPDATE,
-                PERMISSIONS.STATUS.CREATE,
-                PERMISSIONS.STATUS.DELETE
-            ]
-        }
+        // meta: {
+        //     requiresAuth: true,
+        //     permissions: [
+        //         PERMISSIONS.STATUS.READ,
+        //         PERMISSIONS.STATUS.UPDATE,
+        //         PERMISSIONS.STATUS.CREATE,
+        //         PERMISSIONS.STATUS.DELETE
+        //     ]
+        // }
     },
     {
         path: '/Department',
         name: 'Department',
         component: Department,
-        meta: {
-            requiresAuth: true,
-            permissions: [
-                PERMISSIONS.DEPT.READ,
-                PERMISSIONS.DEPT.UPDATE,
-                PERMISSIONS.DEPT.CREATE,
-                PERMISSIONS.DEPT.DELETE,
-                // 添加消金部權限
-                PERMISSIONS.DEPT.CB.READ,
-                PERMISSIONS.DEPT.CB.UPDATE,
-                PERMISSIONS.DEPT.CB.CREATE,
-                PERMISSIONS.DEPT.CB.DELETE
-            ]
-        }
+        // meta: {
+        //     requiresAuth: true,
+        //     permissions: [
+        //         PERMISSIONS.DEPT.READ,
+        //         PERMISSIONS.DEPT.UPDATE,
+        //         PERMISSIONS.DEPT.CREATE,
+        //         PERMISSIONS.DEPT.DELETE,
+        //         // 添加消金部權限
+        //         PERMISSIONS.DEPT.CB.READ,
+        //         PERMISSIONS.DEPT.CB.UPDATE,
+        //         PERMISSIONS.DEPT.CB.CREATE,
+        //         PERMISSIONS.DEPT.CB.DELETE
+        //     ]
+        // }
     },
     {
         path: '/Profile',

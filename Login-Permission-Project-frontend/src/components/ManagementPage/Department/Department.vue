@@ -242,7 +242,8 @@ export default {
                 const token = localStorage.getItem('JWT_Token');
                 let response = await fetch("http://localhost:8085/department/test/get", {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
                 const data = await response.json();
@@ -339,22 +340,22 @@ export default {
                 );
             });
         },
-        canReadDept() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.READ) ||
-                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.READ);
-        },
-        canCreateDept() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CREATE) ||
-                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.CREATE);
-        },
-        canUpdateDept() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.UPDATE) ||
-                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.UPDATE);
-        },
-        canDeleteDept() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.DELETE) ||
-                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.DELETE);
-        },
+        // canReadDept() {
+        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.READ) ||
+        //         this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.READ);
+        // },
+        // canCreateDept() {
+        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CREATE) ||
+        //         this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.CREATE);
+        // },
+        // canUpdateDept() {
+        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.UPDATE) ||
+        //         this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.UPDATE);
+        // },
+        // canDeleteDept() {
+        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.DELETE) ||
+        //         this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.DELETE);
+        // },
     },
 }
 </script>
