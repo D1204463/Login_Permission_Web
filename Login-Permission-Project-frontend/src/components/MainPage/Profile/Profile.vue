@@ -91,32 +91,59 @@
       </div>
 
       <!-- 登入紀錄表格 -->
+<!--      <div class="card-body pb-4">-->
+<!--        <div class="table-responsive">-->
+<!--          <table class="table table-hover login-record-table">-->
+<!--            <thead>-->
+<!--              <tr>-->
+<!--                <th class="text-center" style="width: 30%">登入時間</th>-->
+<!--                <th class="text-center" style="width: 30%">登出時間</th>-->
+<!--                <th class="text-center" style="width: 25%">IP位址</th>-->
+<!--                <th class="text-center" style="width: 15%">狀態</th>-->
+<!--              </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--              <tr v-for="record in loginRecords" :key="record.record_id">-->
+<!--                <td class="text-center">{{ record.login_time }}</td>-->
+<!--                <td class="text-center">{{ record.logout_time || '-' }}</td>-->
+<!--                <td class="text-center">{{ record.ip_address }}</td>-->
+<!--                <td class="text-center">-->
+<!--                  <span class="status-badge" :class="record.status === 'success' ? 'success' : 'error'">-->
+<!--                    {{ record.status === 'success' ? '成功' : '失敗' }}-->
+<!--                  </span>-->
+<!--                </td>-->
+<!--              </tr>-->
+<!--            </tbody>-->
+<!--          </table>-->
+<!--        </div>-->
+<!--      </div>-->
       <div class="card-body pb-4">
-        <div class="table-responsive">
+        <div class="table-responsive login-record-container">
           <table class="table table-hover login-record-table">
             <thead>
-              <tr>
-                <th class="text-center" style="width: 30%">登入時間</th>
-                <th class="text-center" style="width: 30%">登出時間</th>
-                <th class="text-center" style="width: 25%">IP位址</th>
-                <th class="text-center" style="width: 15%">狀態</th>
-              </tr>
+            <tr>
+              <th class="text-center" style="width: 30%">登入時間</th>
+              <th class="text-center" style="width: 30%">登出時間</th>
+              <th class="text-center" style="width: 25%">IP位址</th>
+              <th class="text-center" style="width: 15%">狀態</th>
+            </tr>
             </thead>
             <tbody>
-              <tr v-for="record in loginRecords" :key="record.record_id">
-                <td class="text-center">{{ record.login_time }}</td>
-                <td class="text-center">{{ record.logout_time || '-' }}</td>
-                <td class="text-center">{{ record.ip_address }}</td>
-                <td class="text-center">
-                  <span class="status-badge" :class="record.status === 'success' ? 'success' : 'error'">
-                    {{ record.status === 'success' ? '成功' : '失敗' }}
-                  </span>
-                </td>
-              </tr>
+            <tr v-for="record in loginRecords" :key="record.record_id">
+              <td class="text-center">{{ record.login_time }}</td>
+              <td class="text-center">{{ record.logout_time || '-' }}</td>
+              <td class="text-center">{{ record.ip_address }}</td>
+              <td class="text-center">
+            <span class="status-badge" :class="record.status === 'success' ? 'success' : 'error'">
+              {{ record.status === 'success' ? '成功' : '失敗' }}
+            </span>
+              </td>
+            </tr>
             </tbody>
           </table>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -138,7 +165,7 @@ export default {
     const userPhone = computed(() => store.state.auth.userInfo.userPhone);
     const employeeDepartment = computed(() => store.state.auth.userInfo.employeeDepartment);
     const employeePosition = computed(() => store.state.auth.userInfo.employeePosition);
-    const loginRecords = computed(() => store.state.auth.loginRecords);
+    const loginRecords = computed(() => store.state.auth.userInfo.loginRecords);
 
     // 在組件掛載時獲取登入紀錄
     onMounted(async () => {
@@ -177,8 +204,9 @@ export default {
         });
         //撈取登錄紀錄id
         if(response.ok) {
-          const body = await response.json();
-          console.log(body);
+          const responseBody = await response.json();
+          const record = responseBody.data;
+          this.$store.commit('auth/setLoginRecord', record);
           console.log("獲取登錄紀錄成功");
         } else {
           const data = await response.json();
@@ -369,7 +397,16 @@ export default {
     transform: translateY(0);
   }
 }
+.table-responsive {
+  max-height: 400px; /* 設置容器的最大高度 */
+  overflow-y: auto; /* 啟用垂直滾動條 */
+}
 
+thead th {
+  position: sticky; /* 固定位置 */
+  top: 0; /* 固定在登錄記錄表格頂部 */
+  z-index: 99; /* 調整 z-index，確保出現在畫面最頂層 */
+}
 /* 響應式設計 */
 @media (max-width: 768px) {
   .profile-container {
@@ -397,5 +434,6 @@ export default {
     padding: 0.2rem 0.5rem;
     font-size: 0.75rem;
   }
+
 }
 </style>

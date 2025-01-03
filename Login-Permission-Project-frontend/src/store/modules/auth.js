@@ -33,13 +33,6 @@ export default {
             if (user) {
                 state.userInfo = {
                     userId: user.sub,
-                    userName: user.userName || '',
-                    userEmail: user.userEmail || '',
-                    userPhone: user.userPhone || '',
-                    loginRecordId: user.loginRecordId,
-                    userStatusId: user.userStatusId,
-                    permissionCode: Array.isArray(user.permissionCode) ? user.permissionCode : [], // 確保是陣列
-                    roles: Array.isArray(user.roles) ? user.roles : [],
                 };
                 state.isAuthenticated = true;
             } else {
@@ -47,6 +40,8 @@ export default {
             }
         },
         updateUserInfo(state, employeeData) {
+            console.log(employeeData.position.position);
+            console.log(employeeData.position.unit.department_name);
             // 根據 API 回傳的資料結構更新 userInfo
             state.userInfo = {
                 ...state.userInfo,
@@ -56,6 +51,8 @@ export default {
                 userPhone: employeeData.phoneNumber,
                 userStatusId: employeeData.status_id,
                 employeeStatus: employeeData.employeeStatus.name,
+                employeePosition:employeeData.position.position,
+                employeeDepartment:employeeData.position.unit.department.department_name,
                 roles: employeeData.roles,
                 // 從員工角色中提取所有權限碼
                 permissionCode: employeeData.roles.reduce((acc, role) => {
@@ -68,8 +65,8 @@ export default {
             state.failLoginRecordMessage = message;
         },
         setLoginRecord(state, record) {
-            state.loginRecords = record;
-            console.log("testing setLoginRecord:", state.loginRecords);
+            state.userInfo.loginRecords = record;
+            console.log("testing setLoginRecord:", state.userInfo.loginRecords);
         },
         // 儲存 token 到 localStorage
         setToken(state, token) {
