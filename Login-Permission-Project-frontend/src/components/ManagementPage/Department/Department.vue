@@ -254,8 +254,6 @@ export default {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
-                        // 將權限列表轉換為逗號分隔的字符串
-                        "X-Request-Permission-Code": permissions.join(',')
                     },
                 });
 
@@ -278,7 +276,15 @@ export default {
         },
         async createDepartment() { //新增Department的方法
             try {
+                // 檢查創建權限
+                if (!this.canCreateDept) {
+                    console.error('無權限新增部門資料');
+                    return;
+                }
+
                 const token = localStorage.getItem('JWT_Token');
+                const permissions = this.$store.getters['auth/userPermissions'];
+
                 const response = await fetch("http://localhost:8085/department/test/add", {
                     method: "POST",
                     headers: {
@@ -287,6 +293,12 @@ export default {
                     },
                     body: JSON.stringify(this.newDepartment),
                 });
+
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
                 console.log("Add response:", response.json);
                 if (response.ok) {
                     this.getDepartmentData(); //重新載入資料
@@ -303,15 +315,29 @@ export default {
             this.selectedDepartment = department;
         },
         async deleteDepartment() { //刪除Department的方法
-            const token = localStorage.getItem('JWT_Token');
-            let departmentId = this.selectedDepartment.department_id;
             try {
+                // 檢查刪除權限
+                if (!this.canDeleteDept) {
+                    console.error('無權限刪除部門資料');
+                    return;
+                }
+
+                const token = localStorage.getItem('JWT_Token');
+                const permissions = this.$store.getters['auth/userPermissions'];
+
+                let departmentId = this.selectedDepartment.department_id;
+
                 const response = await fetch("http://localhost:8085/department/test/delete/" + departmentId, {
                     method: "DELETE",
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
                 if (response.ok) {
                     this.getDepartmentData();
                 }
@@ -324,8 +350,16 @@ export default {
             this.editDepartment = { ...department };
         },
         async updateDepartment() { //修改Department的方法
-            const token = localStorage.getItem('JWT_Token');
             try {
+                // 檢查更新權限
+                if (!this.canUpdateDept) {
+                    console.error('無權限修改部門資料');
+                    return;
+                }
+
+                const token = localStorage.getItem('JWT_Token');
+                const permissions = this.$store.getters['auth/userPermissions'];
+
                 const response = await fetch("http://localhost:8085/department/test/edit", {
                     method: "PUT",
                     headers: {
@@ -334,6 +368,11 @@ export default {
                     },
                     body: JSON.stringify(this.editDepartment),
                 });
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
                 if (response.ok) {
                     this.getDepartmentData();
                 }

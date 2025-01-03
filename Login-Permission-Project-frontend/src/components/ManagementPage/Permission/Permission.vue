@@ -347,18 +347,18 @@ export default {
                 );
             });
         },
-        // canReadPerm() {
-        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_READ);
-        // },
-        // canCreatePerm() {
-        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_CREATE);
-        // },
-        // canUpdatePerm() {
-        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_UPDATE);
-        // },
-        // canDeletePerm() {
-        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_DELETE);
-        // },
+        canReadPerm() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_READ);
+        },
+        canCreatePerm() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_CREATE);
+        },
+        canUpdatePerm() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_UPDATE);
+        },
+        canDeletePerm() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_DELETE);
+        },
     },
 }
 </script>
