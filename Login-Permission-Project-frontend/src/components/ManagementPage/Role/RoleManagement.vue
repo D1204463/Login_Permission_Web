@@ -68,13 +68,13 @@
                                 <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
                             </button>
                         </td>
-                        <td class="text-center">{{ role.id }}</td>
-                        <td class="text-center">{{ role.name }}</td>
+                        <td class="text-center">{{ role.role_id }}</td>
+                        <td class="text-center">{{ role.role }}</td>
                         <td class="text-center">{{ role.department }}</td>
                         <td class="text-center">
                             <span v-for="(permission, index) in role.permissions" :key="index"
                                 class="badge bg-secondary me-1">
-                                {{ permission }}
+                                {{ permission.permission_name }}
                             </span>
                         </td>
                         <td class="text-center">
@@ -100,7 +100,7 @@
                         <form>
                             <div class="mb-3">
                                 <label for="newRoleName" class="form-label">角色名稱</label>
-                                <input type="text" class="form-control" id="newRoleName" v-model="newRole.name"
+                                <input type="text" class="form-control" id="newRoleName" v-model="newRole.role"
                                     required>
                             </div>
                             <div class="mb-3">
@@ -115,10 +115,10 @@
                                 <label class="form-label">權限設定</label>
                                 <div class="permission-checkboxes">
                                     <div class="form-check" v-for="perm in availablePermissions" :key="perm">
-                                        <input class="form-check-input" type="checkbox" :id="'perm-' + perm"
-                                            :value="perm" v-model="newRole.permissions">
-                                        <label class="form-check-label" :for="'perm-' + perm">
-                                            {{ perm }}
+                                        <input class="form-check-input" type="checkbox" :id="'perm-' + perm.permission_id"
+                                            :value="perm.permission_id" v-model="newRole.permissions">
+                                        <label class="form-check-label" :for="'perm-' + perm.permission_id">
+                                            {{ perm.permission_name }}
                                         </label>
                                     </div>
                                 </div>
@@ -146,7 +146,7 @@
                         <form v-if="selectedRole">
                             <div class="mb-3">
                                 <label for="editRoleName" class="form-label">角色名稱</label>
-                                <input type="text" class="form-control" id="editRoleName" v-model="selectedRole.name"
+                                <input type="text" class="form-control" id="editRoleName" v-model="selectedRole.role"
                                     required>
                             </div>
                             <div class="mb-3">
@@ -161,10 +161,10 @@
                                 <label class="form-label">權限設定</label>
                                 <div class="permission-checkboxes">
                                     <div class="form-check" v-for="perm in availablePermissions" :key="perm">
-                                        <input class="form-check-input" type="checkbox" :id="'edit-perm-' + perm"
-                                            :value="perm" v-model="selectedRole.permissions">
-                                        <label class="form-check-label" :for="'edit-perm-' + perm">
-                                            {{ perm }}
+                                        <input class="form-check-input" type="checkbox" :id="'edit-perm-' + perm.permission_id"
+                                            :value="perm.permission_id" v-model="selectedRole.permissions" checked>
+                                        <label class="form-check-label" :for="'edit-perm-' + perm.permission_id">
+                                            {{ perm.permission_name }}
                                         </label>
                                     </div>
                                 </div>
@@ -257,7 +257,8 @@ export default {
                     roleService.getAllPermissions()
                 ]);
                 roles.value = rolesData;
-                availablePermissions.value = permissionsData;
+                console.log("permissionsData:", permissionsData)
+                availablePermissions.value = permissionsData.data;
             } catch (error) {
                 console.error('Failed to initialize data:', error);
                 errorMessage.value = '載入數據失敗';
@@ -360,8 +361,9 @@ export default {
 
         const filteredRoles = computed(() => {
             return roles.value.filter(role => {
-                const roleIdMatch = role.id.toLowerCase().includes(searchByRoleId.value.toLowerCase());
-                const roleNameMatch = role.name.toLowerCase().includes(searchByRoleName.value.toLowerCase());
+                console.log(role)
+                const roleIdMatch = role.role_id;
+                const roleNameMatch = role.role.toLowerCase().includes(searchByRoleName.value.toLowerCase());
                 const departmentMatch = !searchByRoleDepartment.value || role.department === searchByRoleDepartment.value;
                 return roleIdMatch && roleNameMatch && departmentMatch;
             });

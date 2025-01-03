@@ -9,11 +9,11 @@
                        :class="{ active: activeTab === 'role' }" 
                        @click.prevent="switchTab('role')">角色管理</a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link" 
                        :class="{ active: activeTab === 'onetwothree' }" 
                        @click.prevent="switchTab('onetwothree')">abc</a>
-                </li>
+                </li> -->
             </ul>
 
             <RoleManagement v-if="activeTab === 'role'" />

@@ -20,8 +20,8 @@ export const roleService = {
     async getAllRoles() {
       try {
         const response = await api.get('/role/getAll');
-        console.log("api",response.data)
-        return response.data;
+        console.log("api",response.data.data)
+        return response.data.data;
       } catch (error) {
         console.error('Failed to fetch roles:', error);
         throw error;
@@ -31,7 +31,7 @@ export const roleService = {
     // 創建新角色
     async createRole(roleData) {
       try {
-        const response = await api.post('/roles', roleData);
+        const response = await api.post('/role/create', roleData);
         return response.data;
       } catch (error) {
         console.error('Failed to create role:', error);
