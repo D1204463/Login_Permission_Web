@@ -129,6 +129,57 @@
             </tbody>
         </table>
     </div>
+    <!-- 編輯員工 Modal -->
+    <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editEmployeeModalLabel">編輯員工資料</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" v-if="selectedEmployee">
+                    <!-- 基本資料編輯區 -->
+                    <h6 class="mb-3">基本資料</h6>
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">姓名</label>
+                        <input type="text" class="form-control" id="editName" v-model="selectedEmployee.name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">電子郵件</label>
+                        <input type="email" class="form-control" id="editEmail" v-model="selectedEmployee.email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPhone" class="form-label">電話</label>
+                        <input type="text" class="form-control" id="editPhone" v-model="selectedEmployee.phoneNumber">
+                    </div>
+
+                    <!-- 角色編輯區 -->
+                    <h6 class="mb-3 mt-4">角色設定</h6>
+                    <div class="permission-checkboxes">
+                        <div v-for="role in roles" :key="role.role_id" class="form-check">
+                            <input class="form-check-input" type="checkbox" 
+                                :id="'role-' + role.role_id"
+                                :checked="selectedEmployee && selectedEmployee.roles.some(r => r.role_id === role.role_id)"
+                                @change="toggleRole(role)">
+                            <label class="form-check-label" :for="'role-' + role.role_id">
+                                {{ role.role }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" @click="updateEmployee" :disabled="isUpdating">
+                        <span v-if="!isUpdating">儲存</span>
+                        <span v-else class="d-flex align-items-center">
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            儲存中...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -170,13 +221,24 @@ export default {
             searchByUnitId: "",
             searchByPositionId: "",
             searchByStatusId: "",
-            selectedEmployee: null,
             newEmployee: {
                 name: '',
                 email: '',
                 phoneNumber: '',
                 status_id: null
-            }
+            },
+            roles: [], // 所有角色列表
+            selectedEmployee: {
+                name: '',
+                email: '',
+                phoneNumber: '',
+                roles: [],
+                department_id: null,
+                unit_id: null,
+                position_id: null,
+                status_id: null
+            },
+            isUpdating: false,
         };
     },
     methods: {
@@ -184,8 +246,8 @@ export default {
             try {
                 const token = localStorage.getItem('JWT_Token');
                 console.log("開始獲取員工資料");
-                let response = await fetch("http://localhost:8085/employee/test/getEmployeeById/"+ this.userId, {
-                    method: "POST",
+                let response = await fetch("http://localhost:8085/employee/test/get", {
+                    method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                         'Authorization': `Bearer ${token}`
@@ -197,7 +259,7 @@ export default {
                 if (response.ok) {
                     const data = await response.json();
                     console.log("解析後資料:", data);
-                    this.employeeInfo = data;
+                    this.employeeInfo = data['data'];
                     console.log("設置後的 employeeInfo:", this.employeeInfo);
                 } else {
                     console.error("API 錯誤回應:", response.statusText);
@@ -247,21 +309,37 @@ export default {
         },
 
         onEditEmployee(employee) {
-            this.selectedEmployee = { ...employee };
+            this.selectedEmployee = JSON.parse(JSON.stringify(employee));
         },
 
         async updateEmployee() {
+            if (this.isUpdating) return;
+            
+            this.isUpdating = true;
             try {
+                const token = localStorage.getItem('JWT_Token');
+                const employeeData = { ...this.selectedEmployee };
+                delete employeeData.password;
+
                 const response = await fetch("http://localhost:8085/employee/test/edit", {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(this.selectedEmployee)
+                    headers: {
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(employeeData)
                 });
                 if (response.ok) {
                     await this.fetchEmployees();
+                    document.querySelector('#editEmployeeModal [data-bs-dismiss="modal"]').click();
+                    this.selectedEmployee = null;
+                } else {
+                    throw new Error('Server response was not OK');
                 }
             } catch (error) {
                 console.error("Error updating employee:", error);
+            } finally {
+                this.isUpdating = false;
             }
         },
 
@@ -296,10 +374,47 @@ export default {
         addStatus() {
             this.status = this.employeeInfo.map(info => info.statusName);
             this.status = [...new Set(this.status)];
+        },
+        async fetchRoles() {
+            try {
+                const token = localStorage.getItem('JWT_Token');
+                const response = await fetch("http://localhost:8085/role/getAll", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    this.roles = data.data;
+                    console.log(this.roles)
+                }
+            } catch (error) {
+                console.error("Error fetching roles:", error);
+            }
+        },
+
+        toggleRole(role) {
+            if (!this.selectedEmployee) return;
+            
+            const index = this.selectedEmployee.roles.findIndex(r => r.role_id === role.role_id);
+            if (index === -1) {
+                // 如果角色不存在，添加它
+                this.selectedEmployee.roles.push({
+                    role_id: role.role_id,
+                    role: role.role,
+                    permissions: role.permissions || []
+                });
+            } else {
+                // 如果角色存在，移除它
+                this.selectedEmployee.roles.splice(index, 1);
+            }
         }
     },
     async mounted() {
         await this.fetchEmployees();
+        await this.fetchRoles();
         this.addDepartments();
         this.addUnits();
         this.addPosition();
@@ -484,5 +599,15 @@ export default {
 .btn-danger:hover {
     background-color: #bb2d3b;
     border-color: #b02a37;
+}
+.spinner-border {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+}
+
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 </style>
