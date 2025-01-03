@@ -239,21 +239,27 @@ export default {
     methods: {
         async getDepartmentData() { //get 部門(Department)的資料
             try {
+                // 檢查讀取權限
+                if (!this.canReadDept) {
+                    console.error('無權限讀取部門資料');
+                    return;
+                }
+
                 const token = localStorage.getItem('JWT_Token');
                 // 從 Vuex 獲取權限
                 const permissions = this.$store.getters['auth/userPermissions'];
-                // 將權限轉換為 URL 參數
-                const permissionsParam = encodeURIComponent(JSON.stringify(permissions));
 
-                let response = await fetch(`http://localhost:8085/department/test/get?permissions=${permissionsParam}`, {
+                let response = await fetch("http://localhost:8085/department/test/get", {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        // 將權限列表轉換為逗號分隔的字符串
+                        "X-Request-Permission-Code": permissions.join(',')
                     },
                 });
 
-                if(response.status === 403) {
+                if (response.status === 403) {
                     console.error('權限不足');
                     return;
                 }
@@ -352,22 +358,22 @@ export default {
                 );
             });
         },
-        // canReadDept() {
-        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.READ) ||
-        //         this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.READ);
-        // },
-        // canCreateDept() {
-        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CREATE) ||
-        //         this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.CREATE);
-        // },
-        // canUpdateDept() {
-        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.UPDATE) ||
-        //         this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.UPDATE);
-        // },
-        // canDeleteDept() {
-        //     return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.DELETE) ||
-        //         this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.DELETE);
-        // },
+        canReadDept() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.READ) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.READ);
+        },
+        canCreateDept() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CREATE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.CREATE);
+        },
+        canUpdateDept() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.UPDATE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.UPDATE);
+        },
+        canDeleteDept() {
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.DELETE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.DEPT.CB.DELETE);
+        },
     },
 }
 </script>
