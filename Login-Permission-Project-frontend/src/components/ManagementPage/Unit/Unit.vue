@@ -82,7 +82,8 @@
                             <tr v-for="unit in filteredUnits" :key="unit.unit_id">
                                 <td class="text-center">
                                     <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                        data-bs-target="#editUnitModal" v-on:click="onUpdateUnit(unit)" v-if="canUpdateUnit">
+                                        data-bs-target="#editUnitModal" v-on:click="onUpdateUnit(unit)"
+                                        v-if="canUpdateUnit">
                                         <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
                                     </button>
                                 </td>
@@ -92,7 +93,8 @@
                                 <td class="text-center">{{ unit.department_id }}</td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
-                                        data-bs-target="#deleteUnit" v-on:click="onSelectUnit(unit)" v-if="canDeleteUnit">
+                                        data-bs-target="#deleteUnit" v-on:click="onSelectUnit(unit)"
+                                        v-if="canDeleteUnit">
                                         <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
                                     </button>
                                 </td>
@@ -289,12 +291,28 @@ export default {
     methods: {
         async getDepartment() {
             try {
+                // 檢查讀取權限
+                if (!this.canReadUnit) {
+                    console.error('無權限讀取部門資料');
+                    return;
+                }
+
                 const token = localStorage.getItem('JWT_Token');
+                const permissions = this.$store.getters['auth/userPermissions'];
+
                 let response = await fetch("http://localhost:8085/department/test/get", {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
                     }
                 });
+
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
                 this.departments = await response.json();
                 console.log(this.departments);
             } catch (error) {
@@ -303,12 +321,28 @@ export default {
         },
         async getUnitData() {
             try {
+                // 檢查讀取權限
+                if (!this.canReadUnit) {
+                    console.error('無權限讀取科別資料');
+                    return;
+                }
+
                 const token = localStorage.getItem('JWT_Token');
+                const permissions = this.$store.getters['auth/userPermissions'];
+
                 let response = await fetch("http://localhost:8085/unit/test/get", {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
                 });
+
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
                 const data = await response.json();
                 this.units = data;
                 this.unitOptions = data;
@@ -326,7 +360,15 @@ export default {
 
         async createUnit() {
             try {
+                // 檢查創建權限
+                if (!this.canCreateUnit) {
+                    console.error('無權限新增科別資料');
+                    return;
+                }
+
                 const token = localStorage.getItem('JWT_Token');
+                const permissions = this.$store.getters['auth/userPermissions'];
+
                 const response = await fetch("http://localhost:8085/unit/test/add", {
                     method: "POST",
                     headers: {
@@ -334,10 +376,20 @@ export default {
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify(this.newUnit),
-                }).then(() => {
-                    console.log(response.json);
-                    this.getUnitData();
                 });
+
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
+                if (response.ok) {
+                    this.getUnitData();
+                    this.newUnit = { unit_id: "", unit_name: "", unit_code: "", department: "" };
+                } else {
+                    console.log("Error adding Unit:", response.statusText);
+                }
+
             } catch (error) {
                 console.log('Error Add Unit:', error);
             }
@@ -347,15 +399,29 @@ export default {
             this.selectedUnit = unit;
         },
         async deleteUnit() {
-            const token = localStorage.getItem('JWT_Token');
-            let unitId = this.selectedUnit.unit_id;
+
             try {
-                const response = await fetch("http://localhost:8085/unit/test/delete" + unitId, {
+                // 檢查刪除權限
+                if (!this.canDeleteUnit) {
+                    console.error('無權限刪除科別資料');
+                    return;
+                }
+
+                const token = localStorage.getItem('JWT_Token');
+                const permissions = this.$store.getters['auth/userPermissions'];
+
+                let unitId = this.selectedUnit.unit_id;
+                const response = await fetch("http://localhost:8085/unit/test/delete/" + unitId, {
                     method: "DELETE",
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
                 if (response.ok) {
                     this.getUnitData();
                 }
@@ -369,7 +435,15 @@ export default {
         },
         async updateUnit() {
             try {
+                // 檢查更新權限
+                if (!this.canUpdateUnit) {
+                    console.error('無權限修改科別資料');
+                    return;
+                }
+
                 const token = localStorage.getItem('JWT_Token');
+                const permissions = this.$store.getters['auth/userPermissions'];
+
                 const response = await fetch("http://localhost:8085/unit/test/edit", {
                     method: "PUT",
                     header: {
@@ -377,9 +451,17 @@ export default {
                         'Authorization': `Bearer ${token}`
                     },
                     body: Json.stringify(this.edidUnit),
-                }).then(() => {
-                    this.getUnitData();
                 });
+
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
+                if (response.ok) {
+                    this.getUnitData();
+                }
+
             } catch (error) {
                 console.log('Error Update Unit:', error);
             }
@@ -403,16 +485,24 @@ export default {
             });
         },
         canReadUnit() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_READ);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.READ) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.CF.READ) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.PF.READ);
         },
         canCreateUnit() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_CREATE);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.CREATE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.CF.CREATE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.PF.CREATE);
         },
         canUpdateUnit() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_UPDATE);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.UPDATE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.CF.UPDATE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.PF.UPDATE);
         },
         canDeleteUnit() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT_DELETE);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.DELETE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.CF.DELETE) ||
+                this.$store.getters['auth/hasPermission'](PERMISSIONS.UNIT.PF.DELETE);
         },
     },
 
