@@ -53,101 +53,101 @@ const routes = [
         path: '/unit',
         name: 'Unit',
         component: Unit,
-        // meta: {
-        //     requiresAuth: true,
-        //     permissions: [
-        //         PERMISSIONS.UNIT.READ,
-        //         PERMISSIONS.UNIT.UPDATE,
-        //         PERMISSIONS.UNIT.CREATE,
-        //         PERMISSIONS.UNIT.DELETE
-        //     ]
-        // }
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.UNIT.READ,
+                PERMISSIONS.UNIT.UPDATE,
+                PERMISSIONS.UNIT.CREATE,
+                PERMISSIONS.UNIT.DELETE
+            ]
+        }
     },
     {
         path: '/loginRecord',
         name: 'LoginRecordPage',
         component: LoginRecord,
-        // meta: {
-        //     requiresAuth: true,
-        //     permissions: [
-        //         PERMISSIONS.RECORD.READ,
-        //     ]
-        // }
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.RECORD.READ,
+            ]
+        }
     },
     {
         path: '/position',
         name: 'Position',
         component: Position,
-        // meta: {
-        //     requiresAuth: true,
-        //     permissions: [
-        //         PERMISSIONS.POS.READ,
-        //         PERMISSIONS.POS.UPDATE,
-        //         PERMISSIONS.POS.CREATE,
-        //         PERMISSIONS.POS.DELETE
-        //     ]
-        // }
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.POS.READ,
+                PERMISSIONS.POS.UPDATE,
+                PERMISSIONS.POS.CREATE,
+                PERMISSIONS.POS.DELETE
+            ]
+        }
     },
     {
         path: '/employee',
         name: 'Employee',
         component: Employee,
-        // meta: {
-        //     requiresAuth: true,
-        //     permissions: [
-        //         PERMISSIONS.EMP.READ,
-        //         PERMISSIONS.EMP.UPDATE,
-        //         PERMISSIONS.EMP.CREATE,
-        //         PERMISSIONS.EMP.DELETE
-        //     ]
-        // }
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.EMP.READ,
+                PERMISSIONS.EMP.UPDATE,
+                PERMISSIONS.EMP.CREATE,
+                PERMISSIONS.EMP.DELETE
+            ]
+        }
     },
     {
         path: '/permission',
         name: 'Permission',
         component: Permission,
-        // meta: {
-        //     requiresAuth: true,
-        //     permissions: [
-        //         PERMISSIONS.PERM.READ,
-        //         PERMISSIONS.PERM.UPDATE,
-        //         PERMISSIONS.PERM.CREATE,
-        //         PERMISSIONS.PERM.DELETE
-        //     ]
-        // }
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.PERM.READ,
+                PERMISSIONS.PERM.UPDATE,
+                PERMISSIONS.PERM.CREATE,
+                PERMISSIONS.PERM.DELETE
+            ]
+        }
     },
     {
         path: '/employee-status',
         name: 'EmployeeStatus',
         component: EmployeeStatusView,
-        // meta: {
-        //     requiresAuth: true,
-        //     permissions: [
-        //         PERMISSIONS.STATUS.READ,
-        //         PERMISSIONS.STATUS.UPDATE,
-        //         PERMISSIONS.STATUS.CREATE,
-        //         PERMISSIONS.STATUS.DELETE
-        //     ]
-        // }
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.STATUS.READ,
+                PERMISSIONS.STATUS.UPDATE,
+                PERMISSIONS.STATUS.CREATE,
+                PERMISSIONS.STATUS.DELETE
+            ]
+        }
     },
     {
         path: '/Department',
         name: 'Department',
         component: Department,
-        // meta: {
-        //     requiresAuth: true,
-        //     permissions: [
-        //         PERMISSIONS.DEPT.READ,
-        //         PERMISSIONS.DEPT.UPDATE,
-        //         PERMISSIONS.DEPT.CREATE,
-        //         PERMISSIONS.DEPT.DELETE,
-        //         // 添加消金部權限
-        //         PERMISSIONS.DEPT.CB.READ,
-        //         PERMISSIONS.DEPT.CB.UPDATE,
-        //         PERMISSIONS.DEPT.CB.CREATE,
-        //         PERMISSIONS.DEPT.CB.DELETE
-        //     ]
-        // }
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.DEPT.READ,
+                PERMISSIONS.DEPT.UPDATE,
+                PERMISSIONS.DEPT.CREATE,
+                PERMISSIONS.DEPT.DELETE,
+                // 添加消金部權限
+                PERMISSIONS.DEPT.CB.READ,
+                PERMISSIONS.DEPT.CB.UPDATE,
+                PERMISSIONS.DEPT.CB.CREATE,
+                PERMISSIONS.DEPT.CB.DELETE
+            ]
+        }
     },
     {
         path: '/Profile',
@@ -158,15 +158,15 @@ const routes = [
         path: '/Role',
         name: 'Role',
         component: RoleView,
-        // meta: {
-        //     requiresAuth: true,
-        //     permissions: [
-        //         PERMISSIONS.ROLE.READ,
-        //         PERMISSIONS.ROLE.UPDATE,
-        //         PERMISSIONS.ROLE.CREATE,
-        //         PERMISSIONS.ROLE.DELETE
-        //     ]
-        // }
+        meta: {
+            requiresAuth: true,
+            permissions: [
+                PERMISSIONS.ROLE.READ,
+                PERMISSIONS.ROLE.UPDATE,
+                PERMISSIONS.ROLE.CREATE,
+                PERMISSIONS.ROLE.DELETE
+            ]
+        }
     },
 
 ]
@@ -197,15 +197,6 @@ router.beforeEach((to, from, next) => {
         next('/');
         return;
     }
-
-    // 如果已認證但沒有權限，嘗試重新獲取
-    // if (isAuthenticated && store.state.auth.userInfo.permissionCode.length === 0) {
-    //     try {
-    //         await store.dispatch('auth/refreshPermissions');
-    //     } catch (error) {
-    //         console.error('Failed to refresh permissions:', error);
-    //     }
-    // }
 
     // 檢查權限
     if (to.meta.permissions && isAuthenticated) {

@@ -10,8 +10,8 @@
             class="avatar-icon"
           />
         </div>
-        <h4 class="user-name mb-2">{{ profile.name || '使用者' }}</h4>
-        <span class="user-position">{{ profile.position || '職位未設定' }}</span>
+        <h4 class="user-name mb-2">{{ userName || '使用者' }}</h4>
+        <span class="user-position">{{ employeePosition || '職位未設定' }}</span>
       </div>
 
       <!-- 分隔線 -->
@@ -29,7 +29,7 @@
                 <font-awesome-icon :icon="['fas', 'id-card']" class="me-2" />
                 員工編號
               </div>
-              <input type="text" class="form-control custom-input" v-model="profile.employeeId" readonly>
+              <input type="text" class="form-control custom-input" :value="userId" readonly>
             </div>
 
             <div class="info-group">
@@ -37,7 +37,7 @@
                 <font-awesome-icon :icon="['fas', 'user']" class="me-2" />
                 員工姓名
               </div>
-              <input type="text" class="form-control custom-input" v-model="profile.name" readonly>
+              <input type="text" class="form-control custom-input" :value="userName" readonly>
             </div>
 
             <div class="info-group">
@@ -45,7 +45,7 @@
                 <font-awesome-icon :icon="['fas', 'envelope']" class="me-2" />
                 電子郵件
               </div>
-              <input type="email" class="form-control custom-input" v-model="profile.email" readonly>
+              <input type="email" class="form-control custom-input" :value="userEmail" readonly>
             </div>
           </div>
 
@@ -56,7 +56,7 @@
                 <font-awesome-icon :icon="['fas', 'building']" class="me-2" />
                 部門
               </div>
-              <input type="text" class="form-control custom-input" v-model="profile.department" readonly>
+              <input type="text" class="form-control custom-input" :value="employeeDepartment" readonly>
             </div>
 
             <div class="info-group">
@@ -64,7 +64,7 @@
                 <font-awesome-icon :icon="['fas', 'briefcase']" class="me-2" />
                 職位
               </div>
-              <input type="text" class="form-control custom-input" v-model="profile.position" readonly>
+              <input type="text" class="form-control custom-input" :value="employeePosition" readonly>
             </div>
 
             <div class="info-group">
@@ -72,7 +72,7 @@
                 <font-awesome-icon :icon="['fas', 'phone']" class="me-2" />
                 聯絡電話
               </div>
-              <input type="tel" class="form-control custom-input" v-model="profile.phone" readonly>
+              <input type="tel" class="form-control custom-input" :value="userPhone" readonly>
             </div>
           </div>
         </div>
@@ -122,66 +122,28 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 
 const store = useStore()
-const profile = ref({
-  name: '',
-  employeeId: '',
-  email: '',
-  department: '',
-  position: '',
-  phone: ''
-})
+// 使用 computed 從 Vuex store 獲取用戶資料
+const userId = computed(() => store.getters['auth/userId'])
+const userName = computed(() => store.getters['auth/userName'])
+const userEmail = computed(() => store.state.auth.userInfo.userEmail)
+const userPhone = computed(() => store.state.auth.userInfo.userPhone)
+const employeeDepartment = computed(() => store.state.auth.userInfo.employeeDepartment)
+const employeePosition = computed(() => store.state.auth.userInfo.employeePosition)
+const loginRecords = computed(() => store.state.auth.loginRecords)
 
+// 在組件掛載時獲取登入紀錄
 onMounted(async () => {
   try {
-    // const response = await store.dispatch('auth/fetchUserProfile')
-    // profile.value = response.data
+    await store.dispatch('auth/getLoginRecord');
   } catch (error) {
-    console.error('Failed to fetch profile:', error)
+    console.error('Failed to fetch login records:', error)
   }
 })
 
-// 新增登入紀錄數據
-const loginRecords = ref([
-  {
-    recordId: 1,
-    loginTime: '2024-03-01 09:30:15',
-    logoutTime: '2024-03-01 18:15:22',
-    ipAddress: '192.168.1.100',
-    status: 'success'
-  },
-  {
-    recordId: 2,
-    loginTime: '2024-02-29 08:45:30',
-    logoutTime: '2024-02-29 17:30:45',
-    ipAddress: '192.168.1.100',
-    status: 'success'
-  },
-  {
-    recordId: 3,
-    loginTime: '2024-02-28 09:15:20',
-    logoutTime: null,
-    ipAddress: '192.168.1.105',
-    status: 'error'
-  }
-])
-
-onMounted(async () => {
-  try {
-    // 獲取個人資料
-    // const profileResponse = await store.dispatch('auth/fetchUserProfile')
-    // profile.value = profileResponse.data
-
-    // 獲取登入紀錄
-    // const recordsResponse = await store.dispatch('auth/fetchLoginRecords')
-    // loginRecords.value = recordsResponse.data
-  } catch (error) {
-    console.error('Failed to fetch data:', error)
-  }
-})
 </script>
 
 <style scoped>

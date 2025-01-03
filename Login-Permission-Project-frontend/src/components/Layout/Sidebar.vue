@@ -133,54 +133,54 @@ export default {
                             name: '部門管理',
                             url: '/Department',
                             requiredPermissions: [
-                                // PERMISSIONS.DEPT.READ,
-                                // PERMISSIONS.DEPT.UPDATE,
-                                // PERMISSIONS.DEPT.CREATE,
-                                // PERMISSIONS.DEPT.DELETE,
-                                // PERMISSIONS.DEPT.CB.READ,
-                                // PERMISSIONS.DEPT.CB.UPDATE,
-                                // PERMISSIONS.DEPT.CB.CREATE,
-                                // PERMISSIONS.DEPT.CB.DELETE
+                                PERMISSIONS.DEPT.READ,
+                                PERMISSIONS.DEPT.UPDATE,
+                                PERMISSIONS.DEPT.CREATE,
+                                PERMISSIONS.DEPT.DELETE,
+                                PERMISSIONS.DEPT.CB.READ,
+                                PERMISSIONS.DEPT.CB.UPDATE,
+                                PERMISSIONS.DEPT.CB.CREATE,
+                                PERMISSIONS.DEPT.CB.DELETE
                             ]
                         },
                         {
                             name: '科別管理',
                             url: '/unit',
                             requiredPermissions: [
-                                // PERMISSIONS.UNIT.READ,
-                                // PERMISSIONS.UNIT.UPDATE,
-                                // PERMISSIONS.UNIT.CREATE,
-                                // PERMISSIONS.UNIT.DELETE
+                                PERMISSIONS.UNIT.READ,
+                                PERMISSIONS.UNIT.UPDATE,
+                                PERMISSIONS.UNIT.CREATE,
+                                PERMISSIONS.UNIT.DELETE
                             ]
                         },
                         {
                             name: '職位管理',
                             url: '/position',
                             requiredPermissions: [
-                                // PERMISSIONS.POS.READ,
-                                // PERMISSIONS.POS.UPDATE,
-                                // PERMISSIONS.POS.CREATE,
-                                // PERMISSIONS.POS.DELETE
+                                PERMISSIONS.POS.READ,
+                                PERMISSIONS.POS.UPDATE,
+                                PERMISSIONS.POS.CREATE,
+                                PERMISSIONS.POS.DELETE
                             ]
                         },
                         {
                             name: '權限管理',
                             url: '/permission',
                             requiredPermissions: [
-                                // PERMISSIONS.PERM.READ,
-                                // PERMISSIONS.PERM.UPDATE,
-                                // PERMISSIONS.PERM.CREATE,
-                                // PERMISSIONS.PERM.DELETE
+                                PERMISSIONS.PERM.READ,
+                                PERMISSIONS.PERM.UPDATE,
+                                PERMISSIONS.PERM.CREATE,
+                                PERMISSIONS.PERM.DELETE
                             ]
                         },
                         {
                             name: '狀態管理',
                             url: '/employee-status',
                             requiredPermissions: [
-                                // PERMISSIONS.STATUS.READ,
-                                // PERMISSIONS.STATUS.UPDATE,
-                                // PERMISSIONS.STATUS.CREATE,
-                                // PERMISSIONS.STATUS.DELETE
+                                PERMISSIONS.STATUS.READ,
+                                PERMISSIONS.STATUS.UPDATE,
+                                PERMISSIONS.STATUS.CREATE,
+                                PERMISSIONS.STATUS.DELETE
                             ]
                         },
                     ]
@@ -194,10 +194,10 @@ export default {
                             name: '員工管理',
                             url: '/employee',
                             requiredPermissions: [
-                                // PERMISSIONS.EMP.READ,
-                                // PERMISSIONS.EMP.UPDATE,
-                                // PERMISSIONS.EMP.CREATE,
-                                // PERMISSIONS.EMP.DELETE
+                                PERMISSIONS.EMP.READ,
+                                PERMISSIONS.EMP.UPDATE,
+                                PERMISSIONS.EMP.CREATE,
+                                PERMISSIONS.EMP.DELETE
                             ]
                         },
                         {
