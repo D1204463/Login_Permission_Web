@@ -9,11 +9,11 @@
 
         <div class="content-wrapper">
             <div class="row g-3 align-items-center">
-                <!-- <div v-if="canReadPerm"> -->
+                <div v-if="canReadPerm">
                     <!-- 新增權限按鈕，點擊會出現Model -->
                     <div class="col-auto">
-                        <button type="button" class="btn add-permission-btn" style="margin-bottom:20px;"
-                            data-bs-toggle="modal" data-bs-target="#createPermissionModal" >
+                        <button v-if="canCreatePerm" type="button" class="btn add-permission-btn" style="margin-bottom:20px;"
+                            data-bs-toggle="modal" data-bs-target="#createPermissionModal">
                             <font-awesome-icon :icon="['fas', 'plus']" size="2xl" class="me-2" />
                             新增權限
                         </button>
@@ -36,8 +36,8 @@
                                                             :key="permission.permission_id"
                                                             :value="permission.permission_id">
                                                             ({{ permission.permission_id }}) {{
-                                                            permission.permission_name }} / {{
-                                                            permission.permission_code }}
+                                                                permission.permission_name }} / {{
+                                                                permission.permission_code }}
                                                         </option>
                                                     </select>
                                                     <label for="permissionSelect">權限查詢</label>
@@ -56,47 +56,48 @@
                             </div>
                         </div>
                     </div>
-                <!-- </div> -->
+                    <!-- </div> -->
 
-                <!-- 部門資料表格 -->
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <!-- 表頭 -->
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width: 80px">編輯</th>
-                                <th class="text-center">權限代號</th>
-                                <th class="text-center">權限功能名稱</th>
-                                <th class="text-center">權限</th>
-                                <th class="text-center">權限代碼</th>
-                                <th class="text-center" style="width: 80px">刪除</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="permission in filteredPermissions" v-bind:key="permission.permission_id">
-                                <td class="text-center">
-                                    <!-- 點擊 Button 出現 Edit Permission Modal -->
-                                    <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                        data-bs-target="#editPermissionModal"
-                                        v-on:click="onUpdatePermission(permission)" >
-                                        <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
-                                    </button>
-                                </td>
-                                <td class="text-center">{{ permission.permission_id }}</td>
-                                <td class="text-center">{{ permission.permission_name }}</td>
-                                <td class="text-center">{{ permission.description }}</td>
-                                <td class="text-center">{{ permission.permission_code }}</td>
-                                <td class="text-center">
-                                    <!-- 點擊 Button 出現 Delete Permission Modal -->
-                                    <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
-                                        data-bs-target="#deletePermissionModal"
-                                        v-on:click="onSelectPermission(permission)" >
-                                        <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- 部門資料表格 -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <!-- 表頭 -->
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 80px">編輯</th>
+                                    <th class="text-center">權限代號</th>
+                                    <th class="text-center">權限功能名稱</th>
+                                    <th class="text-center">權限</th>
+                                    <th class="text-center">權限代碼</th>
+                                    <th class="text-center" style="width: 80px">刪除</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="permission in filteredPermissions" v-bind:key="permission.permission_id">
+                                    <td class="text-center">
+                                        <!-- 點擊 Button 出現 Edit Permission Modal -->
+                                        <button v-if="canUpdatePerm" type="button" class="btn btn-link" data-bs-toggle="modal"
+                                            data-bs-target="#editPermissionModal"
+                                            v-on:click="onUpdatePermission(permission)">
+                                            <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
+                                        </button>
+                                    </td>
+                                    <td class="text-center">{{ permission.permission_id }}</td>
+                                    <td class="text-center">{{ permission.permission_name }}</td>
+                                    <td class="text-center">{{ permission.description }}</td>
+                                    <td class="text-center">{{ permission.permission_code }}</td>
+                                    <td class="text-center">
+                                        <!-- 點擊 Button 出現 Delete Permission Modal -->
+                                        <button v-if="canDeletePerm" type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
+                                            data-bs-target="#deletePermissionModal"
+                                            v-on:click="onSelectPermission(permission)">
+                                            <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -260,7 +261,28 @@ export default {
     methods: {
         async getPermissionData() { //get 權限(Permission)的資料
             try {
-                let response = await fetch("http://localhost:8085/Permission/test/get");
+                // 檢查讀取權限
+                if (!this.canReadPerm) {
+                    console.error('無權限讀取權限資料');
+                    return;
+                }
+
+                const token = localStorage.getItem('JWT_Token');
+                const permissions = this.$store.getters['auth/userPermissions'];
+
+                let response = await fetch("http://localhost:8085/Permission/test/get", {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
                 const data = await response.json();
                 this.permissions = data;
                 this.permissionOptions = data; //設置下拉式選單選項
@@ -275,14 +297,30 @@ export default {
         },
         async createPermission() { //新增Permission的方法
             try {
+                // 檢查創建權限
+                if (!this.canCreatePerm) {
+                    console.error('無權限新增權限資料');
+                    return;
+                }
+
+                const token = localStorage.getItem('JWT_Token');
+                const permissions = this.$store.getters['auth/userPermissions'];
+
                 const response = await fetch("http://localhost:8085/Permission/test/add", {
                     method: "POST",
                     headers: {
+                        'Authorization': `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(this.newPermission),
                 });
                 console.log("Add response:", response.json);
+
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
                 if (response.ok) {
                     this.getPermissionData(); //重新載入資料
                     this.newPermission = { permission_id: "", permission_name: "", description: "", permission_code: "" };
@@ -298,11 +336,29 @@ export default {
             this.selectedPermission = permission;
         },
         async deletePermission() { //刪除Permission的方法
-            let permissionId = this.selectedPermission.permission_id;
             try {
+                // 檢查刪除權限
+                if (!this.canDeletePerm) {
+                    console.error('無權限刪除權限資料');
+                    return;
+                }
+
+                const token = localStorage.getItem('JWT_Token');
+                const permissions = this.$store.getters['auth/userPermissions'];
+                let permissionId = this.selectedPermission.permission_id;
+
                 const response = await fetch("http://localhost:8085/Permission/test/delete/" + permissionId, {
                     method: "DELETE",
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
+
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
                 if (response.ok) {
                     this.getPermissionData();
                 }
@@ -316,13 +372,26 @@ export default {
         },
         async updatePermission() { //修改Permission的方法
             try {
+                // 檢查更新權限
+                if (!this.canUpdatePerm) {
+                    console.error('無權限修改權限資料');
+                    return;
+                }
+
                 const response = await fetch("http://localhost:8085/Permission/test/edit", {
                     method: "PUT",
                     headers: {
+                        'Authorization': `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(this.editPermission),
                 });
+
+                if (response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
                 if (response.ok) {
                     this.getPermissionData();
                 }

@@ -56,45 +56,46 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 部門資料表格 -->
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <!-- 表頭 -->
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width: 80px">編輯</th>
-                                <th class="text-center">部門代號</th>
-                                <th class="text-center">部門名稱</th>
-                                <th class="text-center">部門代碼</th>
-                                <th class="text-center" style="width: 80px">刪除</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="department in filteredDepartments" v-bind:key="department.department_id">
-                                <td class="text-center">
-                                    <!-- 點擊 Button 出現 Edit Department Modal -->
-                                    <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                        data-bs-target="#editDepartmentModal"
-                                        v-on:click="onUpdateDepartment(department)" v-if="canUpdateDept">
-                                        <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
-                                    </button>
-                                </td>
-                                <td class="text-center">{{ department.department_id }}</td>
-                                <td class="text-center">{{ department.department_name }}</td>
-                                <td class="text-center">{{ department.department_code }}</td>
-                                <td class="text-center">
-                                    <!-- 點擊 Button 出現 Delete Department Modal -->
-                                    <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
-                                        data-bs-target="#deleteDepartmentModal"
-                                        v-on:click="onSelectDepartment(department)" v-if="canDeleteDept">
-                                        <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                    <!-- 部門資料表格 -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <!-- 表頭 -->
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 80px">編輯</th>
+                                    <th class="text-center">部門代號</th>
+                                    <th class="text-center">部門名稱</th>
+                                    <th class="text-center">部門代碼</th>
+                                    <th class="text-center" style="width: 80px">刪除</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="department in filteredDepartments" v-bind:key="department.department_id">
+                                    <td class="text-center">
+                                        <!-- 點擊 Button 出現 Edit Department Modal -->
+                                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                            data-bs-target="#editDepartmentModal"
+                                            v-on:click="onUpdateDepartment(department)" v-if="canUpdateDept">
+                                            <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
+                                        </button>
+                                    </td>
+                                    <td class="text-center">{{ department.department_id }}</td>
+                                    <td class="text-center">{{ department.department_name }}</td>
+                                    <td class="text-center">{{ department.department_code }}</td>
+                                    <td class="text-center">
+                                        <!-- 點擊 Button 出現 Delete Department Modal -->
+                                        <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
+                                            data-bs-target="#deleteDepartmentModal"
+                                            v-on:click="onSelectDepartment(department)" v-if="canDeleteDept">
+                                            <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
