@@ -103,10 +103,10 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="record in loginRecords" :key="record.recordId">
-                <td class="text-center">{{ record.loginTime }}</td>
-                <td class="text-center">{{ record.logoutTime || '-' }}</td>
-                <td class="text-center">{{ record.ipAddress }}</td>
+              <tr v-for="record in loginRecords" :key="record.record_id">
+                <td class="text-center">{{ record.login_time }}</td>
+                <td class="text-center">{{ record.logout_time || '-' }}</td>
+                <td class="text-center">{{ record.ip_address }}</td>
                 <td class="text-center">
                   <span class="status-badge" :class="record.status === 'success' ? 'success' : 'error'">
                     {{ record.status === 'success' ? '成功' : '失敗' }}
@@ -121,28 +121,80 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useStore } from 'vuex'
+<script>
+import {computed, onMounted} from 'vue'
+import {useStore} from 'vuex'
+import {getLoginRecord} from "@/utils/loginRecordUtils.js";
 
-const store = useStore()
-// 使用 computed 從 Vuex store 獲取用戶資料
-const userId = computed(() => store.getters['auth/userId'])
-const userName = computed(() => store.getters['auth/userName'])
-const userEmail = computed(() => store.state.auth.userInfo.userEmail)
-const userPhone = computed(() => store.state.auth.userInfo.userPhone)
-const employeeDepartment = computed(() => store.state.auth.userInfo.employeeDepartment)
-const employeePosition = computed(() => store.state.auth.userInfo.employeePosition)
-const loginRecords = computed(() => store.state.auth.loginRecords)
+export default {
+  name: 'UserInfo',
+  setup() {
+    const store = useStore();
 
-// 在組件掛載時獲取登入紀錄
-onMounted(async () => {
-  try {
-    await store.dispatch('auth/getLoginRecord');
-  } catch (error) {
-    console.error('Failed to fetch login records:', error)
+    // 使用 computed 從 Vuex store 獲取用戶資料
+    const userId = computed(() => store.getters['auth/userId']);
+    const userName = computed(() => store.getters['auth/userName']);
+    const userEmail = computed(() => store.state.auth.userInfo.userEmail);
+    const userPhone = computed(() => store.state.auth.userInfo.userPhone);
+    const employeeDepartment = computed(() => store.state.auth.userInfo.employeeDepartment);
+    const employeePosition = computed(() => store.state.auth.userInfo.employeePosition);
+    const loginRecords = computed(() => store.state.auth.loginRecords);
+
+    // 在組件掛載時獲取登入紀錄
+    onMounted(async () => {
+      try {
+        await store.dispatch('auth/getLoginRecord');
+      } catch (error) {
+        console.error('Failed to fetch login records:', error);
+      }
+    });
+
+    return {
+      userId,
+      userName,
+      userEmail,
+      userPhone,
+      employeeDepartment,
+      employeePosition,
+      loginRecords,
+    };
+  },
+  created() {
+      this.getLoginRecordById();
+  },
+  methods: {
+    async getLoginRecordById() {
+      const token = localStorage.getItem('JWT_Token');
+      const employee_id = this.$store.state.auth.userInfo.userId;
+      console.log(employee_id)
+      try{
+        const response = await fetch (`http://localhost:8085/api/loginRecord/getLoginRecord/${employee_id}`,{
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        //撈取登錄紀錄id
+        if(response.ok) {
+          const body = await response.json();
+          console.log(body);
+          console.log("獲取登錄紀錄成功");
+        } else {
+          const data = await response.json();
+          console.log("Data:", data);
+        }
+      }catch(error) {
+        console.error("Request failed:", error);
+      }
+    }
+
+
   }
-})
+};
+
+
+
 
 </script>
 
