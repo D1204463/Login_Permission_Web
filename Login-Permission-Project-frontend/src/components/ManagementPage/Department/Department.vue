@@ -240,12 +240,24 @@ export default {
         async getDepartmentData() { //get 部門(Department)的資料
             try {
                 const token = localStorage.getItem('JWT_Token');
-                let response = await fetch("http://localhost:8085/department/test/get", {
+                // 從 Vuex 獲取權限
+                const permissions = this.$store.getters['auth/userPermissions'];
+                // 將權限轉換為 URL 參數
+                const permissionsParam = encodeURIComponent(JSON.stringify(permissions));
+
+                let response = await fetch(`http://localhost:8085/department/test/get?permissions=${permissionsParam}`, {
+                    method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
-                    }
+                    },
                 });
+
+                if(response.status === 403) {
+                    console.error('權限不足');
+                    return;
+                }
+
                 const data = await response.json();
                 this.departments = data;
                 this.departmentOptions = data; //設置下拉式選單選項
@@ -310,7 +322,7 @@ export default {
             try {
                 const response = await fetch("http://localhost:8085/department/test/edit", {
                     method: "PUT",
-                    header: {
+                    headers: {
                         "Content-Type": "application/json",
                         'Authorization': `Bearer ${token}`
                     },
