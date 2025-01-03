@@ -55,34 +55,43 @@
                         <th class="text-center" style="width: 80px">編輯</th>
                         <th class="text-center">角色編號</th>
                         <th class="text-center">角色名稱</th>
-                        <th class="text-center">所屬部門</th>
+<!--                    <th class="text-center">所屬部門</th>-->
                         <th class="text-center">權限列表</th>
                         <th class="text-center" style="width: 80px">刪除</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="role in filteredRoles" :key="role.id">
-                        <td class="text-center">
-                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                    <tr v-for="role in filteredRoles" :key="role.role_id">
+                      <td class="text-center">
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
                                 data-bs-target="#editRoleModal" @click="onEditRole(role)">
-                                <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
-                            </button>
-                        </td>
-                        <td class="text-center">{{ role.id }}</td>
-                        <td class="text-center">{{ role.name }}</td>
-                        <td class="text-center">{{ role.department }}</td>
-                        <td class="text-center">
-                            <span v-for="(permission, index) in role.permissions" :key="index"
-                                class="badge bg-secondary me-1">
-                                {{ permission }}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
+                          <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
+                        </button>
+                      </td>
+                      <td class="text-center">{{ role.role_id }}</td>
+                      <td class="text-center">{{ role.role }}</td>
+                      <td class="text-center">
+                        <div class="dropdown">
+                          <button class="btn btn-secondary btn-sm dropdown-toggle"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  @click="toggleDropdown($event)">
+                            權限列表
+                          </button>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                            <li v-for="(permission, index) in role.permissions" :key="permission.permission_id">
+                              <span class="dropdown-item text-white" style="background-color: #334255"> {{ permission.permission_name }}</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                      <td class="text-center">
+                        <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
                                 data-bs-target="#deleteRoleModal" @click="onDeleteRole(role.id)">
-                                <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
-                            </button>
-                        </td>
+                          <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
+                        </button>
+                      </td>
                     </tr>
                 </tbody>
             </table>
@@ -103,22 +112,26 @@
                                 <input type="text" class="form-control" id="newRoleName" v-model="newRole.name"
                                     required>
                             </div>
-                            <div class="mb-3">
-                                <label for="newRoleDepartment" class="form-label">所屬部門</label>
-                                <select class="form-select" id="newRoleDepartment" v-model="newRole.department"
-                                    required>
-                                    <option value="">請選擇部門</option>
-                                    <option v-for="dept in roleDepartments" :key="dept">{{ dept }}</option>
-                                </select>
-                            </div>
+<!--                            <div class="mb-3">-->
+<!--                                <label for="newRoleDepartment" class="form-label">所屬部門</label>-->
+<!--                                <select class="form-select" id="newRoleDepartment" v-model="newRole.department"-->
+<!--                                    required>-->
+<!--                                    <option value="">請選擇部門</option>-->
+<!--                                    <option v-for="dept in roleDepartments" :key="dept">{{ dept }}</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
                             <div class="mb-3">
                                 <label class="form-label">權限設定</label>
                                 <div class="permission-checkboxes">
-                                    <div class="form-check" v-for="perm in availablePermissions" :key="perm">
-                                        <input class="form-check-input" type="checkbox" :id="'perm-' + perm"
-                                            :value="perm" v-model="newRole.permissions">
+                                    <div class="form-check" v-for="perm in availablePermissions" :key="perm.permission_id">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            :id="'perm-' + perm.permission_id"
+                                            :value="perm.permission_id"
+                                            v-model="newRole.permissions">
                                         <label class="form-check-label" :for="'perm-' + perm">
-                                            {{ perm }}
+                                          {{ perm.permission_name }}
                                         </label>
                                     </div>
                                 </div>
@@ -237,95 +250,14 @@ export default {
             selectedRole: null,
             roleToDelete: null,
             availablePermissions: [
-                '系統設定',
-                '用戶管理',
-                '權限管理',
-                '日誌查詢',
-                '客戶管理',
-                '業務報表',
-                '績效查看',
-                '帳務處理',
-                '報表查詢',
-                '員工資料管理',
-                '考勤管理',
-                '客訴處理',
-                '服務品質管理',
-                '活動管理',
-                '數據分析',
-                '程式開發',
-                '測試管理',
-                '品質檢測',
-                '異常通報',
-                '採購管理',
-                '供應商管理',
-                '庫存管理',
-                '出貨管理'
+
             ],
             // 角色管理数据
             searchByRoleId: '',
             searchByRoleName: '',
             searchByRoleDepartment: '',
             roles: [
-                {
-                    id: 'R001',
-                    name: '系統管理人員',
-                    department: '資訊部',
-                    permissions: ['系統設定', '用戶管理', '權限管理', '日誌查詢']
-                },
-                {
-                    id: 'R002',
-                    name: '業務主管',
-                    department: '業務部',
-                    permissions: ['客戶管理', '業務報表', '績效查看']
-                },
-                {
-                    id: 'R003',
-                    name: '財務專員',
-                    department: '財務部',
-                    permissions: ['帳務處理', '報表查詢']
-                },
-                {
-                    id: 'R004',
-                    name: '人資專員',
-                    department: '人資部',
-                    permissions: ['員工資料管理', '考勤管理']
-                },
-                {
-                    id: 'R005',
-                    name: '客服主管',
-                    department: '客服部',
-                    permissions: ['客訴處理', '服務品質管理']
-                },
-                {
-                    id: 'R006',
-                    name: '行銷專員',
-                    department: '行銷部',
-                    permissions: ['活動管理', '數據分析']
-                },
-                {
-                    id: 'R007',
-                    name: '研發工程師',
-                    department: '研發部',
-                    permissions: ['程式開發', '測試管理']
-                },
-                {
-                    id: 'R008',
-                    name: '品管專員',
-                    department: '品管部',
-                    permissions: ['品質檢測', '異常通報']
-                },
-                {
-                    id: 'R009',
-                    name: '採購專員',
-                    department: '採購部',
-                    permissions: ['採購管理', '供應商管理']
-                },
-                {
-                    id: 'R010',
-                    name: '倉管人員',
-                    department: '物流部',
-                    permissions: ['庫存管理', '出貨管理']
-                }
+
             ]
         };
     },
@@ -336,10 +268,9 @@ export default {
         },
         filteredRoles() {
             return this.roles.filter(role => {
-                const roleIdMatch = role.id.toLowerCase().includes(this.searchByRoleId.toLowerCase());
-                const roleNameMatch = role.name.toLowerCase().includes(this.searchByRoleName.toLowerCase());
-                const departmentMatch = !this.searchByRoleDepartment || role.department === this.searchByRoleDepartment;
-                return roleIdMatch && roleNameMatch && departmentMatch;
+                const roleIdMatch = role.role_id.toLowerCase().includes(this.searchByRoleId.toLowerCase());
+                const roleNameMatch = role.role.toLowerCase().includes(this.searchByRoleName.toLowerCase());
+                return roleIdMatch && roleNameMatch  ;
             });
         }
     },
@@ -350,18 +281,32 @@ export default {
             this.searchByRoleDepartment = "";
         },
 
-        addRole() {
-            // 生成新的角色 ID
-            const newId = 'R' + String(this.roles.length + 1).padStart(3, '0');
-
-            const role = {
-                id: newId,
-                name: this.newRole.name,
-                department: this.newRole.department,
-                permissions: [...this.newRole.permissions]
+        async addRole() {
+            const roleDto = {
+                role_id:"R" + Math.floor(100000000 + Math.random() * 900000000),
+                roleName: this.newRole.name,
+                permission_id: [...this.newRole.permissions]
             };
+            try{
+              const response = await  fetch("http://localhost:8085/role/create",{
+                method:"POST",
+                headers:{
+                  "Content-Type":"application/json",
+                  "Authorization": "Bearer " + localStorage.getItem("JWT_Token")
+                },
+                body:JSON.stringify(roleDto)
+              });
+              if(response.ok) {
+                console.log("添加角色成功");
+              } else {
+                const errorData = await response.json();
+                const errorMessage = errorData.message;
+                console.log("添加角色失敗: " + errorMessage);
+              }
+            } catch(error) {
+              console.log("送出添加角色請求失敗, 請檢查網路連接");
+            }
 
-            this.roles.push(role);
             this.resetNewRole();
         },
 
@@ -382,13 +327,16 @@ export default {
                 this.closeModal('deleteRoleModal');
                 this.roleToDelete = null;
             }
-        },
+        },toggleDropdown(event) {
+        const dropdown = new bootstrap.Dropdown(event.target)
+        dropdown.toggle()
+      },
 
         resetNewRole() {
             this.newRole = {
-                name: '',
+                roleName: '',
                 department: '',
-                permissions: []
+                permission_id: []
             };
         },
 
@@ -398,7 +346,53 @@ export default {
 
         onDeleteRole(roleId) {
             this.roleToDelete = roleId;
+        },
+      async getAllPermission () {
+        try{
+          const response = await fetch("http://localhost:8085/Permission/test/get",{
+            method:"GET",
+            headers:{
+              "Content-Type":"application/json",
+              "Authorization": "Bearer " + localStorage.getItem("JWT_Token")
+            }
+          });
+          if(response.ok) {
+            const result = await response.json();
+            this.availablePermissions = result.data;
+            console.log(this.availablePermissions);
+            console.log("獲取權限資訊成功");
+          } else {
+            const errorData = await response.json();
+            const errorMessage = errorData.message;
+            console.log("獲取權限失敗: " + errorMessage);
+          }
+        } catch (error) {
+          console.log("發送獲取權限請求失敗,請檢查網路");
         }
+      },
+      async getAllRole () {
+          try{
+            const response = await fetch("http://localhost:8085/role/getAll",{
+              method:"GET",
+              headers:{
+                "Content-Type":"application/json",
+                "Authorization": "Bearer " + localStorage.getItem("JWT_Token")
+              }
+            });
+            if(response.ok) {
+              const body = await response.json();
+              this.roles = body.data;
+              console.log(this.roles);
+            } else {
+              const body = await response.json();
+              const message =body.message;
+              console.log("獲取角色資料錯誤：", message);
+            }
+          } catch (error) {
+            console.log("發送獲取權限請求失敗,請檢查網路");
+          }
+
+      }
     },
     mounted() {
         // 監聽 modal 的顯示和隱藏
@@ -415,6 +409,12 @@ export default {
             }
         });
     },
+
+  async created() {
+     await this.getAllPermission();
+     await this.getAllRole ();
+  },
+
 };
 </script>
 

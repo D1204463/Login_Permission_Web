@@ -35,8 +35,7 @@ export function parseJwt(token) {
         // 返回需要的資料
         return {
             sub: payload.sub || null,  // - 使用者ID (sub)
-            loginRecordId: payload.loginRecordId || null,  // - 登入記錄ID (loginRecordId)
-            permissionCode: Array.isArray(payload.permissionCode) ? payload.permissionCode : [],  // - 權限ID列表 (permissionId)
+            loginRecordId: payload.loginRecordId || null, // - 登入記錄ID (loginRecordId)
         };
     } catch(e) {
         console.error('JWT 解析錯誤:', e);
