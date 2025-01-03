@@ -124,7 +124,7 @@
                 <div class="modal-body">
                     <!-- 職位名稱 Position -->
                     <div class="mb-3 row">
-                        <label for="addPosition" class="col-sm-3 col-form-label">Position</label>
+                        <label for="addPosition" class="col-sm-3 col-form-label">職位名稱</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="addPosition" v-model="newPosition.position"
                                 aria-label="Position">
@@ -132,7 +132,7 @@
                     </div>
                     <!-- 科別 Unit，從 units 資料填充-->
                     <div class="mb-3 row">
-                        <label for="chooseUnitID" class="col-sm-3 col-form-label">Unit ID</label>
+                        <label for="chooseUnitID" class="col-sm-3 col-form-label">科別ID</label>
                         <div class="col-sm-9">
                             <select class="form-select" id="chooseUnitID" v-model="newPosition.unit_id"
                                 @change="updateSelectedUnitName">
@@ -145,15 +145,15 @@
                     </div>
                     <!-- 科別名稱顯示 -->
                     <div class="mb-3 row">
-                        <label for="showUnitName" class="col-sm-3 col-form-label">Unit Name</label>
+                        <label for="showUnitName" class="col-sm-3 col-form-label">科別名稱</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" :value="selectedUnitName" readonly>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                            v-on:click="createPosition">Add</button>
+                            v-on:click="createPosition">添加</button>
                     </div>
                 </div>
             </div>

@@ -88,7 +88,7 @@
                       </td>
                       <td class="text-center">
                         <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
-                                data-bs-target="#deleteRoleModal" @click="onDeleteRole(role.id)">
+                                data-bs-target="#deleteRoleModal" @click="onDeleteRole(role.role_id)">
                           <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
                         </button>
                       </td>
@@ -112,14 +112,7 @@
                                 <input type="text" class="form-control" id="newRoleName" v-model="newRole.name"
                                     required>
                             </div>
-<!--                            <div class="mb-3">-->
-<!--                                <label for="newRoleDepartment" class="form-label">所屬部門</label>-->
-<!--                                <select class="form-select" id="newRoleDepartment" v-model="newRole.department"-->
-<!--                                    required>-->
-<!--                                    <option value="">請選擇部門</option>-->
-<!--                                    <option v-for="dept in roleDepartments" :key="dept">{{ dept }}</option>-->
-<!--                                </select>-->
-<!--                            </div>-->
+
                             <div class="mb-3">
                                 <label class="form-label">權限設定</label>
                                 <div class="permission-checkboxes">
@@ -140,11 +133,14 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                        <button type="button" class="btn btn-primary" @click="addRole" data-bs-dismiss="modal">確認新增</button>
+                        <button type="button" class="btn btn-primary" @click="createRole" data-bs-dismiss="modal">確認新增</button>
                     </div>
                 </div>
             </div>
         </div>
+
+
+
 
         <!-- 編輯角色 Modal -->
         <div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel"
@@ -157,31 +153,30 @@
                     </div>
                     <div class="modal-body">
                         <form v-if="selectedRole">
+
+                          <!--head-->
                             <div class="mb-3">
                                 <label for="editRoleName" class="form-label">角色名稱</label>
-                                <input type="text" class="form-control" id="editRoleName" v-model="selectedRole.name"
+                                <input type="text" class="form-control" id="editRoleName" v-model="selectedRole.role"
                                     required>
                             </div>
-                            <div class="mb-3">
-                                <label for="editRoleDepartment" class="form-label">所屬部門</label>
-                                <select class="form-select" id="editRoleDepartment" v-model="selectedRole.department"
-                                    required>
-                                    <option value="">請選擇部門</option>
-                                    <option v-for="dept in roleDepartments" :key="dept">{{ dept }}</option>
-                                </select>
-                            </div>
+                          <!--body-->
                             <div class="mb-3">
                                 <label class="form-label">權限設定</label>
                                 <div class="permission-checkboxes">
-                                    <div class="form-check" v-for="perm in availablePermissions" :key="perm">
-                                        <input class="form-check-input" type="checkbox" :id="'edit-perm-' + perm"
-                                            :value="perm" v-model="selectedRole.permissions">
+                                    <div class="form-check" v-for="perm in availablePermissions" :key="perm.permission_id">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               :id="'edit-perm-' + perm"
+                                               :value="perm"
+                                               v-model="selectedRole.permissions">
                                         <label class="form-check-label" :for="'edit-perm-' + perm">
-                                            {{ perm }}
+                                            {{ perm.permission_name }}
                                         </label>
                                     </div>
                                 </div>
                             </div>
+
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -191,6 +186,9 @@
                 </div>
             </div>
         </div>
+
+
+
 
         <!-- 刪除角色確認 Modal -->
         <div class="modal fade" id="deleteRoleModal" tabindex="-1" aria-labelledby="deleteRoleModalLabel"
@@ -249,16 +247,12 @@ export default {
             },
             selectedRole: null,
             roleToDelete: null,
-            availablePermissions: [
-
-            ],
+            availablePermissions: [],
             // 角色管理数据
             searchByRoleId: '',
             searchByRoleName: '',
             searchByRoleDepartment: '',
-            roles: [
-
-            ]
+            roles: []
         };
     },
     computed: {
@@ -267,11 +261,17 @@ export default {
             return [...new Set(this.roles.map(role => role.department))];
         },
         filteredRoles() {
-            return this.roles.filter(role => {
-                const roleIdMatch = role.role_id.toLowerCase().includes(this.searchByRoleId.toLowerCase());
-                const roleNameMatch = role.role.toLowerCase().includes(this.searchByRoleName.toLowerCase());
-                return roleIdMatch && roleNameMatch  ;
-            });
+          return this.roles.filter(role => {
+            // 確保 role_id 是字串類型
+            const roleId = role.role_id ? String(role.role_id) : '';
+            const roleIdMatch = roleId.toLowerCase().includes(this.searchByRoleId.toLowerCase());
+
+            // 確保 role 是字串類型
+            const roleName = role.role ? String(role.role) : '';
+            const roleNameMatch = roleName.toLowerCase().includes(this.searchByRoleName.toLowerCase());
+
+            return roleIdMatch && roleNameMatch;
+          });
         }
     },
     methods: {
@@ -281,9 +281,8 @@ export default {
             this.searchByRoleDepartment = "";
         },
 
-        async addRole() {
+        async createRole() {
             const roleDto = {
-                role_id:"R" + Math.floor(100000000 + Math.random() * 900000000),
                 roleName: this.newRole.name,
                 permission_id: [...this.newRole.permissions]
             };
@@ -310,11 +309,33 @@ export default {
             this.resetNewRole();
         },
 
-        updateRole() {
-            const index = this.roles.findIndex(r => r.id === this.selectedRole.id);
-            if (index !== -1) {
-                this.roles[index] = { ...this.selectedRole };
-            }
+        async updateRole() {
+          const roleDto = {
+            role_id:this.selectedRole.role_id,
+            roleName:this.selectedRole.role,
+            permission_id:this.selectedRole.permissions.map(permission => permission.permission_id)
+          }
+        try{
+            const response = await  fetch("http://localhost:8085/role/edit",{
+              method:"PUT",
+              headers:{
+                "Content-Type":"application/json",
+                "Authorization": "Bearer " + localStorage.getItem("JWT_Token")
+              },
+              body:JSON.stringify(roleDto)
+            })
+          if(response.ok) {
+            alert("修改成功");
+            await this.getAllRole();
+          } else {
+            const errorData = await response.json();
+            console.log("修改失敗", errorData);
+          }
+        } catch(error) {
+            console.log("發送修改請求失敗, 請檢查網路連接");
+
+        }
+
             this.selectedRole = null;
         },
 
@@ -341,11 +362,31 @@ export default {
         },
 
         onEditRole(role) {
+
             this.selectedRole = { ...role };
         },
 
-        onDeleteRole(roleId) {
-            this.roleToDelete = roleId;
+        async onDeleteRole(role_id) {
+            this.roleToDelete = role_id;
+            try{
+              const response = await fetch(`http://localhost:8085/role/delete/${role_id}`,{
+                method:"DELETE",
+                headers:{
+                  "Content-Type":"application/json",
+                  "Authorization": "Bearer " + localStorage.getItem("JWT_Token")
+                }
+              });
+              if(response.ok) {
+                const message = response.message;
+                await this.getAllRole();
+                console.log(message)
+              } else {
+                const message = response.message;
+                console.log(message)
+              }
+            } catch (error) {
+              console.log("發送刪除請求失敗");
+            }
         },
       async getAllPermission () {
         try{
