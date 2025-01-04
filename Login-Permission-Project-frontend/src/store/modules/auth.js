@@ -27,7 +27,7 @@ export default {
         failLoginRecordMessage: null
     },
     mutations: {
-        // 設置使用者資訊
+        // 僅用於登入後設置使用者id資訊
         setUserInfo(state, token) {
             const user = parseJwt(token); // 解析 JWT token
             if (user) {
@@ -39,6 +39,7 @@ export default {
                 console.log("JWT missing");
             }
         },
+        //登入後更新使用者的資訊,
         updateUserInfo(state, employeeData) {
             console.log(employeeData.position.position);
             console.log(employeeData.position.unit.department_name);
@@ -123,11 +124,10 @@ export default {
                     // 從 token 中解析出的用戶訊息中獲取 userId
                     const userData = parseJwt(token);
                     const userId = userData.sub;  // sub 是 userId
-                    // 登入成功後，使用 userId 立即獲取權限
+                    // 登入成功後，使用 userId 立即獲取權限, 以及其他登入用戶的資訊
                     try {
                         // 獲取員工資訊
                         const employeeResponse = await getEmployeeIdInfo(token, userId);
-
                         // 更新員工資訊，包括權限
                         if (employeeResponse && employeeResponse.data) {
                             commit('updateUserInfo', employeeResponse.data);
