@@ -106,13 +106,13 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Add Department</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">新增部門</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <!-- 部門名稱 Department Name -->
                         <div class="mb-3 row">
-                            <label for="addDepartmentName" class="col-sm-3 col-form-label">Department Name</label>
+                            <label for="addDepartmentName" class="col-sm-3 col-form-label">部門名稱</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="addDepartmentName"
                                     v-model="newDepartment.department_name" aria-label="DepartmentName">
@@ -120,16 +120,16 @@
                         </div>
                         <!-- 部門代碼 Department Code -->
                         <div class="mb-3 row">
-                            <label for="addDepartmentCode" class="col-sm-3 col-form-label">Department Code</label>
+                            <label for="addDepartmentCode" class="col-sm-3 col-form-label">部門代碼</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="addDepartmentCode"
                                     v-model="newDepartment.department_code" aria-label="DepartmentCode">
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                v-on:click="createDepartment">Add</button>
+                                v-on:click="createDepartment">添加</button>
                         </div>
                     </div>
                 </div>
