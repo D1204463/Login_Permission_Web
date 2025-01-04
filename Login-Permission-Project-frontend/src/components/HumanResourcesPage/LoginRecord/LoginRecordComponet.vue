@@ -261,12 +261,31 @@ export default {
 }
 
 .content-wrapper {
+  position: relative;
   background-color: #ffffff;
   border-radius: 8px;
-  padding: 0 1.5rem;
-  margin-right: 1.5%;
-  margin-top: 20px;
+  padding: 1rem;
+  margin: 10px 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .content-wrapper {
+    padding: 1.5rem;
+    margin: 20px 20px 20px 0;
+  }
+}
+
+.search-section {
+  position: relative;
+  width: 100%;
+  z-index: 1; /* 確保搜尋區域在正確的層級 */
+}
+
+.search-card {
+  position: relative;
+  width: 100%;
 }
 
 .nav-tabs .nav-link {
