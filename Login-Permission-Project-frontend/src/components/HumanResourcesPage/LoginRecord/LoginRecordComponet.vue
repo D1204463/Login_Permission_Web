@@ -260,6 +260,15 @@ export default {
   width: 100%;
 }
 
+.content-wrapper {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 0 1.5rem;
+  margin-right: 1.5%;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .nav-tabs .nav-link {
   color: #334255;
   border: none;
