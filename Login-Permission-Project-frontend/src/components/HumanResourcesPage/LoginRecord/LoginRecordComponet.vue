@@ -8,26 +8,27 @@
     </ul>
 
     <div class="content-wrapper">
-      <div class="row g-3 align-items-center">
+      <div class="search-section">
         <!-- 添加權限檢查 -->
         <div v-if="canReadAllLoginRecords">
           <!-- 搜尋區塊 -->
-          <div class="col">
+          <div class="search-card">
             <div class="card w-100 mb-4 border-0">
               <div class="card-body">
-                <div class="row g-3 align-items-center">
-                  <div class="col-md">
+                <div class="row g-3">
+                  <div class="col-12 col-md-6 col-lg-4">
                     <div class="form-floating">
                       <select class="form-select" id="floatingSelectGrid" v-model="loginDate">
                         <option selected value="">選擇時間</option>
                         <option value="1">一日</option>
                         <option value="7">一周</option>
-                        <option value="30">一周以上</option>
+                        <option value="30">一個月</option>
+                        <option value="90">三個月</option>
                       </select>
                       <label for="floatingSelectGrid">時間查詢</label>
                     </div>
                   </div>
-                  <div class="col-md">
+                  <div class="col-12 col-md-6 col-lg-4">
                     <div class="form-floating">
                       <select class="form-select" id="statusSelect" v-model="loginStatus">
                         <option value="">全部狀態</option>
@@ -38,8 +39,8 @@
                     </div>
                   </div>
                   <!-- 添加重置按鈕 -->
-                  <div class="col-auto d-flex align-items-center">
-                    <button type="button" class="btn btn-secondary search-btn" v-on:click="resetSearch">
+                  <div class="col-12 col-md-auto">
+                    <button type="button" class="btn search-btn w-150" v-on:click="resetSearch">
                       <font-awesome-icon :icon="['fas', 'rotate']" size="lg" />
                     </button>
                   </div>
@@ -110,6 +111,20 @@ export default {
     }
   },
   methods: {
+    formatDateTime(dateString) {
+      if (!dateString) return '-';
+      const date = new Date(dateString);
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    },
+
     resetSearch() {
       this.loginDate = "";
       this.loginStatus = "";
@@ -126,6 +141,11 @@ export default {
         const token = localStorage.getItem('JWT_Token')
         const permissions = this.$store.getters['auth/userPermissions'];
 
+        if (!token) {
+          console.error('找不到登入令牌');
+          return;
+        }
+
         let response = await fetch("http://localhost:8085/api/loginRecord/get", {
           method: 'GET',
           headers: {
@@ -134,8 +154,12 @@ export default {
           },
         });
 
-        if (response.status === 403) {
-          console.error('權限不足');
+        if (!response.ok) {
+          if (response.status === 403) {
+            console.error('權限不足');
+          } else {
+            console.error('獲取資料失敗:', response.status);
+          }
           return;
         }
 
@@ -167,6 +191,13 @@ export default {
           const recordDate = new Date(record.login_time);
           return recordDate >= cutoff;
         });
+
+        // 日期格式化顯示
+        filtered = filtered.map(record => ({
+          ...record,
+          login_time: this.formatDateTime(record.login_time),
+          logout_time: record.logout_time ? this.formatDateTime(record.logout_time) : '-'
+        }));
       }
 
       // 按日期降序排序（最新的在上面）
@@ -190,16 +221,43 @@ export default {
 
 <style scoped>
 .unit-container {
-  padding: 20px;
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+  .unit-container {
+    padding: 20px;
+  }
 }
 
 .content-wrapper {
+  position: relative;
   background-color: #ffffff;
   border-radius: 8px;
-  padding: 0 1.5rem;
-  margin-right: 1.5%;
-  margin-top: 20px;
+  padding: 1rem;
+  margin: 10px 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .content-wrapper {
+    padding: 1.5rem;
+    margin: 20px 20px 20px 0;
+  }
+}
+
+.search-section {
+  position: relative;
+  width: 100%;
+  z-index: 1; /* 確保搜尋區域在正確的層級 */
+}
+
+.search-card {
+  position: relative;
+  width: 100%;
 }
 
 .nav-tabs .nav-link {
@@ -218,28 +276,22 @@ export default {
   background-color: #334255;
   border-color: #334255;
   padding: 0.75rem;
+  transition: all 0.1s ease;
+  color: #fff;
   height: 58px;
-  width: 58px;
+}
+
+@media (max-width: 767px) {
+  .search-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
 }
 
 .search-btn:hover {
   background-color: #FFCD50;
   border-color: #FFCD50;
   color: #334255;
-}
-
-.add-unit-btn {
-  background-color: transparent;
-  color: #334255;
-  border: none;
-  display: flex;
-  align-items: center;
-  /* padding: 8px 16px; */
-  font-size: 1rem;
-}
-
-.add-unit-btn:hover {
-  color: #FFCD50;
 }
 
 .table {
@@ -258,6 +310,57 @@ export default {
   padding: 12px;
   text-align: center;
   vertical-align: middle;
+}
+
+/* 表格響應式調整 */
+.table-responsive {
+  margin-top: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+  .table th,
+  .table td {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+  
+  .status-badge {
+    padding: 3px 8px;
+    font-size: 0.8rem;
+    min-width: 60px;
+  }
+}
+
+/* 卡片響應式調整 */
+.card {
+  background: transparent;
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+@media (max-width: 767px) {
+  .card-body {
+    padding: 0.75rem;
+  }
+}
+
+/* Form 響應式調整 */
+.form-floating {
+  margin-bottom: 0;
+}
+
+@media (max-width: 767px) {
+  .form-floating > label {
+    font-size: 0.9rem;
+  }
+  
+  .form-select {
+    font-size: 0.9rem;
+  }
 }
 
 .btn-link {
