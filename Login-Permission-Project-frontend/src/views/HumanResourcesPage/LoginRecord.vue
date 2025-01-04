@@ -17,14 +17,17 @@ import LoginRecordComponet from "@/components/HumanResourcesPage/LoginRecord/Log
   display: flex;
   min-height: 100vh;
   background: #f8f9fa;
+  position: relative; 
 }
 
 .main-content {
+  position: relative;
   background: #f8f9fa;
   flex: 1;
   padding: 1rem;
   margin-left: 260px; /* 與 sidebar 寬度相同 */
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* 響應式設計 */
