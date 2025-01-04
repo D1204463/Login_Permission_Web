@@ -101,6 +101,35 @@ export default {
         }
     },
     actions: {
+        async initializeAuth({ commit, dispatch }) {
+            const token = localStorage.getItem('JWT_Token');
+            if (!token) {
+                return false;
+            }
+    
+            try {
+                commit('setToken', token);
+                commit('setUserInfo', token);
+                commit('setAuthenticated', true);
+    
+                const userData = parseJwt(token);
+                if (!userData || !userData.sub) {
+                    throw new Error('Invalid token');
+                }
+    
+                const employeeResponse = await getEmployeeIdInfo(token, userData.sub);
+                if (employeeResponse && employeeResponse.data) {
+                    commit('updateUserInfo', employeeResponse.data);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('初始化失敗:', error);
+                commit('clearUserInfo');
+                commit('clearToken');
+                return false;
+            }
+        },
         //實作登錄
         async login({ commit }, { employee_id, password }) {
             try {

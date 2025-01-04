@@ -176,45 +176,49 @@ const router = createRouter({
     routes,
 })
 
-//路由守衛
-router.beforeEach((to, from, next) => {
-    // store.commit('auth/setUserInfo', localStorage.getItem('JWT_Token'));
-    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-    const isAuthenticated = store.state.auth.isAuthenticated;
+router.beforeEach(async (to, from, next) => {
+    const token = localStorage.getItem('JWT_Token');
+    let isAuthenticated = store.state.auth.isAuthenticated;
 
-    // 調試訊息
-    console.log('Route authentication:', {
+    console.log('Route check:', {
         path: to.path,
-        requiresAuth,
-        isAuthenticated,
-        permissions: to.meta.permissions
+        hasToken: !!token,
+        isAuthenticated: isAuthenticated
     });
 
-    // 檢查認證
-    if (requiresAuth && !isAuthenticated) {
-        console.log('Authentication required, redirecting to login');
-        //如果沒有 admin 權限，就跳轉到其他頁面
-        next('/');
-        return;
-    }
-
-    // 檢查權限
-    if (to.meta.permissions && isAuthenticated) {
-        // 使用命名空間的 getter
-        const hasRequiredPermission = store.getters['auth/hasAnyPermission'](to.meta.permissions);
-        console.log('Permission check:', {
-            required: to.meta.permissions,
-            has: hasRequiredPermission,
-            userPermissions: store.state.auth.userInfo.permissionCode
-        });
-
-        if (!hasRequiredPermission) {
-            console.log('Permission denied');
-            next('/403'); // 要有一個 403 頁面
+    // 如果有 token 但還沒認證，嘗試初始化
+    if (token && !isAuthenticated) {
+        try {
+            await store.dispatch('auth/initializeAuth');
+            isAuthenticated = store.state.auth.isAuthenticated;
+        } catch (error) {
+            console.error('Auth init failed:', error);
+            localStorage.removeItem('JWT_Token');
+            next('/');
             return;
         }
     }
-    next();
+
+    // 檢查是否需要認證
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (!isAuthenticated) {
+            next('/');
+            return;
+        }
+        
+        // 權限檢查
+        if (to.meta.permissions) {
+            const hasPermission = store.getters['auth/hasAnyPermission'](to.meta.permissions);
+            if (!hasPermission) {
+                next('/403');
+                return;
+            }
+        }
+        next();
+    } else {
+        // 不需要認證的路由
+        next();
+    }
 });
 
 //全局錯誤處理
