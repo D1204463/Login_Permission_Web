@@ -4,7 +4,7 @@
       <div v-if="showToast"
            class="toast-message"
            v-cloak>
-        添加科別成功
+        操作成功
       </div>
         <ul class="nav nav-tabs mb-4">
             <li class="nav-item">
@@ -151,9 +151,7 @@
                         </div>
                     </div>
                   <div class="modal-footer flex-column">
-                    <!-- 修改點 3: 添加錯誤訊息容器 -->
                     <div class="text-danger w-100 mb-3" v-if="showError">請填妥科別資訊</div>
-                    <!-- 修改點 4: 包裝按鈕並靠右對齊 -->
                     <div class="w-100 d-flex justify-content-end">
                       <button type="button" class="btn btn-secondary me-2"
                               data-bs-dismiss="modal"
@@ -174,38 +172,31 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModLabel">Edit Unit</h5>
+                    <h5 class="modal-title" id="exampleModLabel">修改科別</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- 科別名稱 Unit -->
+
+                    <!-- 科別 修改資料欄位-->
                     <div class="mb-3 row">
-                        <label for="addUnit" class="col-sm-3 col-form-label">Unit Id</label>
+                        <label for="addUnit" class="col-sm-3 col-form-label">科別名稱</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
-                                aria-label="Unit">
-                        </div>
-                    </div>
-                    <!-- 科別 Unit資料填充-->
-                    <div class="mb-3 row">
-                        <label for="addUnit" class="col-sm-3 col-form-label">Unit</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
+                            <input type="text" class="form-control" id="addUnit" v-model="editUnit.unit_name"
                                 aria-label="Unit">
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label for="addUnit" class="col-sm-3 col-form-label">Unit Code</label>
+                        <label for="addUnit" class="col-sm-3 col-form-label">科別代號</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
+                            <input type="text" class="form-control" id="addUnit" v-model="editUnit.unit_code"
                                 aria-label="Unit">
                         </div>
                     </div>
                     <!-- 部門 Department，從 Departments 資料填充-->
                     <div class="mb-3 row">
-                        <label for="chooseDepartmentId" class="col-sm-3 col-form-label">Department</label>
+                        <label for="chooseDepartmentId" class="col-sm-3 col-form-label">部門</label>
                         <div class="col-sm-9">
-                            <select class="form-select" id="chooseDepartmentID" v-model="newUnit.department_id"
+                            <select class="form-select" id="chooseDepartmentID" v-model="editUnit.department_id"
                                 @change="updateSelectedDepartmentName">
                                 <option disabled value="">選擇部門</option>
                                 <option v-for="department in departments" :key="department.department_id"
@@ -215,31 +206,38 @@
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                            v-on:click="createPosition">Add</button>
+                  <div class="modal-footer flex-column">
+                    <div class="text-danger w-100 mb-3" v-if="showError">請填妥科別資訊</div>
+
+                    <div class="w-100 d-flex justify-content-end">
+                      <button type="button" class="btn btn-secondary me-2"
+                              data-bs-dismiss="modal"
+                              v-on:click="resetShowError">關閉</button>
+                      <button type="button" class="btn btn-primary"
+                              v-on:click="updateUnit">確定</button>
                     </div>
+                  </div>
+
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 刪除科別 Modal -->
+    <!------------------------------------------- 刪除科別 Modal ---------------------------------------------------->
     <div class="modal fade" id="deleteUnit" aria-labelledby="deleteUnitModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Delete Unit</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">刪除科別</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this Unit?
+                    您確定要刪除此科別?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                        v-on:click="deleteUnit">Delete</button>
+                        v-on:click="deleteUnit">確定</button>
                 </div>
             </div>
         </div>
@@ -407,7 +405,6 @@ export default {
                 } else {
                     console.log("添加科別失敗:", response.statusText);
                 }
-
             } catch (error) {
                 console.log('送出添加請求失敗:', error);
             }
@@ -421,18 +418,10 @@ export default {
             this.selectedUnit = unit;
         },
         async deleteUnit() {
-
             try {
-                // 檢查刪除權限
-                if (!this.canDeleteUnit) {
-                    console.error('無權限刪除科別資料');
-                    return;
-                }
-
                 const token = localStorage.getItem('JWT_Token');
-                const permissions = this.$store.getters['auth/userPermissions'];
-
                 let unitId = this.selectedUnit.unit_id;
+                console.log(unitId);
                 const response = await fetch("http://localhost:8085/unit/test/delete/" + unitId, {
                     method: "DELETE",
                     headers: {
@@ -443,12 +432,20 @@ export default {
                     console.error('權限不足');
                     return;
                 }
-
                 if (response.ok) {
-                    this.getUnitData();
+                   await this.getUnitData();
+                  const responseBody = await response.json();
+                  console.log(responseBody.message);
+
+                  this.showToast = true;
+                  setTimeout(() => {
+                    this.showToast = false;
+                  }, 3000);
+                } else {
+                  console.log("刪除科別失敗:", response.statusText);
                 }
             } catch (error) {
-                console.log('Error Delete Unit:', error);
+                console.log('發送刪除請求失敗:', error);
             }
         },
 
@@ -456,23 +453,20 @@ export default {
             this.editUnit = { ...unit };
         },
         async updateUnit() {
+          if (!this.editUnit.unit_name || !this.editUnit.unit_code || !this.editUnit.department_id){
+            this.showError = true;
+            return;
+          }
+          this.showError = false;
             try {
-                // 檢查更新權限
-                if (!this.canUpdateUnit) {
-                    console.error('無權限修改科別資料');
-                    return;
-                }
-
                 const token = localStorage.getItem('JWT_Token');
-                const permissions = this.$store.getters['auth/userPermissions'];
-
                 const response = await fetch("http://localhost:8085/unit/test/edit", {
                     method: "PUT",
-                    header: {
+                    headers: {
                         "Content-Type": "application/json",
                         'Authorization': `Bearer ${token}`
                     },
-                    body: Json.stringify(this.editUnit),
+                    body: JSON.stringify(this.editUnit),
                 });
 
                 if (response.status === 403) {
@@ -481,11 +475,25 @@ export default {
                 }
 
                 if (response.ok) {
-                    this.getUnitData();
+                  const responseBody = await response.json();
+                  console.log(responseBody.message);
+                  await this.getUnitData();
+
+                  const closeButton = document.querySelector('#editUnitModal .btn-close');
+                  if (closeButton) {
+                    closeButton.click();
+                  }
+                  this.showToast = true;
+                  setTimeout(() => {
+                    this.showToast = false;
+                  }, 3000);
+                } else {
+                  const responseBody = await response.json();
+                  console.log(responseBody.message);
                 }
 
             } catch (error) {
-                console.log('Error Update Unit:', error);
+                console.log('更新科別失敗:', error);
             }
         },
         updateSelectedDepartmentName() {
