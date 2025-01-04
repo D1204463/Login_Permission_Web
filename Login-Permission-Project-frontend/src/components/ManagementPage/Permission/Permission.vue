@@ -417,16 +417,16 @@ export default {
             });
         },
         canReadPerm() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_READ);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM.READ);
         },
         canCreatePerm() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_CREATE);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM.CREATE);
         },
         canUpdatePerm() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_UPDATE);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM.UPDATE);
         },
         canDeletePerm() {
-            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM_DELETE);
+            return this.$store.getters['auth/hasPermission'](PERMISSIONS.PERM.DELETE);
         },
     },
 }
