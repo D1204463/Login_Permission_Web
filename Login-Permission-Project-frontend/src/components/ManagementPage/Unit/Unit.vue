@@ -17,11 +17,11 @@
                             新增科別
                         </button>
                     </div>
-                    <!-- 搜尋區塊 -->
+                    <!-- 搜尋科別的區塊 -->
                     <div class="col">
                         <div class="card w-100 mb-4 border-0">
                             <div class="card-body">
-                                <!-- 搜尋表單 -->
+                                <!-- 搜尋條件輸入框 -->
                                 <div class="col">
                                     <form @submit.prevent="handleSearch">
                                         <div class="row g-3 align-items-center">
@@ -65,7 +65,7 @@
                     </div>
                 </div>
 
-                <!-- 資料表格 -->
+                <!-- 資料表格, 用於顯示各科別詳細資訊 -->
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -90,7 +90,7 @@
                                 <td class="text-center">{{ unit.unit_id }}</td>
                                 <td class="text-center">{{ unit.unit_name }}</td>
                                 <td class="text-center">{{ unit.unit_code }}</td>
-                                <td class="text-center">{{ unit.department_id }}</td>
+                                <td class="text-center">{{ unit.department.department_name }}</td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
                                         data-bs-target="#deleteUnit" v-on:click="onSelectUnit(unit)"
@@ -106,7 +106,7 @@
         </div>
     </div>
 
-    <!-- 新增科別 Modal -->
+    <!-------------------------------------- 新增科別 Modal ------------------------------------------>
     <div class="modal fade" id="createUnitModal" aria-labelledby="createUnitModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -115,26 +115,18 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- 科別名稱 Unit -->
-                    <div class="mb-3 row">
-                        <label for="addUnit" class="col-sm-3 col-form-label">Unit Id</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
-                                aria-label="Unit">
-                        </div>
-                    </div>
                     <!-- 科別 Unit資料填充-->
                     <div class="mb-3 row">
                         <label for="addUnit" class="col-sm-3 col-form-label">名稱</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
+                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit_name"
                                 aria-label="Unit">
                         </div>
                     </div>
                     <div class="mb-3 row">
                         <label for="addUnit" class="col-sm-3 col-form-label">科別代碼</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
+                            <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit_code"
                                 aria-label="Unit">
                         </div>
                     </div>
@@ -145,24 +137,34 @@
                             <select class="form-select" id="chooseDepartmentID" v-model="newUnit.department_id"
                                 @change="updateSelectedDepartmentName">
                                 <option disabled value="">選擇部門</option>
-                                <option v-for="department in departments" :key="department.department_id"
-                                    :value="department.department_id">
+                                <option v-for="department in departments"
+                                        :key="department.department_id"
+                                        :value="department.department_id">
                                     {{ department.department_id }} ({{ department.department_name }})
                                 </option>
                             </select>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                            v-on:click="createPosition">添加</button>
+                  <div class="modal-footer flex-column">
+                    <!-- 修改點 3: 添加錯誤訊息容器 -->
+                    <div class="text-danger w-100 mb-3" v-if="showError">請填妥科別資訊</div>
+                    <!-- 修改點 4: 包裝按鈕並靠右對齊 -->
+                    <div class="w-100 d-flex justify-content-end">
+                      <button type="button" class="btn btn-secondary me-2"
+                              data-bs-dismiss="modal"
+                              v-on:click="resetShowError">關閉</button>
+                      <button type="button" class="btn btn-primary"
+                              v-on:click="createUnit">添加</button>
                     </div>
+                  </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 修改科別 Modal -->
+
+
+    <!------------------------------------------- 修改科別 Modal ---------------------------------------------------->
     <div class="modal fade" id="editUnitModal" aria-labelledby="editUnitModal" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -240,7 +242,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
     faPlus,
@@ -272,20 +274,20 @@ export default {
                 unit_id: "",
                 unit_name: "",
                 unit_code: "",
-                department: "",
+                department_id: "",
             },
             newUnit: {
-                nit_id: "",
                 unit_name: "",
                 unit_code: "",
-                department: "",
+                department_id: "",
             },
-            edidUnit: {
-                nit_id: "",
+            editUnit: {
+                unit_id: "",
                 unit_name: "",
                 unit_code: "",
-                department: "",
+              department_id: "",
             },
+            showError: false,
         }
     },
     methods: {
@@ -326,11 +328,8 @@ export default {
                     console.error('無權限讀取科別資料');
                     return;
                 }
-
                 const token = localStorage.getItem('JWT_Token');
-                const permissions = this.$store.getters['auth/userPermissions'];
-
-                let response = await fetch("http://localhost:8085/unit/test/get", {
+                 const response = await fetch("http://localhost:8085/unit/test/get", {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -343,9 +342,8 @@ export default {
                     return;
                 }
 
-                const data = await response.json();
-                this.units = data;
-                this.unitOptions = data;
+                const responseBody = await response.json();
+                this.units = responseBody.data;
                 console.log(this.units);
             } catch (error) {
                 console.log('Error Get Unit:', error);
@@ -359,6 +357,11 @@ export default {
         },
 
         async createUnit() {
+          if (!this.newUnit.unit_name || !this.newUnit.unit_code || !this.newUnit.department_id){
+            this.showError = true;
+            return;
+          }
+          this.showError = false;
             try {
                 // 檢查創建權限
                 if (!this.canCreateUnit) {
@@ -367,8 +370,6 @@ export default {
                 }
 
                 const token = localStorage.getItem('JWT_Token');
-                const permissions = this.$store.getters['auth/userPermissions'];
-
                 const response = await fetch("http://localhost:8085/unit/test/add", {
                     method: "POST",
                     headers: {
@@ -384,15 +385,23 @@ export default {
                 }
 
                 if (response.ok) {
-                    this.getUnitData();
-                    this.newUnit = { unit_id: "", unit_name: "", unit_code: "", department: "" };
+                  const responseBody = await response.json();
+                  console.log(responseBody.message);
+                  await this.getUnitData();
+
+                  const modal = bootstrap.Modal.getInstance(document.getElementById('createUnitModal'));
+                  modal.hide();
                 } else {
-                    console.log("Error adding Unit:", response.statusText);
+                    console.log("添加科別失敗:", response.statusText);
                 }
 
             } catch (error) {
-                console.log('Error Add Unit:', error);
+                console.log('送出添加請求失敗:', error);
             }
+
+        },
+        resetShowError() {
+                this.showError = false;
         },
 
         onSelectUnit(unit) {
@@ -431,7 +440,7 @@ export default {
         },
 
         onUpdateUnit(unit) {
-            this.edidUnit = { ...unit };
+            this.editUnit = { ...unit };
         },
         async updateUnit() {
             try {
@@ -450,7 +459,7 @@ export default {
                         "Content-Type": "application/json",
                         'Authorization': `Bearer ${token}`
                     },
-                    body: Json.stringify(this.edidUnit),
+                    body: Json.stringify(this.editUnit),
                 });
 
                 if (response.status === 403) {
