@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" v-if="canReadStatus">
     <!-- 員工狀態管理頁籤 -->
     <ul class="nav nav-tabs mb-2">
       <li class="nav-item">
@@ -11,7 +11,7 @@
       <div class="row g-3 align-items-center">
         <!-- 新增狀態按鈕 -->
         <div class="col-auto">
-          <button type="button" class="btn add-status-btn" style="margin-bottom: 20px" data-bs-toggle="modal"
+          <button v-if="canCreateStatus" type="button" class="btn add-status-btn" style="margin-bottom: 20px" data-bs-toggle="modal"
             data-bs-target="#createStatusModal">
             <font-awesome-icon :icon="['fas', 'plus']" size="2xl" class="me-2" />
             新增狀態
@@ -68,7 +68,7 @@
           <tbody>
             <tr v-for="status in statuses" v-bind:key="status.status_id">
               <td class="text-center">
-                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editStatusModal"
+                <button v-if="canUpdateStatus" type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editStatusModal"
                   v-on:click="onUpdateStatus(status)">
                   <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
                 </button>
@@ -76,7 +76,7 @@
               <td class="text-center">{{ status.status_id }}</td>
               <td class="text-center">{{ status.name }}</td>
               <td class="text-center">
-                <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
+                <button v-if="canDeleteStatus" type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
                   data-bs-target="#deleteStatusModal" v-on:click="onSelectStatus(status)">
                   <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
                 </button>
