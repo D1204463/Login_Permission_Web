@@ -31,13 +31,12 @@
                                                     <!-- 搜尋權限 -->
                                                     <select class="form-select" id="permissionSelect"
                                                         v-model="searchByPermissionId">
-                                                        <option selected value="">選擇權限 / 權限代碼</option>
+                                                        <option selected value="">選擇權限</option>
                                                         <option v-for="permission in permissionOptions"
                                                             :key="permission.permission_id"
                                                             :value="permission.permission_id">
                                                             ({{ permission.permission_id }}) {{
-                                                                permission.permission_name }} / {{
-                                                                permission.permission_code }}
+                                                                permission.permission_name }}
                                                         </option>
                                                     </select>
                                                     <label for="permissionSelect">權限查詢</label>
@@ -67,8 +66,7 @@
                                     <th class="text-center" style="width: 80px">編輯</th>
                                     <th class="text-center">權限代號</th>
                                     <th class="text-center">權限功能名稱</th>
-                                    <th class="text-center">權限</th>
-                                    <th class="text-center">權限代碼</th>
+                                    <th class="text-center">權限類別</th>
                                     <th class="text-center" style="width: 80px">刪除</th>
                                 </tr>
                             </thead>
@@ -84,8 +82,7 @@
                                     </td>
                                     <td class="text-center">{{ permission.permission_id }}</td>
                                     <td class="text-center">{{ permission.permission_name }}</td>
-                                    <td class="text-center">{{ permission.description }}</td>
-                                    <td class="text-center">{{ permission.permission_code }}</td>
+                                    <td class="text-center">{{ permission.category }}</td>
                                     <td class="text-center">
                                         <!-- 點擊 Button 出現 Delete Permission Modal -->
                                         <button v-if="canDeletePerm" type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
@@ -114,32 +111,32 @@
                     <div class="modal-body">
                         <!-- 權限名稱 Permission Name -->
                         <div class="mb-3 row">
-                            <label for="addPermissionName" class="col-sm-3 col-form-label">Permission Name</label>
+                            <label for="addPermissionName" class="col-sm-3 col-form-label">權限功能名稱</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="addPermissionName"
                                     v-model="newPermission.permission_name" aria-label="PermissionName">
                             </div>
                         </div>
-                        <!-- 權限 description -->
+                        <!-- 權限 category -->
                         <div class="mb-3 row">
-                            <label for="addDescription" class="col-sm-3 col-form-label">Description</label>
+                            <label for="addDescription" class="col-sm-3 col-form-label">權限類別</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="addDescription"
-                                    v-model="newPermission.description" aria-label="Description">
+                                    v-model="newPermission.category" aria-label="category">
                             </div>
                         </div>
                         <!-- 權限代碼 Permission Code -->
                         <div class="mb-3 row">
-                            <label for="addPermissionCode" class="col-sm-3 col-form-label">Permission Code</label>
+                            <label for="addPermissionCode" class="col-sm-3 col-form-label">權限代碼</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" id="addPermissionCode"
                                     v-model="newPermission.permission_code" aria-label="PermissionCode">
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                v-on:click="createPermission">Add</button>
+                                v-on:click="createPermission">新增</button>
                         </div>
                     </div>
                 </div>
@@ -159,32 +156,32 @@
                 <div class="modal-body">
                     <!-- 權限名稱 Permission Name -->
                     <div class="mb-3 row">
-                        <label for="editPermissionName" class="col-sm-3 col-form-label">Permission Name</label>
+                        <label for="editPermissionName" class="col-sm-3 col-form-label">權限功能名稱</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="editPermissionName"
                                 v-model="editPermission.permission_name" aria-label="PermissionName">
                         </div>
                     </div>
-                    <!-- 權限 description -->
+                    <!-- 權限 category -->
                     <div class="mb-3 row">
-                        <label for="editDescription" class="col-sm-3 col-form-label">Description</label>
+                        <label for="editDescription" class="col-sm-3 col-form-label">權限類別</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="editDescription"
-                                v-model="editPermission.description" aria-label="Description">
+                                v-model="editPermission.category" aria-label="category">
                         </div>
                     </div>
                     <!-- 權限代碼 Permission Code -->
                     <div class="mb-3 row">
-                        <label for="editPermissionCode" class="col-sm-3 col-form-label">Permission Code</label>
+                        <label for="editPermissionCode" class="col-sm-3 col-form-label">權限代號</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="editPermissionCode"
                                 v-model="editPermission.permission_code" aria-label="PermissionCode">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
-                            v-on:click="updatePermission">Update</button>
+                            v-on:click="updatePermission">更新</button>
                     </div>
                 </div>
             </div>
@@ -241,19 +238,19 @@ export default {
             selectedPermission: {
                 permission_id: "",
                 permission_name: "",
-                description: "",
+                category: "",
                 permission_code: "",
             },
             newPermission: {
                 permission_id: "",
                 permission_name: "",
-                description: "",
+                category: "",
                 permission_code: "",
             },
             editPermission: {
                 permission_id: "",
                 permission_name: "",
-                description: "",
+                category: "",
                 permission_code: "",
             },
         }
@@ -284,8 +281,8 @@ export default {
                 }
 
                 const data = await response.json();
-                this.permissions = data;
-                this.permissionOptions = data; //設置下拉式選單選項
+                this.permissions = data.data;
+                this.permissionOptions = data.data; //設置下拉式選單選項
                 console.log(this.permissions);
             } catch (error) {
                 console.log('Error Get Permission:', error);
@@ -323,7 +320,7 @@ export default {
 
                 if (response.ok) {
                     this.getPermissionData(); //重新載入資料
-                    this.newPermission = { permission_id: "", permission_name: "", description: "", permission_code: "" };
+                    this.newPermission = { permission_id: "", permission_name: "", category: "", permission_code: "" };
                 } else {
                     console.log("Error adding Permission:", response.statusText);
                 }
