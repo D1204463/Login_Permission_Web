@@ -11,18 +11,9 @@
       <div class="row g-3 align-items-center">
         <!-- 新增狀態按鈕 -->
         <div class="col-auto">
-          <button
-            type="button"
-            class="btn add-status-btn"
-            style="margin-bottom: 20px"
-            data-bs-toggle="modal"
-            data-bs-target="#createStatusModal"
-          >
-            <font-awesome-icon
-              :icon="['fas', 'plus']"
-              size="2xl"
-              class="me-2"
-            />
+          <button type="button" class="btn add-status-btn" style="margin-bottom: 20px" data-bs-toggle="modal"
+            data-bs-target="#createStatusModal">
+            <font-awesome-icon :icon="['fas', 'plus']" size="2xl" class="me-2" />
             新增狀態
           </button>
         </div>
@@ -37,17 +28,9 @@
                     <div class="col-md">
                       <div class="form-floating">
                         <!-- 搜尋狀態 -->
-                        <select
-                          class="form-select"
-                          id="statusSelect"
-                          v-model="searchByStatusId"
-                        >
+                        <select class="form-select" id="statusSelect" v-model="searchByStatusId">
                           <option selected value="">選擇狀態</option>
-                          <option
-                            v-for="status in statusOptions"
-                            :key="status.status_id"
-                            :value="status.status_id"
-                          >
+                          <option v-for="status in statusOptions" :key="status.status_id" :value="status.status_id">
                             ({{ status.status_id }}) {{ status.name }}
                           </option>
                         </select>
@@ -56,25 +39,11 @@
                     </div>
                     <!-- 搜尋按鈕 -->
                     <div class="col-auto d-flex align-items-center">
-                      <button
-                        type="button"
-                        class="btn btn-primary search-btn me-2"
-                        v-on:click="search"
-                      >
-                        <font-awesome-icon
-                          :icon="['fas', 'magnifying-glass']"
-                          size="lg"
-                        />
+                      <button type="button" class="btn btn-primary search-btn me-2" v-on:click="search">
+                        <font-awesome-icon :icon="['fas', 'magnifying-glass']" size="lg" />
                       </button>
-                      <button
-                        type="button"
-                        class="btn btn-secondary search-btn"
-                        v-on:click="resetSearch"
-                      >
-                        <font-awesome-icon
-                          :icon="['fas', 'rotate']"
-                          size="lg"
-                        />
+                      <button type="button" class="btn btn-secondary search-btn" v-on:click="resetSearch">
+                        <font-awesome-icon :icon="['fas', 'rotate']" size="lg" />
                       </button>
                     </div>
                   </div>
@@ -99,29 +68,16 @@
           <tbody>
             <tr v-for="status in statuses" v-bind:key="status.status_id">
               <td class="text-center">
-                <button
-                  type="button"
-                  class="btn btn-link"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editStatusModal"
-                  v-on:click="onUpdateStatus(status)"
-                >
-                  <font-awesome-icon
-                    :icon="['fas', 'pen-to-square']"
-                    size="lg"
-                  />
+                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editStatusModal"
+                  v-on:click="onUpdateStatus(status)">
+                  <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
                 </button>
               </td>
               <td class="text-center">{{ status.status_id }}</td>
               <td class="text-center">{{ status.name }}</td>
               <td class="text-center">
-                <button
-                  type="button"
-                  class="btn btn-link text-danger"
-                  data-bs-toggle="modal"
-                  data-bs-target="#deleteStatusModal"
-                  v-on:click="onSelectStatus(status)"
-                >
+                <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
+                  data-bs-target="#deleteStatusModal" v-on:click="onSelectStatus(status)">
                   <font-awesome-icon :icon="['fas', 'trash-can']" size="lg" />
                 </button>
               </td>
@@ -133,58 +89,29 @@
   </div>
 
   <!-- 新增狀態 Modal -->
-  <div
-    class="modal fade"
-    id="createStatusModal"
-    tabindex="-1"
-    aria-labelledby="createStatusModalLabel"
-    aria-hidden="true"
-  >
+  <div class="modal fade" id="createStatusModal" tabindex="-1" aria-labelledby="createStatusModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="createStatusModalLabel">新增狀態</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <div class="modal-body">
           <div class="mb-3">
             <label for="addStatusId" class="form-label">狀態代號</label>
-            <input
-              type="text"
-              class="form-control"
-              id="addStatusId"
-              v-model="newStatus.status_id"
-            />
+            <input type="text" class="form-control" id="addStatusId" v-model="newStatus.status_id" />
           </div>
           <div class="mb-3">
             <label for="addStatus" class="form-label">狀態名稱</label>
-            <input
-              type="text"
-              class="form-control"
-              id="addStatus"
-              v-model="newStatus.name"
-            />
+            <input type="text" class="form-control" id="addStatus" v-model="newStatus.name" />
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
               取消
             </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-dismiss="modal"
-              v-on:click="createStatus"
-            >
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" v-on:click="createStatus">
               新增
             </button>
           </div>
@@ -194,57 +121,27 @@
   </div>
 
   <!-- 編輯狀態 Modal -->
-  <div
-    class="modal fade"
-    id="editStatusModal"
-    tabindex="-1"
-    aria-labelledby="editStatusModalLabel"
-    aria-hidden="true"
-  >
+  <div class="modal fade" id="editStatusModal" tabindex="-1" aria-labelledby="editStatusModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="editStatusModalLabel">編輯狀態</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
             <label for="editStatusId" class="form-label">狀態代號</label>
-            <input
-              type="text"
-              class="form-control"
-              id="editStatusId"
-              v-model="editStatus.status_id"
-            />
+            <input type="text" class="form-control" id="editStatusId" v-model="editStatus.status_id" />
           </div>
           <div class="mb-3">
             <label for="editStatus" class="form-label">狀態名稱</label>
-            <input
-              type="text"
-              class="form-control"
-              id="editStatus"
-              v-model="editStatus.name"
-            />
+            <input type="text" class="form-control" id="editStatus" v-model="editStatus.name" />
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
               取消
             </button>
-            <button
-              type="button"
-              class="btn btn-warning"
-              data-bs-dismiss="modal"
-              v-on:click="updateStatus"
-            >
+            <button type="button" class="btn btn-warning" data-bs-dismiss="modal" v-on:click="updateStatus">
               更新
             </button>
           </div>
@@ -254,39 +151,20 @@
   </div>
 
   <!-- 刪除狀態 Modal -->
-  <div
-    class="modal fade"
-    id="deleteStatusModal"
-    tabindex="-1"
-    aria-labelledby="deleteStatusModalLabel"
-    aria-hidden="true"
-  >
+  <div class="modal fade" id="deleteStatusModal" tabindex="-1" aria-labelledby="deleteStatusModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="deleteStatusModalLabel">刪除狀態</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">確定要刪除此狀態嗎？</div>
         <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             取消
           </button>
-          <button
-            type="button"
-            class="btn btn-danger"
-            data-bs-dismiss="modal"
-            v-on:click="deleteStatus"
-          >
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" v-on:click="deleteStatus">
             刪除
           </button>
         </div>
@@ -305,6 +183,7 @@ import {
   faMagnifyingGlass,
   faRotate,
 } from "@fortawesome/free-solid-svg-icons";
+import { PERMISSIONS } from '@/constants/permissions';
 
 export default {
   components: {
@@ -323,11 +202,32 @@ export default {
   methods: {
     async fetchStatuses() {
       try {
-        let response = await fetch("http://localhost:8085/status/test/get");
-        if(response.ok){
+        // 檢查讀取權限
+        if (!this.canReadStatus) {
+          console.error('無權限讀取狀態資料');
+          return;
+        }
+
+        const token = localStorage.getItem('JWT_Token');
+        const permissions = this.$store.getters['auth/userPermissions'];
+
+        let response = await fetch("http://localhost:8085/status/test/get", {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.status === 403) {
+          console.error('權限不足');
+          return;
+        }
+
+        if (response.ok) {
           this.statuses = await response.json();
           this.statusOptions = this.statuses; // 確保選項正確綁定
-          console.log("status Options:" , this.statuses); // 檢查資料是否正確加載
+          console.log("status Options:", this.statuses); // 檢查資料是否正確加載
         } else {
           console.log("failed to fetch status data");
         }
@@ -347,19 +247,36 @@ export default {
     },
     // 新增職位的邏輯
     async createStatus() {
-      if(!this.findDuplicateStatusId(this.newStatus)) {
+      if (!this.findDuplicateStatusId(this.newStatus)) {
         const requestBody = JSON.stringify(this.newStatus);
         console.log(this.newStatus);
-        try{
+        try {
+          // 檢查創建權限
+          if (!this.canCreateStatus) {
+            console.error('無權限新增狀態資料');
+            return;
+          }
+
+          const token = localStorage.getItem('JWT_Token');
+          const permissions = this.$store.getters['auth/userPermissions'];
+
           const response = await fetch("http://localhost:8085/status/test/add", {
             method: "POST",
             headers: {
+              'Authorization': `Bearer ${token}`,
               "Content-Type": "application/json",
             },
             body: requestBody,
-          })
-          if(response.ok) {
+          });
+
+          if (response.status === 403) {
+            console.error('權限不足');
+            return;
+          }
+
+          if (response.ok) {
             await this.fetchStatuses;
+            this.newStatus = { status_id: "", name: "" };
             console.log("Fetch status successfully");
           } else {
             console.log("Fail to fetch status");
@@ -371,36 +288,82 @@ export default {
         alert("已經存在相同Id的狀態")
       }
 
-
-
     },
     onUpdateStatus(status) {
       this.editStatus = { ...status };
     },
-    updateStatus() {
-      fetch("http://localhost:8085/status/test/edit", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(this.editStatus),
-      }).then(this.fetchStatuses);
+    async updateStatus() {
+      try {
+        // 檢查更新權限
+        if (!this.canUpdateStatus) {
+          console.error('無權限修改狀態資料');
+          return;
+        }
+
+        const token = localStorage.getItem('JWT_Token');
+        const permissions = this.$store.getters['auth/userPermissions'];
+
+        const response = await fetch("http://localhost:8085/status/test/edit", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(this.editStatus),
+        });
+
+        if (response.status === 403) {
+          console.error('權限不足');
+          return;
+        }
+
+        if (response.ok) {
+          await this.fetchStatuses();
+        }
+      } catch (error) {
+        console.log("Error updating status:", error);
+      }
     },
+
     onSelectStatus(status) {
       this.selectedStatus = status;
     },
-
-    deleteStatus() {
-      fetch(
-        `http://localhost:8085/status/test/delete/${this.selectedStatus.status_id}`,
-        {
-          method: "DELETE",
+    async deleteStatus() {
+      try {
+        // 檢查刪除權限
+        if (!this.canDeleteStatus) {
+          console.error('無權限刪除狀態資料');
+          return;
         }
-      ).then(this.fetchStatuses);
+
+        const token = localStorage.getItem('JWT_Token');
+        const permissions = this.$store.getters['auth/userPermissions'];
+
+        const response = await fetch(
+          `http://localhost:8085/status/test/delete/${this.selectedStatus.status_id}`,
+          {
+            method: "DELETE",
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+
+        if (response.status === 403) {
+          console.error('權限不足');
+          return;
+        }
+
+        if (response.ok) {
+          await this.fetchStatuses();
+        }
+      } catch (error) {
+        console.log("Error deleting status:", error);
+      }
     },
-    findDuplicateStatusId(newStatus){
-      for(let i = 0; i < this.statuses.length; i ++) {
-        if(String(this.statuses[i].status_id) === String(newStatus.status_id)) {
+    findDuplicateStatusId(newStatus) {
+      for (let i = 0; i < this.statuses.length; i++) {
+        if (String(this.statuses[i].status_id) === String(newStatus.status_id)) {
           console.log("This status id is already exist");
           return true;
         }
@@ -412,31 +375,48 @@ export default {
   mounted() {
     this.fetchStatuses();
   },
+
+  computed: {
+    // 權限控制
+    canReadStatus() {
+      return this.$store.getters['auth/hasPermission'](PERMISSIONS.STATUS.READ);
+    },
+    canCreateStatus() {
+      return this.$store.getters['auth/hasPermission'](PERMISSIONS.STATUS.CREATE);
+    },
+    canUpdateStatus() {
+      return this.$store.getters['auth/hasPermission'](PERMISSIONS.STATUS.UPDATE);
+    },
+    canDeleteStatus() {
+      return this.$store.getters['auth/hasPermission'](PERMISSIONS.STATUS.DELETE);
+    }
+  },
+
 };
 </script>
 
 <style scoped>
 .content-wrapper {
   background-color: #ffffff;
-    border-radius: 8px;
-    padding: 0 1.5rem;
-    /* 只保留左右間距 */
-    margin-right: 5%;
-    margin-top: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 0 1.5rem;
+  /* 只保留左右間距 */
+  margin-right: 5%;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .nav-tabs {
-    margin-right: 5%;
-    margin-top: 15px;
+  margin-right: 5%;
+  margin-top: 15px;
 }
 
 .nav-tabs .nav-link {
   color: #334255;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    font-size: 1.1rem;
-    position: relative;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  position: relative;
 }
 
 .nav-tabs .nav-link.active {
@@ -447,13 +427,13 @@ export default {
 }
 
 .nav-tabs .nav-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: #334255;
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #334255;
 }
 
 .btn-link {
@@ -466,21 +446,24 @@ export default {
   color: #ffcd50;
   transform: scale(1.1);
 }
+
 .add-status-btn {
   color: #334255;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border: 2px solid #334255;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    height: 58px;
-    /* 與表單元素等高 */
-    white-space: nowrap;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border: 2px solid #334255;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  height: 58px;
+  /* 與表單元素等高 */
+  white-space: nowrap;
 }
+
 .add-status-btn:hover {
   background-color: #334255;
   color: #ffffff;
 }
+
 .search-btn {
   background-color: #334255;
   border-color: #334255;
@@ -488,11 +471,13 @@ export default {
   height: 58px;
   width: 58px;
 }
+
 .search-btn:hover {
   background-color: #ffcd50;
   border-color: #ffcd50;
   color: #334255;
 }
+
 .table th {
   background-color: #f8f9fa;
   font-weight: 600;
