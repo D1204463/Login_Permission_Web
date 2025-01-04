@@ -111,7 +111,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Add Unit</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">新增科別</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -125,14 +125,14 @@
                     </div>
                     <!-- 科別 Unit資料填充-->
                     <div class="mb-3 row">
-                        <label for="addUnit" class="col-sm-3 col-form-label">Unit</label>
+                        <label for="addUnit" class="col-sm-3 col-form-label">名稱</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
                                 aria-label="Unit">
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label for="addUnit" class="col-sm-3 col-form-label">Unit Code</label>
+                        <label for="addUnit" class="col-sm-3 col-form-label">科別代碼</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="addUnit" v-model="newUnit.unit"
                                 aria-label="Unit">
@@ -140,7 +140,7 @@
                     </div>
                     <!-- 部門 Department，從 Departments 資料填充-->
                     <div class="mb-3 row">
-                        <label for="chooseDepartmentId" class="col-sm-3 col-form-label">Department</label>
+                        <label for="chooseDepartmentId" class="col-sm-3 col-form-label">部門</label>
                         <div class="col-sm-9">
                             <select class="form-select" id="chooseDepartmentID" v-model="newUnit.department_id"
                                 @change="updateSelectedDepartmentName">
@@ -153,9 +153,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                            v-on:click="createPosition">Add</button>
+                            v-on:click="createPosition">添加</button>
                     </div>
                 </div>
             </div>

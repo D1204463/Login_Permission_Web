@@ -115,10 +115,10 @@
                     <td class="text-center">{{ employee.name }}</td>
                     <td class="text-center">{{ employee.email }}</td>
                     <td class="text-center">{{ employee.phoneNumber }}</td>
-                    <td class="text-center">{{ employee.departmentName ? employee.departmentName : 'N/A' }}</td>
-                    <td class="text-center">{{ employee.unitName ? employee.unitName : 'N/A' }}</td>
-                    <td class="text-center">{{ employee.positionName ? employee.positionName : 'N/A' }}</td>
-                    <td class="text-center">{{ employee.statusName ? employee.statusName : 'N/A' }}</td>
+                    <td class="text-center">{{ employee.position.unit.department.department_name ? employee.position.unit.department.department_name : 'N/A' }}</td>
+                    <td class="text-center">{{ employee.position.unit.unit_name ? employee.position.unit.unit_name : 'N/A' }}</td>
+                    <td class="text-center">{{ employee.position.position ? employee.position.position : 'N/A' }}</td>
+                    <td class="text-center">{{ employee.employeeStatus.name ? employee.employeeStatus.name : 'N/A' }}</td>
                     <td class="text-center">
                         <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
                             data-bs-target="#deleteEmployeeModal" @click="onDeleteEmployee(employee.employee_id)">
