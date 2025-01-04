@@ -318,18 +318,27 @@ export default {
             this.isUpdating = true;
             try {
                 const token = localStorage.getItem('JWT_Token');
-                const employeeData = { ...this.selectedEmployee };
-                delete employeeData.password;
+                const updatedDto = {
+                  employee_id:this.selectedEmployee.employee_id,
+                  name: this.selectedEmployee.name,
+                  email: this.selectedEmployee.email,
+                  phoneNumber: this.selectedEmployee.phoneNumber,
+                  roleIds: this.selectedEmployee.roles.map(function(role) {
+                    return role.role_id;
+                  }),
+                };
+                console.log(updatedDto);
 
-                const response = await fetch("http://localhost:8085/employee/test/edit", {
+                const response = await fetch("http://localhost:8085/employee/test/update", {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify(employeeData)
+                    body: JSON.stringify(updatedDto)
                 });
                 if (response.ok) {
+                  console.log("test success");
                     await this.fetchEmployees();
                     document.querySelector('#editEmployeeModal [data-bs-dismiss="modal"]').click();
                     this.selectedEmployee = null;
