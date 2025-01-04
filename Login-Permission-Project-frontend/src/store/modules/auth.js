@@ -17,13 +17,13 @@ export default {
             userStatusId: null,
             permissionCode: [],
             loginRecordId: null,
+            loginRecords: [],
             employeeDepartment: null,
             employeePosition: null,
             employeeStatus: null,
             roles: [],
         },
         isAuthenticated: false, // 用來追蹤使用者是否已登入
-        loginRecords: [],
         failLoginRecordMessage: null
     },
     mutations: {
@@ -52,8 +52,8 @@ export default {
                 userPhone: employeeData.phoneNumber,
                 userStatusId: employeeData.status_id,
                 employeeStatus: employeeData.employeeStatus.name,
-                employeePosition:employeeData.position.position,
-                employeeDepartment:employeeData.position.unit.department.department_name,
+                employeePosition: employeeData.position.position,
+                employeeDepartment: employeeData.position.unit.department.department_name,
                 roles: employeeData.roles,
                 // 從員工角色中提取所有權限碼
                 permissionCode: employeeData.roles.reduce((acc, role) => {
@@ -67,7 +67,6 @@ export default {
         },
         setLoginRecord(state, record) {
             state.userInfo.loginRecords = record;
-            console.log("testing setLoginRecord:", state.userInfo.loginRecords);
         },
         // 儲存 token 到 localStorage
         setToken(state, token) {
@@ -170,23 +169,42 @@ export default {
             }
         },
         //獲取登錄紀錄
-        async getLoginRecord({ commit }) {
+        async getLoginRecord({ commit, state }) {
             const token = localStorage.getItem("JWT_Token");
-            if (token === null) {
-                commit("setFailRecordMessage", "找不到token, 請嘗試重新登錄")
+            if (!token) {
+                commit("setFailRecordMessage", "找不到token, 請嘗試重新登錄");
+                return;
             }
-            try {
-                const response = await getLoginRecord(token);
-                if (response.ok) {
-                    const loginRecord = await response.json();
-                    console.log("loginRecord:", loginRecord);
-                    commit("setLoginRecord", loginRecord)
 
+            try {
+                // 使用當前登入用戶的 ID
+                const userId = state.userInfo.userId;
+                if (!userId) {
+                    commit("setFailRecordMessage", "無法獲取用戶ID");
+                    return;
+                }
+
+                const response = await getLoginRecord(token, userId);
+                if (response.ok) {
+                    const responseData = await response.json();
+                    // 確保使用 responseData.data 來獲取實際的登入記錄數組
+                    console.log("獲取的登入記錄:", responseData);
+                    if (responseData.data) {
+                        // 對登入記錄進行排序，最新的排在前面
+                        const sortedRecords = responseData.data.sort((a, b) => {
+                            const timeA = new Date(a.login_time).getTime();
+                            const timeB = new Date(b.login_time).getTime();
+                            return timeB - timeA; // 降序排序
+                        });
+                        commit("setLoginRecord", sortedRecords);
+                    }
                 } else {
-                    console.log("獲取登錄紀錄失敗," + await response.text());
+                    const errorMessage = await response.text();
+                    commit("setFailRecordMessage", `獲取登錄紀錄失敗: ${errorMessage}`);
                 }
             } catch (error) {
-                console.log("獲取登錄紀錄失敗,請檢查連線是否正常");
+                commit("setFailRecordMessage", "獲取登錄紀錄失敗,請檢查連線是否正常");
+                console.error("獲取登錄紀錄錯誤:", error);
             }
         },
         setPermissions({ commit }, permissions) {
@@ -212,6 +230,12 @@ export default {
         },
         userRoles: (state) => {
             return state.userInfo.roles;
+        },
+        loginRecords: (state) => {
+            return state.userInfo.loginRecords;
+        },
+        failLoginRecordMessage: (state) => {
+            return state.failLoginRecordMessage;
         },
         hasPermission: (state) => (permission) => {
             return state.userInfo.permissionCode.includes(permission);
