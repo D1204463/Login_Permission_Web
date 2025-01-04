@@ -1,6 +1,11 @@
 <template>
     <div class="unit-container">
         <!-- 頁籤 -->
+      <div v-if="showToast"
+           class="toast-message"
+           v-cloak>
+        添加科別成功
+      </div>
         <ul class="nav nav-tabs mb-4">
             <li class="nav-item">
                 <a class="nav-link active" href="#">科別管理</a>
@@ -288,6 +293,8 @@ export default {
               department_id: "",
             },
             showError: false,
+          showToast: false,
+
         }
     },
     methods: {
@@ -389,8 +396,14 @@ export default {
                   console.log(responseBody.message);
                   await this.getUnitData();
 
-                  const modal = bootstrap.Modal.getInstance(document.getElementById('createUnitModal'));
-                  modal.hide();
+                  const closeButton = document.querySelector('#createUnitModal .btn-close');
+                  if (closeButton) {
+                    closeButton.click();
+                  }
+                  this.showToast = true;
+                  setTimeout(() => {
+                    this.showToast = false;
+                  }, 3000);
                 } else {
                     console.log("添加科別失敗:", response.statusText);
                 }
@@ -530,6 +543,27 @@ export default {
     /* 只保留左右間距 */
     margin-right: 5%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.toast-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  color: #10b981;  /* 綠色文字 */
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  font-size: 16px;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -20px); }
+  15% { opacity: 1; transform: translate(-50%, 0); }
+  85% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -20px); }
 }
 
 .nav-tabs {
