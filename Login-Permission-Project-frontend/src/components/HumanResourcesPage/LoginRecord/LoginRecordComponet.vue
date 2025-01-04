@@ -67,7 +67,8 @@
                 <tr v-for="record in filteredRecords">
                   <td>{{ record.employee_id }}</td>
                   <!-- 後端傳回來的 LoginRecord 沒有employeeName -->
-                  <td>{{ record.name }}</td>
+                  <!-- <td>{{ record.name }}</td> -->
+                  <td>{{ record.employee && record.employee.name ? record.employee.name : '-' }}</td>
                   <td>{{ record.ip_address }}</td>
                   <td>{{ record.login_time }}</td>
                   <td>{{ record.logout_time }}</td>
@@ -164,6 +165,7 @@ export default {
         }
 
         const data = await response.json();
+        console.log('後端返回的數據:', data);
         this.loginRecords = data;
       } catch (error) {
         console.error('Error fetching login records:', error);
