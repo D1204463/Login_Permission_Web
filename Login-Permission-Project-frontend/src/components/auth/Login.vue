@@ -119,10 +119,20 @@ export default {
         } else {
           // 顯示錯誤訊息
           errorMessage.value = result.message;
+          console.log('登入失敗:', result.message);
         }
       } catch (error) {
-        console.error("登錄失敗:", error);
-        errorMessage.value = '登入失敗，請稍後再試';
+        if (error.response) {
+          console.error("HTTP 狀態碼:", error.response.status);
+          console.error("後端返回訊息:", error.response.data);
+          errorMessage.value = error.response.data.message || '登入失敗，請稍後再試';
+        } else if (error.request) {
+          console.error("未收到後端響應:", error.request);
+          errorMessage.value = '後端未響應，請稍後再試';
+        } else {
+          console.error("其他錯誤:", error.message);
+          errorMessage.value = '登入失敗，請稍後再試';
+        }
       } finally {
         isLoading.value = false;
       }

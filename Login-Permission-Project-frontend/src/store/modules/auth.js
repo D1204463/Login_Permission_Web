@@ -144,7 +144,7 @@ export default {
                     return { success: false, message: errorMessage };
                 }
             } catch (error) {
-                console.error("登錄請求失敗:", error);
+                console.error("登錄請求失敗:", error.message);
                 return { success: false, message: "登錄失敗，請檢查網路是否連線正常" };
             }
         },

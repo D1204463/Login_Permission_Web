@@ -20,22 +20,26 @@ const routes = [
     {
         path: '/Home',
         name: 'Home',
-        component: Home
+        component: Home,
+        meta: { requiresAuth: true }
     },
     {
         path: '/MyNotifications',
         name: 'MyNotifications',
-        component: Home
+        component: Home,
+        meta: { requiresAuth: true }
     },
     {
         path: '/department-announcements',
         name: 'DepartmentAnnouncements',
-        component: Home
+        component: Home,
+        meta: { requiresAuth: true }
     },
     {
         path: '/company-announcements',
         name: 'CompanyAnnouncements',
-        component: Home
+        component: Home,
+        meta: { requiresAuth: true }
     },
     {
         path: '/',
@@ -152,7 +156,9 @@ const routes = [
     {
         path: '/Profile',
         name: 'Profile',
-        component: ProfileView
+        component: ProfileView,
+        meta: {
+            requiresAuth: true}
     },
     {
         path: '/Role',
@@ -182,34 +188,26 @@ router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     const isAuthenticated = store.state.auth.isAuthenticated;
 
-    // 調試訊息
-    console.log('Route authentication:', {
-        path: to.path,
-        requiresAuth,
-        isAuthenticated,
-        permissions: to.meta.permissions
-    });
+
+    // 如果沒有匹配的路由，跳轉到登錄頁面
+    if (to.matched.length === 0) {
+        next('/');
+        return;
+    }
 
     // 檢查認證
     if (requiresAuth && !isAuthenticated) {
         console.log('Authentication required, redirecting to login');
-        //如果沒有 admin 權限，就跳轉到其他頁面
         next('/');
         return;
     }
+
 
     // 檢查權限
     if (to.meta.permissions && isAuthenticated) {
         // 使用命名空間的 getter
         const hasRequiredPermission = store.getters['auth/hasAnyPermission'](to.meta.permissions);
-        console.log('Permission check:', {
-            required: to.meta.permissions,
-            has: hasRequiredPermission,
-            userPermissions: store.state.auth.userInfo.permissionCode
-        });
-
         if (!hasRequiredPermission) {
-            console.log('Permission denied');
             next('/403'); // 要有一個 403 頁面
             return;
         }
