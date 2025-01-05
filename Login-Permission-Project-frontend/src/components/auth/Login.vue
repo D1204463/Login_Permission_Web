@@ -60,6 +60,8 @@
       </form>
     </div>
   </div>
+
+  <ForgotPassword v-model:showDialog="showForgotPasswordDialog" />
 </template>
 
 <script>
@@ -74,15 +76,18 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useRouter } from "vue-router";
 import { useStore } from 'vuex';
+import ForgotPassword from './ForgotPassword.vue';
 
 // 添加圖標到庫中
 library.add(faUserCircle, faEye, faEyeSlash, faSpinner)
 
 export default {
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    ForgotPassword
   },
   setup() {
+    const showForgotPasswordDialog = ref(false)
     // 響應式狀態
     const employeeId = ref('')
     const password = ref('')
@@ -138,6 +143,7 @@ export default {
 
     // 處理忘記密碼
     const handleForgotPassword = () => {
+      showForgotPasswordDialog.value = true
       // TODO: 實作忘記密碼邏輯
       console.log('忘記密碼')
     }
@@ -151,7 +157,8 @@ export default {
       togglePassword,
       handleLogin,
       handleRegister,
-      handleForgotPassword
+      handleForgotPassword,
+      showForgotPasswordDialog
     }
   }
 }
