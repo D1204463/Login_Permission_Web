@@ -11,6 +11,7 @@ import Department from '@/views/ManagementPage/Department.vue';
 import EmployeeStatusView from '@/views/ManagementPage/EmployeeStatusView.vue';
 import Employee from "@/views/HumanResourcesPage/EmployeeView.vue";
 import LoginRecord from "@/views/HumanResourcesPage/LoginRecord.vue";
+import ResetPassword from '@/views/auth/ResetPassword.vue'
 
 import store from '@/store';
 import { PERMISSIONS } from '@/constants/permissions';
@@ -47,6 +48,12 @@ const routes = [
         path: '/register',
         name: 'Register',
         component: Register,
+        meta: { requiresAuth: false }
+    },
+    {
+        path: '/reset-password',
+        name: 'ResetPassword',
+        component: ResetPassword,
         meta: { requiresAuth: false }
     },
     {
