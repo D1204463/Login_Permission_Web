@@ -10,7 +10,7 @@
             </button>
         </div>
 
-        <!-- 員工搜尋欄位 -->
+        <!------------------------------------------ 員工搜尋條件欄位 -------------------------------------------->
         <div class="col">
             <div class="card w-100 mb-4 border-0">
                 <div class="card-body">
@@ -32,10 +32,12 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <select class="form-select" id="departmentSelect" v-model="searchByDepartmentId">
-                                        <option selected value="">選擇部門</option>
-                                        <option v-for="department in departments">
-                                            {{ department }}
+                                    <select class="form-select" id="departmentSelect" v-model="searchByDepartmentName">
+                                        <option value="">選擇部門</option>
+                                        <option v-for="department in departments"
+                                                :key="department.department_id"
+                                                :value="department.department_name">
+                                            {{ department.department_name }}
                                         </option>
                                     </select>
                                     <label for="departmentSelect">部門查詢</label>
@@ -43,10 +45,12 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <select class="form-select" id="unitSelect" v-model="searchByUnitId">
-                                        <option selected value="">選擇科別</option>
-                                        <option v-for="unit in units">
-                                            {{ unit }}
+                                    <select class="form-select" id="unitSelect" v-model="searchByUnitName">
+                                        <option   value="">選擇科別</option>
+                                        <option v-for="unit in units"
+                                                :key = "unit.unit_id"
+                                                :value="unit.unit_name">
+                                            {{ unit.unit_name }}
                                         </option>
                                     </select>
                                     <label for="unitSelect">科別查詢</label>
@@ -54,10 +58,14 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <select class="form-select" id="positionSelect" v-model="searchByPositionId">
-                                        <option selected value="">選擇職位</option>
-                                        <option v-for="position in positions">
-                                            {{ position }}
+                                    <select class="form-select"
+                                            id="positionSelect"
+                                            v-model="searchByPositionName">
+                                        <option   value="">選擇職位</option>
+                                        <option v-for="position in positions"
+                                                :key="position.position_id"
+                                                :value="position.position">
+                                            {{ position.position }}
                                         </option>
                                     </select>
                                     <label for="positionSelect">職位查詢</label>
@@ -65,12 +73,12 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <select class="form-select" id="statusSelect" v-model="searchByStatusId">
-                                        <option selected value="">選擇狀態</option>
-                                        <option v-for="statusName in status">
-                                            {{ statusName }}
-                                        </option>
-                                    </select>
+                                  <select class="form-select" id="statusSelect" v-model="searchByStatusName">
+                                    <option value="">選擇狀態</option>
+                                    <option v-for="status in status" :key="status.status_id" :value="status.name">
+                                      {{ status.name }}
+                                    </option>
+                                  </select>
                                     <label for="statusSelect">狀態查詢</label>
                                 </div>
                             </div>
@@ -186,6 +194,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
 import { mapGetters } from 'vuex'
+import {fetchDepartment} from "@/utils/fetchDepartment.js";
+import{fetchStatus} from "@/utils/fetchStatus.js";
+import{fetchUnits} from "@/utils/fetchUnits.js";
+import{fetchPosition} from "@/utils/fetchPosition.js";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -217,10 +229,10 @@ export default {
             status: [],
             searchByEmployeeId: "",
             searchByName: "",
-            searchByDepartmentId: "",
-            searchByUnitId: "",
-            searchByPositionId: "",
-            searchByStatusId: "",
+            searchByDepartmentName: "",
+            searchByUnitName: "",
+            searchByPositionName: "",
+            searchByStatusName: "",
             newEmployee: {
                 name: '',
                 email: '',
@@ -252,7 +264,6 @@ export default {
                         "Content-Type": "application/json",
                         'Authorization': `Bearer ${token}`
                     },
-                    //  body: JSON.stringify(this.newEmployee)
                 });
                 console.log("API 回應:", response);
 
@@ -272,10 +283,10 @@ export default {
         resetSearch() {
             this.searchByEmployeeId = "";
             this.searchByName = "";
-            this.searchByDepartmentId = "";
-            this.searchByUnitId = "";
-            this.searchByPositionId = "";
-            this.searchByStatusId = "";
+            this.searchByDepartmentName = "";
+            this.searchByUnitName = "";
+            this.searchByPositionName = "";
+            this.searchByStatusName = "";
             this.fetchEmployees();
         },
 
@@ -300,10 +311,10 @@ export default {
                 return (
                     (this.searchByEmployeeId === "" || String(employee.employee_id) === this.searchByEmployeeId) &&
                     (this.searchByName === "" || employee.name.includes(this.searchByName)) &&
-                    (this.searchByDepartmentId === "" || employee.departmentName === this.searchByDepartmentId) &&
-                    (this.searchByUnitId === "" || employee.unitName === this.searchByUnitId) &&
-                    (this.searchByPositionId === "" || employee.positionName === this.searchByPositionId) &&
-                    (this.searchByStatusId === "" || employee.statusName === this.searchByStatusId)
+                    (this.searchByDepartmentName === "" || (employee?.department?.department_name ?? '') === this.searchByDepartmentName) &&
+                    (this.searchByUnitName === "" || (employee?.position?.unit?.unit_name ?? '') === this.searchByUnitName) &&
+                    (this.searchByPositionName === "" || (employee.position?.position || '') === this.searchByPositionName) &&
+                    (this.searchByStatusName === "" || employee.employeeStatus.name === this.searchByStatusName)
                 );
             });
         },
@@ -351,11 +362,15 @@ export default {
                 this.isUpdating = false;
             }
         },
-
         async onDeleteEmployee(employeeId) {
+          const token = localStorage.getItem('JWT_Token');
             try {
                 const response = await fetch(`http://localhost:8085/employee/test/delete/${employeeId}`, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+                      "Content-Type": "application/json",
+                      'Authorization': `Bearer ${token}`
+                    }
                 });
                 if (response.ok) {
                     await this.fetchEmployees();
@@ -363,26 +378,6 @@ export default {
             } catch (error) {
                 console.error("Error deleting employee:", error);
             }
-        },
-
-        addDepartments() {
-            this.departments = this.employeeInfo.map(info => info.departmentName);
-            this.departments = [...new Set(this.departments)];
-        },
-
-        addUnits() {
-            this.units = this.employeeInfo.map(info => info.unitName);
-            this.units = [...new Set(this.units)];
-        },
-
-        addPosition() {
-            this.positions = this.employeeInfo.map(info => info.positionName);
-            this.positions = [...new Set(this.positions)];
-        },
-
-        addStatus() {
-            this.status = this.employeeInfo.map(info => info.statusName);
-            this.status = [...new Set(this.status)];
         },
         async fetchRoles() {
             try {
@@ -403,6 +398,60 @@ export default {
                 console.error("Error fetching roles:", error);
             }
         },
+        async fetchDepartment(){
+            try{
+              const response = await fetchDepartment( );
+              if(response.ok) {
+                this.departments = await response.json()
+                console.log(this.departments);
+              } else {
+                console.log("獲取部門失敗,請檢查是否有權限或有效憑證");
+              }
+            } catch (error) {
+              console.log("發送獲取部門請求失敗,請檢查網路連線");
+            }
+        },
+      async fetchStatus () {
+        try{
+          const response = await fetchStatus();
+          if(response.ok) {
+            this.status = await response.json()
+
+          }else {
+            console.log("獲取狀態失敗,請檢查是否有權限或有效憑證");
+          }
+        } catch (error) {
+          console.log("發送獲取狀態請求失敗,請檢查網路連線");
+        }
+      },
+      async fetchUnits () {
+          try{
+            const response = await fetchUnits();
+            if(response.ok) {
+              const responseBody = await response.json();
+              this.units = responseBody.data;
+
+            }else {
+              console.log("獲取科別失敗,請檢查是否有權限或有效憑證");
+            }
+          } catch (error) {
+            console.log("發送獲取科別請求失敗,請檢查網路連線");
+          }
+      },
+      async fetchPosition () {
+          try{
+            const response = await fetchPosition();
+            if(response.ok) {
+              this.positions = await response.json();
+
+            }else {
+              console.log("獲取職位失敗,請檢查是否有權限或有效憑證");
+            }
+          } catch (error) {
+            console.log("發送獲取職位請求失敗,請檢查網路連線");
+          }
+      },
+
 
         toggleRole(role) {
             if (!this.selectedEmployee) return;
@@ -421,13 +470,14 @@ export default {
             }
         }
     },
-    async mounted() {
+    async created() {
         await this.fetchEmployees();
         await this.fetchRoles();
-        this.addDepartments();
-        this.addUnits();
-        this.addPosition();
-        this.addStatus();
+        await this.fetchDepartment();
+        await this.fetchStatus ();
+        await this.fetchUnits();
+        await this.fetchPosition();
+
     },
     computed: {
         ...mapGetters('auth', ['userId'])
