@@ -3,5 +3,5 @@
 </template>
 
 <script setup>
-import RegisterComponent from '../components/Register.vue';
+import RegisterComponent from '@/components/Register.vue';
 </script>
