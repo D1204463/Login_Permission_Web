@@ -115,10 +115,10 @@
                     <td class="text-center">{{ employee.name }}</td>
                     <td class="text-center">{{ employee.email }}</td>
                     <td class="text-center">{{ employee.phoneNumber }}</td>
-                    <td class="text-center">{{ employee.position.unit.department.department_name ? employee.position.unit.department.department_name : 'N/A' }}</td>
-                    <td class="text-center">{{ employee.position.unit.unit_name ? employee.position.unit.unit_name : 'N/A' }}</td>
-                    <td class="text-center">{{ employee.position.position ? employee.position.position : 'N/A' }}</td>
-                    <td class="text-center">{{ employee.employeeStatus.name ? employee.employeeStatus.name : 'N/A' }}</td>
+                    <td class="text-center">{{ employee?.position?.unit?.department?.department_name || 'N/A' }}</td>
+                    <td class="text-center">{{ employee?.position?.unit?.unit_name || 'N/A' }}</td>
+                    <td class="text-center">{{ employee?.position?.position || 'N/A' }}</td>
+                    <td class="text-center">{{ employee?.employeeStatus?.name || 'N/A' }}</td>
                     <td class="text-center">
                         <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
                             data-bs-target="#deleteEmployeeModal" @click="onDeleteEmployee(employee.employee_id)">
@@ -130,7 +130,8 @@
         </table>
     </div>
     <!-- 編輯員工 Modal -->
-    <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -157,8 +158,7 @@
                     <h6 class="mb-3 mt-4">角色設定</h6>
                     <div class="permission-checkboxes">
                         <div v-for="role in roles" :key="role.role_id" class="form-check">
-                            <input class="form-check-input" type="checkbox" 
-                                :id="'role-' + role.role_id"
+                            <input class="form-check-input" type="checkbox" :id="'role-' + role.role_id"
                                 :checked="selectedEmployee && selectedEmployee.roles.some(r => r.role_id === role.role_id)"
                                 @change="toggleRole(role)">
                             <label class="form-check-label" :for="'role-' + role.role_id">
@@ -251,7 +251,7 @@ export default {
                     headers: {
                         "Content-Type": "application/json",
                         'Authorization': `Bearer ${token}`
-                     },
+                    },
                     //  body: JSON.stringify(this.newEmployee)
                 });
                 console.log("API 回應:", response);
@@ -314,18 +314,18 @@ export default {
 
         async updateEmployee() {
             if (this.isUpdating) return;
-            
+
             this.isUpdating = true;
             try {
                 const token = localStorage.getItem('JWT_Token');
                 const updatedDto = {
-                  employee_id:this.selectedEmployee.employee_id,
-                  name: this.selectedEmployee.name,
-                  email: this.selectedEmployee.email,
-                  phoneNumber: this.selectedEmployee.phoneNumber,
-                  roleIds: this.selectedEmployee.roles.map(function(role) {
-                    return role.role_id;
-                  }),
+                    employee_id: this.selectedEmployee.employee_id,
+                    name: this.selectedEmployee.name,
+                    email: this.selectedEmployee.email,
+                    phoneNumber: this.selectedEmployee.phoneNumber,
+                    roleIds: this.selectedEmployee.roles.map(function (role) {
+                        return role.role_id;
+                    }),
                 };
                 console.log(updatedDto);
 
@@ -338,7 +338,7 @@ export default {
                     body: JSON.stringify(updatedDto)
                 });
                 if (response.ok) {
-                  console.log("test success");
+                    console.log("test success");
                     await this.fetchEmployees();
                     document.querySelector('#editEmployeeModal [data-bs-dismiss="modal"]').click();
                     this.selectedEmployee = null;
@@ -406,7 +406,7 @@ export default {
 
         toggleRole(role) {
             if (!this.selectedEmployee) return;
-            
+
             const index = this.selectedEmployee.roles.findIndex(r => r.role_id === role.role_id);
             if (index === -1) {
                 // 如果角色不存在，添加它
@@ -609,6 +609,7 @@ export default {
     background-color: #bb2d3b;
     border-color: #b02a37;
 }
+
 .spinner-border {
     width: 1rem;
     height: 1rem;

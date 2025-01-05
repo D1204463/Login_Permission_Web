@@ -67,7 +67,8 @@
                 <tr v-for="record in filteredRecords">
                   <td>{{ record.employee_id }}</td>
                   <!-- 後端傳回來的 LoginRecord 沒有employeeName -->
-                  <td>{{ record.name }}</td>
+                  <!-- <td>{{ record.name }}</td> -->
+                  <td>{{ record.employee && record.employee.name ? record.employee.name : '-' }}</td>
                   <td>{{ record.ip_address }}</td>
                   <td>{{ record.login_time }}</td>
                   <td>{{ record.logout_time }}</td>
@@ -164,6 +165,7 @@ export default {
         }
 
         const data = await response.json();
+        console.log('後端返回的數據:', data);
         this.loginRecords = data;
       } catch (error) {
         console.error('Error fetching login records:', error);
@@ -230,6 +232,34 @@ export default {
   .unit-container {
     padding: 20px;
   }
+}
+
+.content-wrapper {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 10px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .content-wrapper {
+    padding: 1.5rem;
+    margin: 20px 20px 20px 0;
+  }
+}
+
+.search-section {
+  position: relative;
+  width: 100%;
+  z-index: 1; /* 確保搜尋區域在正確的層級 */
+}
+
+.search-card {
+  position: relative;
+  width: 100%;
 }
 
 .content-wrapper {
