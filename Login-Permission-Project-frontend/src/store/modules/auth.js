@@ -41,8 +41,6 @@ export default {
         },
         //登入後更新使用者的資訊,
         updateUserInfo(state, employeeData) {
-            console.log(employeeData.position.position);
-            console.log(employeeData.position.unit.department_name);
             // 根據 API 回傳的資料結構更新 userInfo
             state.userInfo = {
                 ...state.userInfo,
@@ -51,13 +49,13 @@ export default {
                 userEmail: employeeData.email,
                 userPhone: employeeData.phoneNumber,
                 userStatusId: employeeData.status_id,
-                employeeStatus: employeeData.employeeStatus.name,
-                employeePosition: employeeData.position.position,
-                employeeDepartment: employeeData.position.unit.department.department_name,
-                roles: employeeData.roles,
+                employeeStatus: employeeData?.employeeStatus?.name ?? '未設定狀態',
+                employeePosition: employeeData?.position?.position ?? '未設定職位',
+                employeeDepartment: employeeData?.department?.department_name ?? '未設定部門',
+                roles: employeeData.roles ?? [],
                 // 從員工角色中提取所有權限碼
-                permissionCode: employeeData.roles.reduce((acc, role) => {
-                    const permissions = role.permissions.map(p => p.permission_code);
+                permissionCode: (employeeData.roles ?? []).reduce((acc, role) => {
+                    const permissions = role.permissions?.map(p => p.permission_code) ?? [];
                     return [...acc, ...permissions];
                 }, [])
             };
