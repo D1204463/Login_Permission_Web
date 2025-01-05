@@ -22,22 +22,26 @@ const routes = [
     {
         path: '/Home',
         name: 'Home',
-        component: Home
+        component: Home,
+        meta: { requiresAuth: true }
     },
     {
         path: '/MyNotifications',
         name: 'MyNotifications',
-        component: Home
+        component: Home,
+        meta: { requiresAuth: true }
     },
     {
         path: '/department-announcements',
         name: 'DepartmentAnnouncements',
-        component: Home
+        component: Home,
+        meta: { requiresAuth: true }
     },
     {
         path: '/company-announcements',
         name: 'CompanyAnnouncements',
-        component: Home
+        component: Home,
+        meta: { requiresAuth: true }
     },
     {
         path: '/',
@@ -160,7 +164,9 @@ const routes = [
     {
         path: '/Profile',
         name: 'Profile',
-        component: ProfileView
+        component: ProfileView,
+        meta: {
+            requiresAuth: true}
     },
     {
         path: '/Role',
@@ -199,6 +205,12 @@ router.beforeEach(async (to, from, next) => {
         isAuthenticated: isAuthenticated
     });
 
+    // 如果沒有匹配的路由，跳轉到登錄頁面
+    if (to.matched.length === 0) {
+        next('/');
+        return;
+    }
+
     // 如果有 token 但還沒認證，嘗試初始化
     if (token && !isAuthenticated) {
         try {
@@ -218,7 +230,7 @@ router.beforeEach(async (to, from, next) => {
             next('/');
             return;
         }
-        
+
         // 權限檢查
         if (to.meta.permissions) {
             const hasPermission = store.getters['auth/hasAnyPermission'](to.meta.permissions);
