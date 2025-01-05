@@ -57,7 +57,8 @@
             </div>
 
             <!-- 成功訊息 -->
-            <div v-else class="text-center text-white fade-in second" role="status" aria-live="polite">
+            <div v-else class="text-center text-white fade-in second" :class="{ 'fade-out': isRedirecting }"
+                role="status" aria-live="polite">
                 <font-awesome-icon icon="check-circle" size="3x" class="text-success mb-3" />
                 <h4>密碼重置成功！</h4>
                 <p>請使用新密碼登入。</p>
@@ -95,6 +96,7 @@ export default {
         const token = route.query.token
 
         const password = ref('')
+        const isRedirecting = ref(false)
         const confirmPassword = ref('')
         const showPassword = ref(false)
         const showConfirmPassword = ref(false)
@@ -151,7 +153,13 @@ export default {
                 if (data.success && data.message) {
                     console.log('密碼重置成功:', data.message); // 確保格式正確
                     isSuccess.value = true
-                    await router.push('/');
+                    // 使用 setTimeout 延遲跳轉，讓使用者有時間看到成功訊息
+                    setTimeout(() => {
+                        isRedirecting.value = true  // 開始淡出動畫
+                        setTimeout(async () => {
+                            await router.push('/')
+                        }, 500)  // 等待動畫完成後跳轉
+                    }, 2500)  // 顯示成功訊息 1.5 秒
                 } else {
                     // 如果格式不正確，打印完整返回數據，供調試
                     console.error('返回格式不正確:', data);
@@ -171,6 +179,7 @@ export default {
             showPassword,
             showConfirmPassword,
             isLoading,
+            isRedirecting,
             errorMessage,
             isSuccess,
             isPasswordValid,
@@ -291,5 +300,21 @@ export default {
     background-color: #4BB543;
     color: white;
     box-shadow: 0 5px 15px rgba(75, 181, 67, 0.4);
+}
+
+.fade-out {
+    animation: fadeOut 0.5s ease-out;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
 }
 </style>
