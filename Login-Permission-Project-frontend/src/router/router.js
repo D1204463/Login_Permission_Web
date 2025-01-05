@@ -12,6 +12,7 @@ import EmployeeStatusView from '@/views/ManagementPage/EmployeeStatusView.vue';
 import Employee from "@/views/HumanResourcesPage/EmployeeView.vue";
 import LoginRecord from "@/views/HumanResourcesPage/LoginRecord.vue";
 import ResetPassword from '@/views/auth/ResetPassword.vue'
+import Forbidden from '@/views/auth/403.vue'
 
 import store from '@/store';
 import { PERMISSIONS } from '@/constants/permissions';
@@ -175,7 +176,12 @@ const routes = [
             ]
         }
     },
-
+    {
+        path: '/403',
+        name: 'Forbidden',
+        component: Forbidden,
+        meta: { requiresAuth: false }  // 不需要認證就可以訪問
+    },
 ]
 
 const router = createRouter({
