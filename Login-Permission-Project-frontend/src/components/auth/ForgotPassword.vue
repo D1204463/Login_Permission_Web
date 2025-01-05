@@ -102,7 +102,7 @@ export default {
 
         const data = await response.json()
 
-        if (data.success) {
+        if (data.message && data.data === null) {
           emailSent.value = true
         } else {
           errorMessage.value = data.message || '發送重置郵件失敗'

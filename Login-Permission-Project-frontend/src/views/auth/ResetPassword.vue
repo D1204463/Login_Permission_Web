@@ -142,19 +142,20 @@ export default {
                     })
                 })
 
+                if (!response.ok) {
+                    throw new Error(`HTTP錯誤: ${response.status}`);
+                }
+
                 const data = await response.json()
 
-                if (data.success) {
+                if (data.success && data.message) {
+                    console.log('密碼重置成功:', data.message); // 確保格式正確
                     isSuccess.value = true
-                    try {
-                        await new Promise(resolve => setTimeout(resolve, 3000));
-                        await router.push('/');
-                    } catch (error) {
-                        console.error('導航失敗:', error);
-                        errorMessage.value = '導航至登入頁面失敗';
-                    }
+                    await router.push('/');
                 } else {
-                    errorMessage.value = data.message || '重置密碼失敗'
+                    // 如果格式不正確，打印完整返回數據，供調試
+                    console.error('返回格式不正確:', data);
+                    errorMessage.value = '重置密碼失敗，請稍後再試';
                 }
             } catch (error) {
                 console.error('重置密碼失敗:', error)
