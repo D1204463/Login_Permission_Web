@@ -1,89 +1,75 @@
 <template>
-  <div class="unit-container">
-    <!-- 頁籤 -->
-    <ul class="nav nav-tabs mb-4">
-      <li class="nav-item">
-        <a class="nav-link active" href="#">登錄紀錄管理</a>
-      </li>
-    </ul>
-
-    <div class="content-wrapper">
-      <div class="search-section">
-        <!-- 添加權限檢查 -->
-        <div v-if="canReadAllLoginRecords">
-          <!-- 搜尋區塊 -->
-          <div class="search-card">
-            <div class="card w-100 mb-4 border-0">
-              <div class="card-body">
-                <div class="row g-3">
-                  <div class="col-12 col-md-6 col-lg-4">
-                    <div class="form-floating">
-                      <select class="form-select" id="floatingSelectGrid" v-model="loginDate">
-                        <option selected value="">選擇時間</option>
-                        <option value="1">一日</option>
-                        <option value="7">一周</option>
-                        <option value="30">一個月</option>
-                        <option value="90">三個月</option>
-                      </select>
-                      <label for="floatingSelectGrid">時間查詢</label>
-                    </div>
+  <div class="content-wrapper">
+    <div class="search-section">
+      <div v-if="canReadAllLoginRecords">
+        <!-- 搜尋區塊 -->
+        <div class="search-card">
+          <div class="card w-100 mb-4 border-0">
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-12 col-md-6 col-lg-4">
+                  <div class="form-floating">
+                    <select class="form-select" id="floatingSelectGrid" v-model="loginDate">
+                      <option selected value="">選擇時間</option>
+                      <option value="1">一日</option>
+                      <option value="7">一周</option>
+                      <option value="30">一個月</option>
+                      <option value="90">三個月</option>
+                    </select>
+                    <label for="floatingSelectGrid">時間查詢</label>
                   </div>
-                  <div class="col-12 col-md-6 col-lg-4">
-                    <div class="form-floating">
-                      <select class="form-select" id="statusSelect" v-model="loginStatus">
-                        <option value="">全部狀態</option>
-                        <option value="成功">成功</option>
-                        <option value="失敗">失敗</option>
-                      </select>
-                      <label for="statusSelect">狀態查詢</label>
-                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-4">
+                  <div class="form-floating">
+                    <select class="form-select" id="statusSelect" v-model="loginStatus">
+                      <option value="">全部狀態</option>
+                      <option value="成功">成功</option>
+                      <option value="失敗">失敗</option>
+                    </select>
+                    <label for="statusSelect">狀態查詢</label>
                   </div>
-                  <!-- 添加重置按鈕 -->
-                  <div class="col-12 col-md-auto">
-                    <button type="button" class="btn search-btn w-150" v-on:click="resetSearch">
-                      <font-awesome-icon :icon="['fas', 'rotate']" size="lg" />
-                    </button>
-                  </div>
+                </div>
+                <div class="col-12 col-md-auto">
+                  <button type="button" class="btn search-btn w-150" @click="resetSearch">
+                    <font-awesome-icon :icon="['fas', 'rotate']" size="lg" />
+                  </button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-
-          <!-- 員工資料表格 -->
-          <div class="table-responsive">
-            <table class="table">
-              <thead class="table-secondary">
-                <tr>
-                  <th>員工ID</th>
-                  <th>員工姓名</th>
-                  <th>登錄ip位址</th>
-                  <th>登錄時間</th>
-                  <th>登出時間</th>
-                  <th>狀態</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="record in filteredRecords">
-                  <td>{{ record.employee_id }}</td>
-                  <!-- 後端傳回來的 LoginRecord 沒有employeeName -->
-                  <!-- <td>{{ record.name }}</td> -->
-                  <td>{{ record.employee && record.employee.name ? record.employee.name : '-' }}</td>
-                  <td>{{ record.ip_address }}</td>
-                  <td>{{ record.login_time }}</td>
-                  <td>{{ record.logout_time }}</td>
-                  <td>
-                    <span class="status-badge" :class="{
-                      'status-success': record.status === '成功',
-                      'status-failed': record.status === '失敗'
-                    }">
-                      {{ record.status }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <!-- 登錄記錄表格 -->
+        <div class="table-responsive">
+          <table class="table">
+            <thead class="table-secondary">
+              <tr>
+                <th>員工ID</th>
+                <th>員工姓名</th>
+                <th>登錄ip位址</th>
+                <th>登錄時間</th>
+                <th>登出時間</th>
+                <th>狀態</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="record in filteredRecords" :key="record.id">
+                <td>{{ record.employee_id }}</td>
+                <td>{{ record.employee && record.employee.name ? record.employee.name : '-' }}</td>
+                <td>{{ record.ip_address }}</td>
+                <td>{{ record.login_time }}</td>
+                <td>{{ record.logout_time }}</td>
+                <td>
+                  <span class="status-badge" :class="{
+                    'status-success': record.status === '成功',
+                    'status-failed': record.status === '失敗'
+                  }">
+                    {{ record.status }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
