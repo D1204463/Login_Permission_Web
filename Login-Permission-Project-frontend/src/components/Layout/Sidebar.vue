@@ -127,7 +127,12 @@ export default {
                         {
                             name: '角色管理',
                             url: '/role',
-                            requiredPermissions: []
+                            requiredPermissions: [
+                                PERMISSIONS.ROLE.READ,
+                                PERMISSIONS.ROLE.UPDATE,
+                                PERMISSIONS.ROLE.CREATE,
+                                PERMISSIONS.ROLE.DELETE,
+                            ]
                         },
                         {
                             name: '部門管理',
@@ -204,7 +209,7 @@ export default {
                             name: '登入記錄',
                             url: '/loginRecord',
                             requiredPermissions: [
-                                // PERMISSIONS.RECORD.READ
+                                PERMISSIONS.RECORD.READ
                             ]
                         }
                     ]
