@@ -80,8 +80,7 @@
                             <th class="text-center" style="width: 80px">編輯</th>
                             <th class="text-center">職位編號</th>
                             <th class="text-center">職位名稱</th>
-                            <th class="text-center">科別代號</th>
-                            <th class="text-center">科別名稱</th>
+                            <th class="text-center">所屬科別</th>
                             <th class="text-center" style="width: 80px">刪除</th>
                         </tr>
                     </thead>
@@ -96,8 +95,7 @@
                             </td>
                             <td class="text-center">{{ position.position_id }}</td>
                             <td class="text-center">{{ position.position }}</td>
-                            <td class="text-center">{{ position.unit_id }}</td>
-                            <td class="text-center">{{ position.unit.unit_name }}</td>
+                            <td class="text-center">{{ position.unit?.unit_name }}</td>
                             <td class="text-center">
                                 <!-- 點擊 Button 出現 Delete Position Modal -->
                                 <button type="button" class="btn btn-link text-danger" data-bs-toggle="modal"
@@ -132,7 +130,7 @@
                     </div>
                     <!-- 科別 Unit，從 units 資料填充-->
                     <div class="mb-3 row">
-                        <label for="chooseUnitID" class="col-sm-3 col-form-label">科別ID</label>
+                        <label for="chooseUnitID" class="col-sm-3 col-form-label">科別</label>
                         <div class="col-sm-9">
                             <select class="form-select" id="chooseUnitID" v-model="newPosition.unit_id"
                                 @change="updateSelectedUnitName">
@@ -143,13 +141,7 @@
                             </select>
                         </div>
                     </div>
-                    <!-- 科別名稱顯示 -->
-                    <div class="mb-3 row">
-                        <label for="showUnitName" class="col-sm-3 col-form-label">科別名稱</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" :value="selectedUnitName" readonly>
-                        </div>
-                    </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
@@ -174,18 +166,18 @@
                     <div class="mb-3 row">
                         <label for="editPosition" class="col-sm-3 col-form-label">職位名稱</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="editPosition" v-model="edidPosition.position"
+                            <input type="text" class="form-control" id="editPosition" v-model="editPosition.position"
                                 aria-label="Position">
                         </div>
                     </div>
                     <!-- 科別 Unit，從 units 資料填充-->
                     <div class="mb-3 row">
-                        <label for="editUnitID" class="col-sm-3 col-form-label">職位代號</label>
+                        <label for="editUnitID" class="col-sm-3 col-form-label">科別</label>
                         <div class="col-sm-9">
-                            <select class="form-select" id="editUnitID" v-model="edidPosition.unit_id">
+                            <select class="form-select" id="editUnitID" v-model="editPosition.unit_id">
                                 <option disabled value="">選擇科別</option>
                                 <option v-for="unit in units" :key="unit.unit_id" :value="unit.unit_id">
-                                    {{ unit.unit_id }} ({{ unit.unit_name }})
+                                    {{ unit.unit_id }} ({{ unit.unit_name  }})
                                 </option>
                             </select>
                         </div>
@@ -256,11 +248,10 @@ export default {
                 unit_id: "",
             },
             newPosition: {
-                position_id: "",
                 position: "",
                 unit_id: "",
             },
-            edidPosition: {
+            editPosition: {
                 position_id: "",
                 position: "",
                 unit_id: "",
@@ -270,9 +261,21 @@ export default {
     methods: {
         async getUnitData() { //get 科別(Unit)的資料
             try {
-                let response = await fetch("http://localhost:8085/unit/test/get");
-                this.units = await response.json();
-                console.log(this.units);
+                 const response = await fetch("http://localhost:8085/unit/test/get",{
+                  method:"GET",
+                   headers:{
+                     "Authorization": "Bearer " + localStorage.getItem("JWT_Token")
+                   }
+
+                });
+                 if(response.ok) {
+                   const responseBody =await  response.json();
+                   this.units = responseBody.data;
+                   console.log(this.units);
+                 } else {
+                   console.log("獲取科別資訊失敗");
+                 }
+
             } catch (error) {
                 console.log('Error Get Units:', error);
             }
@@ -323,20 +326,25 @@ export default {
             this.getPositionData(); //重新Get所有資料
         },
         async createPosition() { //新增Position的方法
+          console.log(this.newPosition);
             try {
-                fetch("http://localhost:8085/Position/add", {
+                const response = await fetch("http://localhost:8085/Position/add", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("JWT_Token")
                     },
                     body: JSON.stringify(this.newPosition),
-                }).then(() => {
+                });
+              if(response.ok)  {
                     toast.success('新增職位成功');
                     console.log(response.json);
-                    this.getPositionData();
-                });
+                    await this.getPositionData();
+                } else {
+                toast.error("添加職位失敗");
+              }
             } catch (error) {
-                toast.error('新增職位失敗');
+                toast.error('操作失敗');
                 console.log('Error Add Position:', error);
             }
         },
@@ -358,22 +366,27 @@ export default {
         },
 
         onUpdatePosition(position) { //選到要修改的Position，資料要帶入updatePosition方法
-            this.edidPosition = { ...position };
+            this.editPosition = { ...position };
         },
         async updatePosition() { //修改Position的方法
+          console.log(this.editPosition);
             try {
-                fetch("http://localhost:8085/Position/edit", {
+                const response = await fetch("http://localhost:8085/Position/edit", {
                     method: "PUT",
-                    header: {
+                    headers: {
                         "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("JWT_Token")
                     },
-                    body: JSON.stringify(this.edidPosition),
-                }).then(() => {
+                    body: JSON.stringify(this.editPosition),
+                })
+              if(response.ok){
                     toast.success('更新職位成功');
-                    this.getPositionData();
-                });
-            } catch (error) {
+                    await this.getPositionData();
+                } else {
                 toast.error('更新職位失敗');
+              }
+            } catch (error) {
+                toast.error('操作異常');
                 console.log('Error Update Position:', error);
             }
         },
