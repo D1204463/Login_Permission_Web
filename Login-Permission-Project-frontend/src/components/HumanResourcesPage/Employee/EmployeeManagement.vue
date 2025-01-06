@@ -2,13 +2,13 @@
     <!-- 員工管理內容 -->
     <div class="row g-3 align-items-center">
         <!-- 新增員工按鈕 -->
-        <div class="col-auto">
+        <!-- <div class="col-auto">
             <button type="button" class="btn add-employee-btn" style="margin-bottom:20px;" data-bs-toggle="modal"
                 data-bs-target="#createEmployeeModal" @click="">
                 <font-awesome-icon :icon="['fas', 'plus']" size="2xl" class="me-2" />
                 新增員工
             </button>
-        </div>
+        </div> -->
 
         <!------------------------------------------ 員工搜尋條件欄位 -------------------------------------------->
         <div class="col">
@@ -197,7 +197,7 @@
                         <select class="form-select" id="editPosition" v-model="selectedEmployee.status.status_id">
                             <option value="" disabled>選擇狀態</option>
                             <option v-for="stat in status" :key="stat.status_id" :value="stat.status_id">
-                                {{ stat.status_id }}
+                                {{ stat.name }}
                             </option>
                         </select>
                     </div>
