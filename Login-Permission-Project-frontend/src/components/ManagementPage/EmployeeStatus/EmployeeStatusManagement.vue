@@ -11,8 +11,8 @@
       <div class="row g-3 align-items-center">
         <!-- 新增狀態按鈕 -->
         <div class="col-auto">
-          <button v-if="canCreateStatus" type="button" class="btn add-status-btn" style="margin-bottom: 20px" data-bs-toggle="modal"
-            data-bs-target="#createStatusModal">
+          <button v-if="canCreateStatus" type="button" class="btn add-status-btn" style="margin-bottom: 20px"
+            data-bs-toggle="modal" data-bs-target="#createStatusModal">
             <font-awesome-icon :icon="['fas', 'plus']" size="2xl" class="me-2" />
             新增狀態
           </button>
@@ -68,8 +68,8 @@
           <tbody>
             <tr v-for="status in statuses" v-bind:key="status.status_id">
               <td class="text-center">
-                <button v-if="canUpdateStatus" type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editStatusModal"
-                  v-on:click="onUpdateStatus(status)">
+                <button v-if="canUpdateStatus" type="button" class="btn btn-link" data-bs-toggle="modal"
+                  data-bs-target="#editStatusModal" v-on:click="onUpdateStatus(status)">
                   <font-awesome-icon :icon="['fas', 'pen-to-square']" size="lg" />
                 </button>
               </td>
@@ -101,19 +101,21 @@
         <div class="modal-body">
           <div class="mb-3">
             <label for="addStatusId" class="form-label">狀態代號</label>
-            <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.newStatus.status_id }" id="addStatusId" v-model="newStatus.status_id" />
+            <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.newStatus.status_id }"
+              id="addStatusId" v-model="newStatus.status_id" />
             <div class="invalid-feedback">{{ validationErrors.newStatus.status_id }}</div>
           </div>
           <div class="mb-3">
             <label for="addStatus" class="form-label">狀態名稱</label>
-            <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.newStatus.name}" id="addStatus" v-model="newStatus.name" />
+            <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.newStatus.name }"
+              id="addStatus" v-model="newStatus.name" />
             <div class="invalid-feedback">{{ validationErrors.newStatus.name }}</div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
               取消
             </button>
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" v-on:click="createStatus">
+            <button type="button" class="btn btn-primary" v-on:click="createStatus">
               確定新增
             </button>
           </div>
@@ -133,12 +135,14 @@
         <div class="modal-body">
           <div class="mb-3">
             <label for="editStatusId" class="form-label">狀態代號</label>
-            <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.editStatus.status_id }" id="editStatusId" v-model="editStatus.status_id" />
+            <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.editStatus.status_id }"
+              id="editStatusId" v-model="editStatus.status_id" />
             <div class="invalid-feedback">{{ validationErrors.editStatus.status_id }}</div>
           </div>
           <div class="mb-3">
             <label for="editStatus" class="form-label">狀態名稱</label>
-            <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.editStatus.name }" id="editStatus" v-model="editStatus.name" />
+            <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.editStatus.name }"
+              id="editStatus" v-model="editStatus.name" />
             <div class="invalid-feedback"> {{ validationErrors.editStatus.name }}</div>
           </div>
           <div class="modal-footer">
@@ -203,58 +207,69 @@ export default {
       newStatus: { name: "" },
       editStatus: { status_id: "", name: "" },
       selectedStatus: { status_id: "" },
-      validationErrors: { 
+      validationErrors: {
         newStatus: {
-          status_id: "", 
-          name: "" },
+          status_id: "",
+          name: ""
+        },
         editStatus: {
-          status_id: "", 
-          name: "" },
+          status_id: "",
+          name: ""
+        },
       },
     };
   },
   methods: {
     validateStatus(type) {
-        const status = type === 'new' ? this.newStatus : this.editStatus;
-        const errors = this.validationErrors[type === 'new' ? 'newStatus' : 'editStatus'];
-        let isValid = true;
+      const status = type === 'new' ? this.newStatus : this.editStatus;
+      const errors = this.validationErrors[type === 'new' ? 'newStatus' : 'editStatus'];
+      let isValid = true;
 
-        // 驗證狀態代號
-        if (!status.status_id.toString().trim()) {
-            errors.status_id = '狀態代號不得為空';
-            toast.error('狀態代號不得為空');
-            isValid = false;
-        } else if (!/^\d+$/.test(status.status_id)) {
-            errors.status_id = '狀態代號只能包含數字';
-            toast.error('狀態代號只能包含數字');
-            isValid = false;
-        } else {
-            errors.status_id = '';
-        }
+      // 驗證狀態代號
+      if ( !status.status_id || !status.status_id.toString().trim()) {
+        errors.status_id = '狀態代號不得為空';
+        toast.error('狀態代號不得為空', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 3000
+        });
+        isValid = false;
+      } else if (!/^\d+$/.test(status.status_id)) {
+        errors.status_id = '狀態代號只能包含數字';
+        toast.error('狀態代號只能包含數字', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 3000
+        });
+        isValid = false;
+      } else {
+        errors.status_id = '';
+      }
 
-        // 驗證狀態名稱
-        if (!status.name.trim()) {
-            errors.name = '狀態名稱不得為空';
-            toast.error('狀態名稱不得為空');
-            isValid = false;
-        } else {
-            errors.name = '';
-        }
+      // 驗證狀態名稱
+      if (!status.name.trim() || !status.name.trim()) {
+        errors.name = '狀態名稱不得為空';
+        toast.error('狀態名稱不得為空', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 3000
+        });
+        isValid = false;
+      } else {
+        errors.name = '';
+      }
 
-        return isValid;
+      return isValid;
     },
 
     clearValidationErrors() {
-        this.validationErrors = {
-            newStatus: {
-                status_id: '',
-                name: ''
-            },
-            editStatus: {
-                status_id: '',
-                name: ''
-            }
-        };
+      this.validationErrors = {
+        newStatus: {
+          status_id: '',
+          name: ''
+        },
+        editStatus: {
+          status_id: '',
+          name: ''
+        }
+      };
     },
 
     async fetchStatuses() {
@@ -304,16 +319,19 @@ export default {
     },
     // 新增職位的邏輯
     async createStatus() {
+
       if (!this.validateStatus('new')) {
+        console.log('驗證失敗');
         return;
       }
+
       if (!this.findDuplicateStatusId(this.newStatus)) {
         const requestBody = JSON.stringify(this.newStatus);
         console.log(this.newStatus);
         try {
           // 檢查創建權限
           if (!this.canCreateStatus) {
-            console.error('無權限新增狀態資料');
+            toast.error('無權限新增狀態資料');
             return;
           }
 
@@ -340,6 +358,8 @@ export default {
             this.clearValidationErrors();
             this.newStatus = { status_id: "", name: "" };
             console.log("Fetch status successfully");
+            const modal = document.getElementById('createStatusModal');
+            const bootstrapModal = bootstrap.Modal.getInstance(modal);
           } else {
             toast.error('新增狀態失敗');
             console.log("Fail to fetch status");

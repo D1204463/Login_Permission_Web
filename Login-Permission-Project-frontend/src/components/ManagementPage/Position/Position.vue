@@ -153,7 +153,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                            v-on:click="createPosition">添加</button>
+                            v-on:click="createPosition">確定新增</button>
                     </div>
                 </div>
             </div>
@@ -166,13 +166,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Position</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">編輯職位</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- 職位名稱 Position -->
                     <div class="mb-3 row">
-                        <label for="editPosition" class="col-sm-3 col-form-label">Position</label>
+                        <label for="editPosition" class="col-sm-3 col-form-label">職位名稱</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="editPosition" v-model="edidPosition.position"
                                 aria-label="Position">
@@ -180,7 +180,7 @@
                     </div>
                     <!-- 科別 Unit，從 units 資料填充-->
                     <div class="mb-3 row">
-                        <label for="editUnitID" class="col-sm-3 col-form-label">Unit ID</label>
+                        <label for="editUnitID" class="col-sm-3 col-form-label">職位代號</label>
                         <div class="col-sm-9">
                             <select class="form-select" id="editUnitID" v-model="edidPosition.unit_id">
                                 <option disabled value="">選擇科別</option>
@@ -191,9 +191,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
-                            v-on:click="updatePosition">Update</button>
+                            v-on:click="updatePosition">確定修改</button>
                     </div>
                 </div>
             </div>
@@ -226,6 +226,7 @@
 // import圖標的路徑
 import { popScopeId, ref } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
+import { toast } from 'vue3-toastify'
 import {
     faPlus,
     faPenToSquare,
@@ -330,10 +331,12 @@ export default {
                     },
                     body: JSON.stringify(this.newPosition),
                 }).then(() => {
+                    toast.success('新增職位成功');
                     console.log(response.json);
                     this.getPositionData();
                 });
             } catch (error) {
+                toast.error('新增職位失敗');
                 console.log('Error Add Position:', error);
             }
         },
@@ -366,9 +369,11 @@ export default {
                     },
                     body: JSON.stringify(this.edidPosition),
                 }).then(() => {
+                    toast.success('更新職位成功');
                     this.getPositionData();
                 });
             } catch (error) {
+                toast.error('更新職位失敗');
                 console.log('Error Update Position:', error);
             }
         },

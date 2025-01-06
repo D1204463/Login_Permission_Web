@@ -1,11 +1,6 @@
 <template>
     <div class="unit-container">
         <!-- 頁籤 -->
-      <div v-if="showToast"
-           class="toast-message"
-           v-cloak>
-        操作成功
-      </div>
         <ul class="nav nav-tabs mb-4">
             <li class="nav-item">
                 <a class="nav-link active" href="#">科別管理</a>
@@ -142,24 +137,21 @@
                             <select class="form-select" id="chooseDepartmentID" v-model="newUnit.department_id"
                                 @change="updateSelectedDepartmentName">
                                 <option disabled value="">選擇部門</option>
-                                <option v-for="department in departments"
-                                        :key="department.department_id"
-                                        :value="department.department_id">
+                                <option v-for="department in departments" :key="department.department_id"
+                                    :value="department.department_id">
                                     {{ department.department_id }} ({{ department.department_name }})
                                 </option>
                             </select>
                         </div>
                     </div>
-                  <div class="modal-footer flex-column">
-                    <div class="text-danger w-100 mb-3" v-if="showError">請填妥科別資訊</div>
-                    <div class="w-100 d-flex justify-content-end">
-                      <button type="button" class="btn btn-secondary me-2"
-                              data-bs-dismiss="modal"
-                              v-on:click="resetShowError">關閉</button>
-                      <button type="button" class="btn btn-primary"
-                              v-on:click="createUnit">添加</button>
+                    <div class="modal-footer flex-column">
+                        <div class="text-danger w-100 mb-3" v-if="showError">請填妥科別資訊</div>
+                        <div class="w-100 d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal"
+                                v-on:click="resetShowError">取消</button>
+                            <button type="button" class="btn btn-primary" v-on:click="createUnit">確定新增</button>
+                        </div>
                     </div>
-                  </div>
                 </div>
             </div>
         </div>
@@ -206,17 +198,15 @@
                             </select>
                         </div>
                     </div>
-                  <div class="modal-footer flex-column">
-                    <div class="text-danger w-100 mb-3" v-if="showError">請填妥科別資訊</div>
+                    <div class="modal-footer flex-column">
+                        <div class="text-danger w-100 mb-3" v-if="showError">請填妥科別資訊</div>
 
-                    <div class="w-100 d-flex justify-content-end">
-                      <button type="button" class="btn btn-secondary me-2"
-                              data-bs-dismiss="modal"
-                              v-on:click="resetShowError">關閉</button>
-                      <button type="button" class="btn btn-primary"
-                              v-on:click="updateUnit">確定</button>
+                        <div class="w-100 d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal"
+                                v-on:click="resetShowError">取消</button>
+                            <button type="button" class="btn btn-warning" v-on:click="updateUnit">確定修改</button>
+                        </div>
                     </div>
-                  </div>
 
                 </div>
             </div>
@@ -237,7 +227,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                        v-on:click="deleteUnit">確定</button>
+                        v-on:click="deleteUnit">確定刪除</button>
                 </div>
             </div>
         </div>
@@ -259,6 +249,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faPlus, faPenToSquare, faTrashCan, faMagnifyingGlass)
 
 import { PERMISSIONS } from '@/constants/permissions';
+import { toast } from 'vue3-toastify';
 
 export default {
     components: {
@@ -288,10 +279,10 @@ export default {
                 unit_id: "",
                 unit_name: "",
                 unit_code: "",
-              department_id: "",
+                department_id: "",
             },
             showError: false,
-          showToast: false,
+            showToast: false,
 
         }
     },
@@ -334,7 +325,7 @@ export default {
                     return;
                 }
                 const token = localStorage.getItem('JWT_Token');
-                 const response = await fetch("http://localhost:8085/unit/test/get", {
+                const response = await fetch("http://localhost:8085/unit/test/get", {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -362,11 +353,11 @@ export default {
         },
 
         async createUnit() {
-          if (!this.newUnit.unit_name || !this.newUnit.unit_code || !this.newUnit.department_id){
-            this.showError = true;
-            return;
-          }
-          this.showError = false;
+            if (!this.newUnit.unit_name || !this.newUnit.unit_code || !this.newUnit.department_id) {
+                toast.error('欄位請填寫齊全')
+                return;
+            }
+            this.showError = false;
             try {
                 // 檢查創建權限
                 if (!this.canCreateUnit) {
@@ -390,18 +381,15 @@ export default {
                 }
 
                 if (response.ok) {
-                  const responseBody = await response.json();
-                  console.log(responseBody.message);
-                  await this.getUnitData();
+                    toast.success('科別新增成功')
+                    const responseBody = await response.json();
+                    console.log(responseBody.message);
+                    await this.getUnitData();
 
-                  const closeButton = document.querySelector('#createUnitModal .btn-close');
-                  if (closeButton) {
-                    closeButton.click();
-                  }
-                  this.showToast = true;
-                  setTimeout(() => {
-                    this.showToast = false;
-                  }, 3000);
+                    const closeButton = document.querySelector('#createUnitModal .btn-close');
+                    if (closeButton) {
+                        closeButton.click();
+                    }
                 } else {
                     console.log("添加科別失敗:", response.statusText);
                 }
@@ -411,7 +399,7 @@ export default {
 
         },
         resetShowError() {
-                this.showError = false;
+            this.showError = false;
         },
 
         onSelectUnit(unit) {
@@ -433,16 +421,16 @@ export default {
                     return;
                 }
                 if (response.ok) {
-                   await this.getUnitData();
-                  const responseBody = await response.json();
-                  console.log(responseBody.message);
+                    await this.getUnitData();
+                    const responseBody = await response.json();
+                    console.log(responseBody.message);
 
-                  this.showToast = true;
-                  setTimeout(() => {
-                    this.showToast = false;
-                  }, 3000);
+                    this.showToast = true;
+                    setTimeout(() => {
+                        this.showToast = false;
+                    }, 3000);
                 } else {
-                  console.log("刪除科別失敗:", response.statusText);
+                    console.log("刪除科別失敗:", response.statusText);
                 }
             } catch (error) {
                 console.log('發送刪除請求失敗:', error);
@@ -453,11 +441,11 @@ export default {
             this.editUnit = { ...unit };
         },
         async updateUnit() {
-          if (!this.editUnit.unit_name || !this.editUnit.unit_code || !this.editUnit.department_id){
-            this.showError = true;
-            return;
-          }
-          this.showError = false;
+            if (!this.editUnit.unit_name || !this.editUnit.unit_code || !this.editUnit.department_id) {
+                toast.error('欄位請填寫齊全');
+                return;
+            }
+            
             try {
                 const token = localStorage.getItem('JWT_Token');
                 const response = await fetch("http://localhost:8085/unit/test/edit", {
@@ -475,25 +463,23 @@ export default {
                 }
 
                 if (response.ok) {
-                  const responseBody = await response.json();
-                  console.log(responseBody.message);
-                  await this.getUnitData();
+                    toast.success('更新科別成功');
+                    const responseBody = await response.json();
+                    console.log(responseBody.message);
+                    await this.getUnitData();
 
-                  const closeButton = document.querySelector('#editUnitModal .btn-close');
-                  if (closeButton) {
-                    closeButton.click();
-                  }
-                  this.showToast = true;
-                  setTimeout(() => {
-                    this.showToast = false;
-                  }, 3000);
+                    const closeButton = document.querySelector('#editUnitModal .btn-close');
+                    if (closeButton) {
+                        closeButton.click();
+                    }
                 } else {
-                  const responseBody = await response.json();
-                  console.log(responseBody.message);
+                    const responseBody = await response.json();
+                    console.log(responseBody.message);
                 }
 
             } catch (error) {
-                console.log('更新科別失敗:', error);
+                toast.error('操作失敗');
+                console.log('操作失敗:', error);
             }
         },
         updateSelectedDepartmentName() {
@@ -552,26 +538,43 @@ export default {
     margin-right: 5%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+
 .toast-message {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: white;
-  color: #10b981;  /* 綠色文字 */
-  padding: 12px 24px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  font-size: 16px;
-  animation: fadeInOut 3s ease-in-out;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: #10b981;
+    /* 綠色文字 */
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    font-size: 16px;
+    animation: fadeInOut 3s ease-in-out;
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translate(-50%, -20px); }
-  15% { opacity: 1; transform: translate(-50%, 0); }
-  85% { opacity: 1; transform: translate(-50%, 0); }
-  100% { opacity: 0; transform: translate(-50%, -20px); }
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+
+    15% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    85% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
 }
 
 .nav-tabs {
