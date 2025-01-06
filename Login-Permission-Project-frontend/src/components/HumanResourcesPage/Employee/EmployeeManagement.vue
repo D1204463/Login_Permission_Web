@@ -162,6 +162,45 @@
                         <input type="text" class="form-control" id="editPhone" v-model="selectedEmployee.phoneNumber">
                     </div>
 
+                  <div class="mb-3">
+                    <label for="editDepartment" class="form-label">部門</label>
+                    <select class="form-select" id="editDepartment" v-model="selectedEmployee.department_id">
+                      <option v-for="department in departments" :key="department.department_id" :value="department.department_id">
+                        {{ department.department_name }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- 科別選擇 -->
+                  <div class="mb-3">
+                    <label for="editDivision" class="form-label">科別</label>
+                    <select class="form-select" id="editDivision" v-model="selectedEmployee.unit_id">
+                      <option v-for="unit in units" :key="unit.unit_id" :value="unit.unit_id">
+                        {{ unit.unit_name }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- 職位選擇 -->
+                  <div class="mb-3">
+                    <label for="editPosition" class="form-label">職位</label>
+                    <select class="form-select" id="editPosition" v-model="selectedEmployee.position_id">
+                      <option v-for="position in positions" :key="position.position_id" :value="position.position_id">
+                        {{ position.position }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- 狀態選擇 -->
+                  <div class="mb-3">
+                    <label for="editPosition" class="form-label">職位</label>
+                    <select class="form-select" id="editPosition" v-model="selectedEmployee.status_id">
+                      <option v-for="stat  in  status" :key="stat.status_id" :value="stat.status_id">
+                        {{ stat.name }}
+                      </option>
+                    </select>
+                  </div>
+
                     <!-- 角色編輯區 -->
                     <h6 class="mb-3 mt-4">角色設定</h6>
                     <div class="permission-checkboxes">
@@ -334,6 +373,10 @@ export default {
                     name: this.selectedEmployee.name,
                     email: this.selectedEmployee.email,
                     phoneNumber: this.selectedEmployee.phoneNumber,
+                    status_id:this.selectedEmployee.status_id,
+                    department_id: this.selectedEmployee.department_id,
+                    unit_id:this.selectedEmployee.unit_id,
+                    position_id:this.selectedEmployee.position_id,
                     roleIds: this.selectedEmployee.roles.map(function (role) {
                         return role.role_id;
                     }),
@@ -363,21 +406,21 @@ export default {
             }
         },
         async onDeleteEmployee(employeeId) {
-          const token = localStorage.getItem('JWT_Token');
-            try {
-                const response = await fetch(`http://localhost:8085/employee/test/delete/${employeeId}`, {
-                    method: "DELETE",
-                    headers: {
-                      "Content-Type": "application/json",
-                      'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (response.ok) {
-                    await this.fetchEmployees();
-                }
-            } catch (error) {
-                console.error("Error deleting employee:", error);
-            }
+          // const token = localStorage.getItem('JWT_Token');
+          //   try {
+          //       const response = await fetch(`http://localhost:8085/employee/test/delete/${employeeId}`, {
+          //           method: "DELETE",
+          //           headers: {
+          //             "Content-Type": "application/json",
+          //             'Authorization': `Bearer ${token}`
+          //           }
+          //       });
+          //       if (response.ok) {
+          //           await this.fetchEmployees();
+          //       }
+          //   } catch (error) {
+          //       console.error("Error deleting employee:", error);
+          //   }
         },
         async fetchRoles() {
             try {
