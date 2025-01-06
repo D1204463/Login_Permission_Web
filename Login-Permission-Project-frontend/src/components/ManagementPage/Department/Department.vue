@@ -210,7 +210,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faPlus, faPenToSquare, faTrashCan, faMagnifyingGlass)
 
 import { PERMISSIONS } from '@/constants/permissions';
-
+import { toast } from 'vue3-toastify'
 export default {
     components: {
         FontAwesomeIcon
