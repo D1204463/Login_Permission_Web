@@ -150,15 +150,15 @@
                     <!-- 基本資料編輯區 -->
                     <h6 class="mb-3">基本資料</h6>
                     <div class="mb-3">
-                        <label for="editName" class="form-label">姓名</label>
+                        <label for="editName" class="form-label">姓名<span style="color: red;">*</span></label>
                         <input type="text" class="form-control" id="editName" v-model="selectedEmployee.name">
                     </div>
                     <div class="mb-3">
-                        <label for="editEmail" class="form-label">電子郵件</label>
+                        <label for="editEmail" class="form-label">電子郵件<span style="color: red;">*</span></label>
                         <input type="email" class="form-control" id="editEmail" v-model="selectedEmployee.email">
                     </div>
                     <div class="mb-3">
-                        <label for="editPhone" class="form-label">電話</label>
+                        <label for="editPhone" class="form-label">電話<span style="color: red;">*</span></label>
                         <input type="text" class="form-control" id="editPhone" v-model="selectedEmployee.phoneNumber">
                     </div>
 
@@ -193,7 +193,7 @@
 
                   <!-- 狀態選擇 -->
                   <div class="mb-3">
-                    <label for="editPosition" class="form-label">職位</label>
+                    <label for="editPosition" class="form-label">狀態</label>
                     <select class="form-select" id="editPosition" v-model="selectedEmployee.status_id">
                       <option v-for="stat  in  status" :key="stat.status_id" :value="stat.status_id">
                         {{ stat.name }}
@@ -237,6 +237,7 @@ import {fetchDepartment} from "@/utils/fetchDepartment.js";
 import{fetchStatus} from "@/utils/fetchStatus.js";
 import{fetchUnits} from "@/utils/fetchUnits.js";
 import{fetchPosition} from "@/utils/fetchPosition.js";
+import { toast } from 'vue3-toastify'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -366,6 +367,10 @@ export default {
             if (this.isUpdating) return;
 
             this.isUpdating = true;
+            if(!this.selectedEmployee.name.trim() ||!this.selectedEmployee.email.trim() ||!this.selectedEmployee.phoneNumber.trim() ) {
+              toast.error("員工姓名, 信箱, 電話號碼為必填!");
+              return;
+            }
             try {
                 const token = localStorage.getItem('JWT_Token');
                 const updatedDto = {
@@ -381,7 +386,7 @@ export default {
                         return role.role_id;
                     }),
                 };
-                console.log(updatedDto);
+
 
                 const response = await fetch("http://localhost:8085/employee/test/update", {
                     method: "PUT",
@@ -395,11 +400,14 @@ export default {
                     console.log("test success");
                     await this.fetchEmployees();
                     document.querySelector('#editEmployeeModal [data-bs-dismiss="modal"]').click();
+                  toast.success("操作成功");
                     this.selectedEmployee = null;
                 } else {
+                    toast.error("操作失敗");
                     throw new Error('Server response was not OK');
                 }
             } catch (error) {
+                toast.error("操作失敗");
                 console.error("Error updating employee:", error);
             } finally {
                 this.isUpdating = false;
