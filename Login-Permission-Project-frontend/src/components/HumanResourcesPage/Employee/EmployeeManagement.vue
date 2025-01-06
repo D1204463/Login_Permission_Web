@@ -162,46 +162,47 @@
                         <input type="text" class="form-control" id="editPhone" v-model="selectedEmployee.phoneNumber">
                     </div>
 
-                  <div class="mb-3">
-                    <label for="editDepartment" class="form-label">部門</label>
-                    <select class="form-select" id="editDepartment" v-model="selectedEmployee.department_id">
-                      <option v-for="department in departments" :key="department.department_id" :value="department.department_id">
-                        {{ department.department_name }}
-                      </option>
-                    </select>
-                  </div>
+<!--                  <div class="mb-3">-->
+<!--                    <label for="editDepartment" class="form-label">部門</label>-->
+<!--                    <select class="form-select" id="editDepartment" v-model="selectedEmployee.department.department_id">-->
+<!--                      <option value="" disabled>選擇部門</option>-->
+<!--                      <option v-for="department in departments" :key="department.department_id" :value="department.department_id">-->
+<!--                        {{ department.department_name }}-->
+<!--                      </option>-->
+<!--                    </select>-->
+<!--                  </div>-->
 
-                  <!-- 科別選擇 -->
-                  <div class="mb-3">
-                    <label for="editDivision" class="form-label">科別</label>
-                    <select class="form-select" id="editDivision" v-model="selectedEmployee.unit_id">
-                      <option v-for="unit in units" :key="unit.unit_id" :value="unit.unit_id">
-                        {{ unit.unit_name }}
-                      </option>
-                    </select>
-                  </div>
+<!--                  &lt;!&ndash; 科別選擇 &ndash;&gt;-->
+<!--                  <div class="mb-3">-->
+<!--                    <label for="editDivision" class="form-label">科別</label>-->
+<!--                    <select class="form-select" id="editDivision" v-model="selectedEmployee.unit.unit_id">-->
+<!--                      <option v-for="unit in units" :key="unit.unit_id" :value="unit.unit_id">-->
+<!--                        {{ unit.unit_name }}-->
+<!--                      </option>-->
+<!--                    </select>-->
+<!--                  </div>-->
 
                   <!-- 職位選擇 -->
-                  <div class="mb-3">
-                    <label for="editPosition" class="form-label">職位</label>
-                    <select class="form-select" id="editPosition" v-model="selectedEmployee.position_id">
-                      <option v-for="position in positions" :key="position.position_id" :value="position.position_id">
-                        {{ position.position }}
-                      </option>
-                    </select>
-                  </div>
+<!--                  <div class="mb-3">-->
+<!--                    <label for="editPosition" class="form-label">職位</label>-->
+<!--                    <select class="form-select" id="editPosition" v-model="selectedEmployee.position.position_id">-->
+<!--                      <option v-for="position in positions" :key="position.position_id" :value="position.position_id">-->
+<!--                        {{ position.position }}-->
+<!--                      </option>-->
+<!--                    </select>-->
+<!--                  </div>-->
 
-                  <!-- 狀態選擇 -->
-                  <div class="mb-3">
-                    <label for="editPosition" class="form-label">狀態</label>
-                    <select class="form-select" id="editPosition" v-model="selectedEmployee.status_id">
-                      <option v-for="stat  in  status" :key="stat.status_id" :value="stat.status_id">
-                        {{ stat.name }}
-                      </option>
-                    </select>
-                  </div>
+<!--                  &lt;!&ndash; 狀態選擇 &ndash;&gt;-->
+<!--                  <div class="mb-3">-->
+<!--                    <label for="editPosition" class="form-label">狀態</label>-->
+<!--                    <select class="form-select" id="editPosition" v-model="selectedEmployee.status.status_id">-->
+<!--                      <option v-for="stat  in  status" :key="stat.status_id" :value="stat.status_id">-->
+<!--                        {{ stat.name }}-->
+<!--                      </option>-->
+<!--                    </select>-->
+<!--                  </div>-->
 
-                    <!-- 角色編輯區 -->
+
                     <h6 class="mb-3 mt-4">角色設定</h6>
                     <div class="permission-checkboxes">
                         <div v-for="role in roles" :key="role.role_id" class="form-check">
@@ -285,10 +286,18 @@ export default {
                 email: '',
                 phoneNumber: '',
                 roles: [],
+              department: {
                 department_id: null,
+              },
+              unit: {
                 unit_id: null,
+              },
+              position: {
                 position_id: null,
-                status_id: null
+              },
+              status: {
+                status_id: null,
+              },
             },
             isUpdating: false,
         };
@@ -387,6 +396,7 @@ export default {
                     }),
                 };
 
+                console.log(updatedDto);
 
                 const response = await fetch("http://localhost:8085/employee/test/update", {
                     method: "PUT",
@@ -414,21 +424,6 @@ export default {
             }
         },
         async onDeleteEmployee(employeeId) {
-          // const token = localStorage.getItem('JWT_Token');
-          //   try {
-          //       const response = await fetch(`http://localhost:8085/employee/test/delete/${employeeId}`, {
-          //           method: "DELETE",
-          //           headers: {
-          //             "Content-Type": "application/json",
-          //             'Authorization': `Bearer ${token}`
-          //           }
-          //       });
-          //       if (response.ok) {
-          //           await this.fetchEmployees();
-          //       }
-          //   } catch (error) {
-          //       console.error("Error deleting employee:", error);
-          //   }
         },
         async fetchRoles() {
             try {
