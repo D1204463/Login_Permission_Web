@@ -100,13 +100,13 @@
             </div>
         </div>
 
-        <!-- 新增職位 Modal -->
+        <!-- 新增部門 Modal -->
         <div class="modal fade" id="createDepartmentModal" tabindex="-1" aria-labelledby="createDepartmentModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">新增部門</h5>
+                        <h5 class="modal-title" id="createDepartmentModalLabel">新增部門</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -114,22 +114,24 @@
                         <div class="mb-3 row">
                             <label for="addDepartmentName" class="col-sm-3 col-form-label">部門名稱</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="addDepartmentName"
+                                <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.newDepartment.department_name }" id="addDepartmentName"
                                     v-model="newDepartment.department_name" aria-label="DepartmentName">
+                                    <div class="invalid-feeback">{{ validationErrors.newDepartment.department_name }}</div>
                             </div>
                         </div>
                         <!-- 部門代碼 Department Code -->
                         <div class="mb-3 row">
                             <label for="addDepartmentCode" class="col-sm-3 col-form-label">部門代碼</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="addDepartmentCode"
+                                <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.newDepartment.department_code }" id="addDepartmentCode"
                                     v-model="newDepartment.department_code" aria-label="DepartmentCode">
+                                    <div class="invalid-feeback">{{ validationErrors.newDepartment.department_code }}</div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                                v-on:click="createDepartment">添加</button>
+                                v-on:click="createDepartment">確定新增</button>
                         </div>
                     </div>
                 </div>
@@ -137,58 +139,60 @@
         </div>
     </div>
 
-    <!-- 修改職位 Modal -->
+    <!-- 編輯部門 Modal -->
     <div class="modal fade" id="editDepartmentModal" tabindex="-1" aria-labelledby="editDepartmentModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Department</h5>
+                    <h5 class="modal-title" id="editDepartmentModalLabel">編輯部門</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- 部門名稱 Department Name -->
                     <div class="mb-3 row">
-                        <label for="editDepartmentName" class="col-sm-3 col-form-label">Department Name</label>
+                        <label for="editDepartmentName" class="col-sm-3 col-form-label">部門名稱</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="editDepartmentName"
+                            <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.editDepartment.department_name }" id="editDepartmentName"
                                 v-model="editDepartment.department_name" aria-label="DepartmentName">
+                                <div class="invalid-feedback"> {{ validationErrors.editDepartment.department_name }}</div>
                         </div>
                     </div>
                     <!-- 部門代碼 Department Code -->
                     <div class="mb-3 row">
-                        <label for="editDepartmentCode" class="col-sm-3 col-form-label">Department Code</label>
+                        <label for="editDepartmentCode" class="col-sm-3 col-form-label">部門代碼</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="editDepartmentCode"
+                            <input type="text" class="form-control" :class="{ 'is-invalid': validationErrors.editDepartment.department_code }" id="editDepartmentCode"
                                 v-model="editDepartment.department_code" aria-label="DepartmentCode">
+                                <div class="invalid-feedback">{{ validationErrors.editDepartment.department_code }}</div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-warning" data-bs-dismiss="modal"
-                            v-on:click="updateDepartment">Update</button>
+                            v-on:click="updateDepartment">確定修改</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 刪除職位 Modal -->
+    <!-- 刪除部門 Modal -->
     <div class="modal fade" id="deleteDepartmentModal" tabindex="-1" aria-labelledby="deleteDepartmentModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Delete Department</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">刪除部門</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this Department?
+                    確定要刪除這個部門嗎？此操作無法復原。
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                        v-on:click="deleteDepartment">Delete</button>
+                        v-on:click="deleteDepartment">確定刪除</button>
                 </div>
             </div>
         </div>
@@ -197,7 +201,7 @@
 
 <script>
 // import圖標的路徑
-import { popScopeId, ref } from 'vue'
+import { ref } from 'vue';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
     faPlus,
@@ -210,6 +214,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faPlus, faPenToSquare, faTrashCan, faMagnifyingGlass)
 
 import { PERMISSIONS } from '@/constants/permissions';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
     components: {
@@ -235,9 +241,61 @@ export default {
                 department_name: "",
                 department_code: "",
             },
+            validationErrors: {
+                newDepartment: {
+                    department_name: '',
+                    department_code: ''
+                },
+                editDepartment: {
+                    department_name: '',
+                    department_code: ''
+                }
+            }
         }
     },
     methods: {
+        validateDepartment(type) {
+            const department = type === 'new' ? this.newDepartment : this.editDepartment;
+            const errors = this.validationErrors[type === 'new' ? 'newDepartment' : 'editDepartment'];
+            let isValid = true;
+
+            // 驗證部門名稱
+            if (!department.department_name.trim()) {
+                errors.department_name = '部門名稱不得為空';
+                toast.error('部門名稱不得為空');
+                isValid = false;
+            } else {
+                errors.department_name = '';
+            }
+
+            // 驗證部門代碼
+            if (!department.department_code) {
+                errors.department_code = '部門代碼不得為空';
+                toast.error('部門代碼不得為空');
+                isValid = false;
+            } else if (!/^[A-Z0-9]+$/.test(department.department_code)) {
+                errors.department_code = '部門代碼只能包含大寫英文字母和數字';
+                toast.error('部門代碼只能包含大寫英文字母和數字');
+                isValid = false;
+            } else {
+                errors.department_code = '';
+            }
+
+            return isValid;
+        },
+        clearValidationErrors() {
+            this.validationErrors = {
+                newDepartment: {
+                    department_name: '',
+                    department_code: ''
+                },
+                editDepartment: {
+                    department_name: '',
+                    department_code: ''
+                }
+            };
+
+        },
         async getDepartmentData() { //get 部門(Department)的資料
             try {
                 // 檢查讀取權限
@@ -276,6 +334,9 @@ export default {
             this.getDepartmentData(); //重新Get所有資料
         },
         async createDepartment() { //新增Department的方法
+            if (!this.validateDepartment('new')) {
+                return;
+            }
             try {
                 // 檢查創建權限
                 if (!this.canCreateDept) {
@@ -302,12 +363,15 @@ export default {
 
                 console.log("Add response:", response.json);
                 if (response.ok) {
+                    toast.success('新增部門成功');
                     this.getDepartmentData(); //重新載入資料
                     this.newDepartment = { department_id: "", department_name: "", department_code: "" };
                 } else {
+                    toast.error('新增部門失敗');
                     console.log("Error adding Department:", response.statusText);
                 }
             } catch (error) {
+                toast.error('新增部門發生錯誤');
                 console.log('Error Add Department:', error);
             }
         },
@@ -348,9 +412,14 @@ export default {
         },
 
         onUpdateDepartment(department) { //選到要修改的department，資料要帶入updateDepartment方法
+            this.clearValidationErrors();
             this.editDepartment = { ...department };
         },
         async updateDepartment() { //修改Department的方法
+
+            if (!this.validateDepartment('edit')) {
+                return;
+            }
             try {
                 // 檢查更新權限
                 if (!this.canUpdateDept) {
@@ -375,9 +444,14 @@ export default {
                 }
 
                 if (response.ok) {
+                    toast.success('修改部門成功');
                     this.getDepartmentData();
-                }
+                } else {
+                    toast.error('修改部門失敗');
+                    console.log("Error updating Department:", response.statusText);
+                }   
             } catch (error) {
+                toast.error('修改部門發生錯誤');
                 console.log('Error Update Department:', error);
             }
         },

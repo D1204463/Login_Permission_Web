@@ -181,7 +181,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                        <button type="button" class="btn btn-primary" @click="updateRole" data-bs-dismiss="modal">確認修改</button>
+                        <button type="button" class="btn btn-warning" @click="updateRole" data-bs-dismiss="modal">確認修改</button>
                     </div>
                 </div>
             </div>
