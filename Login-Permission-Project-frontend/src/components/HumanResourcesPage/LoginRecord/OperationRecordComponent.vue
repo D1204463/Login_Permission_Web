@@ -96,7 +96,7 @@
           </div>
   
           <!-- 操作記錄表格 -->
-          <div class="table-responsive">
+          <div class="table-responsive" style="overflow-x: auto;">
             <table class="table">
               <thead class="table-secondary">
                 <tr>
@@ -235,7 +235,7 @@
                 <div class="custom-modal-body">
                   <div v-if="selectedRecord">
                     <div class="mb-4">
-                      <h6 class="fw-bold mb-2">變更前:</h6>
+                      <h6 class="fw-bold mb-2">變更後:</h6>
                       <div class="bg-light p-3 rounded">
                         <pre v-if="selectedRecord.beforeValue" class="mb-0">
                           <code>{{ formatJson(selectedRecord.beforeValue) }}</code>
@@ -244,7 +244,7 @@
                       </div>
                     </div>
                     <div>
-                      <h6 class="fw-bold mb-2">變更後:</h6>
+                      <h6 class="fw-bold mb-2">結果訊息:</h6>
                       <div class="bg-light p-3 rounded">
                         <pre v-if="selectedRecord.afterValue" class="mb-0">
                           <code>{{ formatJson(selectedRecord.afterValue) }}</code>

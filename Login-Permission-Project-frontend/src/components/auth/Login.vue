@@ -117,7 +117,7 @@ export default {
         if (result.success) {
           console.log('登入成功，正在跳轉...');
           // 登入成功，向後端再發送一次請求拿取登錄紀錄,導向首頁
-          await store.dispatch('auth/getLoginRecord');
+          // await store.dispatch('auth/getLoginRecord');
           console.log(store.state.loginRecords);
           // 使用 await 確保導航完成
           await router.push('/Home');
