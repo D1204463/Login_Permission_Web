@@ -1,278 +1,287 @@
 <template>
-    <div class="content-wrapper">
-      <div class="search-section">
-        <div v-if="canReadOperationLogs">
-          <!-- 搜尋區塊 -->
-          <div class="search-card">
-            <div class="card w-100 mb-4 border-0">
-              <div class="card-body">
-                <div class="row g-3">
-                  <!-- 開始時間 -->
-                  <div class="col-12 col-md-6 col-lg-3">
-                    <div class="form-floating">
-                      <input
-                        type="datetime-local"
-                        class="form-control"
-                        id="startTime"
-                        v-model="searchParams.startTime"
-                      />
-                      <label for="startTime">開始時間</label>
-                    </div>
-                  </div>
-  
-                  <!-- 結束時間 -->
-                  <div class="col-12 col-md-6 col-lg-3">
-                    <div class="form-floating">
-                      <input
-                        type="datetime-local"
-                        class="form-control"
-                        id="endTime"
-                        v-model="searchParams.endTime"
-                      />
-                      <label class="flex items-center" for="endTime"
-                        >結束時間</label
-                      >
-                    </div>
-                  </div>
-  
-                  <!-- 操作類型 -->
-                  <div class="col-12 col-md-6 col-lg-2">
-                    <div class="form-floating">
-                      <select
-                        class="form-select"
-                        id="operationType"
-                        v-model="searchParams.operationType"
-                      >
-                        <option value="">全部類型</option>
-                        <option value="新增">新增</option>
-                        <option value="修改">修改</option>
-                        <option value="刪除">刪除</option>
-                        <option value="查詢">查詢</option>
-                      </select>
-                      <label for="operationType">操作類型</label>
-                    </div>
-                  </div>
-  
-                  <!-- 功能模組 -->
-                  <div class="col-12 col-md-6 col-lg-2">
-                    <div class="form-floating">
-                      <select
-                        class="form-select"
-                        id="module"
-                        v-model="searchParams.module"
-                      >
-                        <option value="">全部模組</option>
-                        <option value="使用者管理">使用者管理</option>
-                        <option value="角色管理">角色管理</option>
-                        <option value="權限管理">權限管理</option>
-                        <option value="操作日誌">操作日誌</option>
-                      </select>
-                      <label for="module">功能模組</label>
-                    </div>
-                  </div>
-  
-                  <!-- 按鈕 -->
-                  <div class="col-12 col-md-auto">
-                    <div class="d-flex gap-2">
-                      <button
-                        type="button"
-                        class="btn search-btn"
-                        @click="searchLogs"
-                      >
-                        <font-awesome-icon :icon="['fas', 'search']" />
-                      </button>
-                      <button
-                        type="button"
-                        class="btn search-btn"
-                        @click="resetSearch"
-                      >
-                        <font-awesome-icon :icon="['fas', 'rotate']" />
-                      </button>
-                    </div>
+  <div class="content-wrapper">
+    <div class="search-section">
+      <div v-if="canReadOperationLogs">
+        <!-- 搜尋區塊 -->
+        <div class="search-card">
+          <div class="card w-100 mb-4 border-0">
+            <div class="card-body">
+              <div class="row g-3">
+                <!-- 開始時間 -->
+                <div class="col-12 col-md-6 col-lg-3">
+                  <div class="form-floating">
+                    <input
+                      type="datetime-local"
+                      class="form-control"
+                      id="startTime"
+                      v-model="searchParams.startTime"
+                    />
+                    <label for="startTime">開始時間</label>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-  
-          <!-- 操作記錄表格 -->
-          <div class="table-responsive" style="overflow-x: auto;">
-            <table class="table">
-              <thead class="table-secondary">
-                <tr>
-                  <th>用戶ID</th>
-                  <th>用戶名稱</th>
-                  <th>操作類型</th>
-                  <th>功能模組</th>
-                  <th>操作描述</th>
-                  <th>操作結果</th>
-                  <th>IP位址</th>
-                  <th>操作時間</th>
-                  <th>詳細資訊</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(record, index) in operationLogs" :key="record.id">
-                  <td>{{ record.userId }}</td>
-                  <td>{{ record.username }}</td>
-                  <td>
-                    <span
-                      class="operation-type"
-                      :class="getOperationTypeClass(record.operationType)"
+
+                <!-- 結束時間 -->
+                <div class="col-12 col-md-6 col-lg-3">
+                  <div class="form-floating">
+                    <input
+                      type="datetime-local"
+                      class="form-control"
+                      id="endTime"
+                      v-model="searchParams.endTime"
+                    />
+                    <label class="flex items-center" for="endTime"
+                      >結束時間</label
                     >
-                      {{ record.operationType }}
-                    </span>
-                  </td>
-                  <td>{{ record.module }}</td>
-                  <td>{{ record.description }}</td>
-                  <td>
-                    <span
-                      class="status-badge"
-                      :class="{
-                        'status-success': record.operationResult === '成功',
-                        'status-failed': record.operationResult === '失敗',
-                      }"
+                  </div>
+                </div>
+
+                <!-- 操作類型 -->
+                <div class="col-12 col-md-6 col-lg-2">
+                  <div class="form-floating">
+                    <select
+                      class="form-select"
+                      id="operationType"
+                      v-model="searchParams.operationType"
                     >
-                      {{ record.operationResult }}
-                    </span>
-                  </td>
-                  <td>{{ record.ipAddress }}</td>
-                  <td>{{ formatDateTime(record.operationTime) }}</td>
-                  <td>
+                      <option value="">全部類型</option>
+                      <option value="新增">新增</option>
+                      <option value="修改">修改</option>
+                      <option value="刪除">刪除</option>
+                      <option value="查詢">查詢</option>
+                    </select>
+                    <label for="operationType">操作類型</label>
+                  </div>
+                </div>
+
+                <!-- 功能模組 -->
+                <div class="col-12 col-md-6 col-lg-2">
+                  <div class="form-floating">
+                    <select
+                      class="form-select"
+                      id="module"
+                      v-model="searchParams.module"
+                    >
+                      <option value="">全部模組</option>
+                      <option value="使用者管理">使用者管理</option>
+                      <option value="角色管理">角色管理</option>
+                      <option value="權限管理">權限管理</option>
+                      <option value="操作日誌">操作日誌</option>
+                    </select>
+                    <label for="module">功能模組</label>
+                  </div>
+                </div>
+
+                <!-- 按鈕 -->
+                <div class="col-12 col-md-auto">
+                  <div class="d-flex gap-2">
                     <button
                       type="button"
-                      class="btn btn-link p-0"
-                      @click="setSelectedRecord(record)"
-                      v-if="record.beforeValue || record.afterValue"
+                      class="btn search-btn"
+                      @click="searchLogs"
                     >
-                      <font-awesome-icon :icon="['fas', 'circle-info']" />
+                      <font-awesome-icon :icon="['fas', 'search']" />
                     </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-  
-          <!-- 分頁控制 -->
-          <div class="d-flex justify-content-between align-items-center mt-3">
-            <div class="d-flex align-items-center gap-3">
-              <!-- 新增顯示行數選擇器 -->
-              <div class="d-flex align-items-center">
-                <span class="me-2">顯示筆數：</span>
-                <select 
-                  class="form-select form-select-sm" 
-                  v-model="pageSize" 
-                  @change="handlePageSizeChange"
-                  style="width: auto;"
-                >
-                  <option v-for="size in pageSizeOptions" :key="size" :value="size">
-                    {{ size }}
-                  </option>
-                </select>
-              </div>
-              <div class="text-muted">共 {{ totalItems }} 筆資料</div>
-            </div>
-  
-            <nav aria-label="Page navigation">
-              <ul class="pagination mb-0">
-                <li class="page-item" :class="{ disabled: currentPage === 0 }">
-                  <a
-                    class="page-link"
-                    href="#"
-                    @click.prevent="changePage(currentPage - 1)"
-                  >
-                    <span aria-hidden="true">&laquo;</span>
-                  </a>
-                </li>
-                <li
-                  v-for="page in displayedPages"
-                  :key="page"
-                  class="page-item"
-                  :class="{ active: currentPage === page }"
-                >
-                  <a class="page-link" href="#" @click.prevent="changePage(page)">
-                    {{ page + 1 }}
-                  </a>
-                </li>
-                <li
-                  class="page-item"
-                  :class="{ disabled: currentPage === totalPages - 1 }"
-                >
-                  <a
-                    class="page-link"
-                    href="#"
-                    @click.prevent="changePage(currentPage + 1)"
-                  >
-                    <span aria-hidden="true">&raquo;</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-  
-          <!-- 自定義 Modal -->
-          <div class="custom-modal" v-if="isShow">
-            <!-- 背景遮罩 -->
-            <div class="custom-modal-backdrop" @click="closeModal"></div>
-  
-            <!-- Modal 內容 -->
-            <div class="custom-modal-dialog" role="dialog" aria-labelledby="customModalLabel">
-              <div class="custom-modal-content">
-                <!-- 標題區 -->
-                <div class="custom-modal-header">
-                  <h5 class="custom-modal-title" id="customModalLabel">操作詳細資訊</h5>
-                  <button 
-                    type="button" 
-                    class="custom-modal-close" 
-                    @click="closeModal"
-                    aria-label="Close"
-                  >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+                    <button
+                      type="button"
+                      class="btn search-btn"
+                      @click="resetSearch"
+                    >
+                      <font-awesome-icon :icon="['fas', 'rotate']" />
+                    </button>
+                  </div>
                 </div>
-  
-                <!-- 內容區 -->
-                <div class="custom-modal-body">
-                  <div v-if="selectedRecord">
-                    <div class="mb-4">
-                      <h6 class="fw-bold mb-2">變更後:</h6>
-                      <div class="bg-light p-3 rounded">
-                        <pre v-if="selectedRecord.beforeValue" class="mb-0">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 操作記錄表格 -->
+        <div class="table-responsive" style="overflow-x: auto">
+          <table class="table">
+            <thead class="table-secondary">
+              <tr>
+                <th>用戶ID</th>
+                <th>用戶名稱</th>
+                <th>操作類型</th>
+                <th>功能模組</th>
+                <th>操作描述</th>
+                <th>操作結果</th>
+                <th>IP位址</th>
+                <th>操作時間</th>
+                <th>詳細資訊</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(record, index) in operationLogs" :key="record.id">
+                <td>{{ record.userId }}</td>
+                <td>{{ record.username }}</td>
+                <td>
+                  <span
+                    class="operation-type"
+                    :class="getOperationTypeClass(record.operationType)"
+                  >
+                    {{ record.operationType }}
+                  </span>
+                </td>
+                <td>{{ record.module }}</td>
+                <td>{{ record.description }}</td>
+                <td>
+                  <span
+                    class="status-badge"
+                    :class="{
+                      'status-success': record.operationResult === '成功',
+                      'status-failed': record.operationResult === '失敗',
+                    }"
+                  >
+                    {{ record.operationResult }}
+                  </span>
+                </td>
+                <td>{{ record.ipAddress }}</td>
+                <td>{{ formatDateTime(record.operationTime) }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn btn-link p-0"
+                    @click="setSelectedRecord(record)"
+                    v-if="record.beforeValue || record.afterValue"
+                  >
+                    <font-awesome-icon :icon="['fas', 'circle-info']" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 分頁控制 -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <div class="d-flex align-items-center gap-3">
+            <!-- 新增顯示行數選擇器 -->
+            <div class="d-flex align-items-center">
+              <span class="me-2">顯示筆數：</span>
+              <select
+                class="form-select form-select-sm"
+                v-model="pageSize"
+                @change="handlePageSizeChange"
+                style="width: auto"
+              >
+                <option
+                  v-for="size in pageSizeOptions"
+                  :key="size"
+                  :value="size"
+                >
+                  {{ size }}
+                </option>
+              </select>
+            </div>
+            <div class="text-muted">共 {{ totalItems }} 筆資料</div>
+          </div>
+
+          <nav aria-label="Page navigation">
+            <ul class="pagination mb-0">
+              <li class="page-item" :class="{ disabled: currentPage === 0 }">
+                <a
+                  class="page-link"
+                  href="#"
+                  @click.prevent="changePage(currentPage - 1)"
+                >
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              <li
+                v-for="page in displayedPages"
+                :key="page"
+                class="page-item"
+                :class="{ active: currentPage === page }"
+              >
+                <a class="page-link" href="#" @click.prevent="changePage(page)">
+                  {{ page + 1 }}
+                </a>
+              </li>
+              <li
+                class="page-item"
+                :class="{ disabled: currentPage === totalPages - 1 }"
+              >
+                <a
+                  class="page-link"
+                  href="#"
+                  @click.prevent="changePage(currentPage + 1)"
+                >
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <!-- 自定義 Modal -->
+        <div class="custom-modal" v-if="isShow">
+          <!-- 背景遮罩 -->
+          <div class="custom-modal-backdrop" @click="closeModal"></div>
+
+          <!-- Modal 內容 -->
+          <div
+            class="custom-modal-dialog"
+            role="dialog"
+            aria-labelledby="customModalLabel"
+          >
+            <div class="custom-modal-content">
+              <!-- 標題區 -->
+              <div class="custom-modal-header">
+                <h5 class="custom-modal-title" id="customModalLabel">
+                  操作詳細資訊
+                </h5>
+                <button
+                  type="button"
+                  class="custom-modal-close"
+                  @click="closeModal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <!-- 內容區 -->
+              <div class="custom-modal-body">
+                <div v-if="selectedRecord">
+                  <div class="mb-4">
+                    <h6 class="fw-bold mb-2">變更後:</h6>
+                    <div class="bg-light p-3 rounded">
+                      <pre v-if="selectedRecord.beforeValue" class="mb-0">
                           <code>{{ formatJson(selectedRecord.beforeValue) }}</code>
                         </pre>
-                        <span v-else class="text-muted fst-italic">null</span>
-                      </div>
+                      <span v-else class="text-muted fst-italic">null</span>
                     </div>
-                    <div>
-                      <h6 class="fw-bold mb-2">結果訊息:</h6>
-                      <div class="bg-light p-3 rounded">
-                        <pre v-if="selectedRecord.afterValue" class="mb-0">
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-2">結果訊息:</h6>
+                    <div class="bg-light p-3 rounded">
+                      <pre v-if="selectedRecord.afterValue" class="mb-0">
                           <code>{{ formatJson(selectedRecord.afterValue) }}</code>
                         </pre>
-                        <span v-else class="text-muted fst-italic">null</span>
-                      </div>
+                      <span v-else class="text-muted fst-italic">null</span>
                     </div>
                   </div>
                 </div>
-  
-                <!-- 底部按鈕區 -->
-                <div class="custom-modal-footer">
-                  <button 
-                    type="button" 
-                    class="custom-btn custom-btn-secondary" 
-                    @click="closeModal"
-                  >
-                    關閉
-                  </button>
-                </div>
+              </div>
+
+              <!-- 底部按鈕區 -->
+              <div class="custom-modal-footer">
+                <button
+                  type="button"
+                  class="custom-btn custom-btn-secondary"
+                  @click="closeModal"
+                >
+                  關閉
+                </button>
               </div>
             </div>
           </div>
-  
         </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
 
 <script>
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -282,6 +291,8 @@ import {
   faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 import { PERMISSIONS } from "@/constants/permissions";
 
 library.add(faRotate, faSearch, faCircleInfo);
@@ -343,7 +354,7 @@ export default {
         minute: "2-digit",
         second: "2-digit",
         hour12: false,
-        timeZone: 'Asia/Taipei'
+        timeZone: "Asia/Taipei",
       }).format(date);
     },
 
@@ -369,89 +380,92 @@ export default {
     },
 
     handlePageSizeChange() {
-    this.currentPage = 0; // 重置到第一頁
-    this.searchLogs(); // 重新獲取數據
-  },
+      this.currentPage = 0; // 重置到第一頁
+      this.searchLogs(); // 重新獲取數據
+    },
 
-  async searchLogs() {
-  try {
-    const params = new URLSearchParams();
-    
-    // 處理時間格式
-    if (this.searchParams.startTime) {
-      // 確保時間是在正確的時區
-      const startTime = new Date(this.searchParams.startTime);
-      const timeStr = startTime.toLocaleString('sv', { timeZone: 'Asia/Taipei' }).replace(' ', 'T');
-      params.append("startTime", timeStr);
-    }
-    
-    if (this.searchParams.endTime) {
-      const endTime = new Date(this.searchParams.endTime);
-      const timeStr = endTime.toLocaleString('sv', { timeZone: 'Asia/Taipei' }).replace(' ', 'T');
-      params.append("endTime", timeStr);
-    }
+    async searchLogs() {
+      try {
+        const params = new URLSearchParams();
 
-    // 其他參數
-    if (this.searchParams.operationType) {
-      params.append("operationType", this.searchParams.operationType);
-    }
-    if (this.searchParams.module) {
-      params.append("module", this.searchParams.module);
-    }
-    
-    params.append("page", this.currentPage);
-    params.append("size", this.pageSize);
+        // 處理時間格式
+        if (this.searchParams.startTime) {
+          // 確保時間是在正確的時區
+          const startTime = new Date(this.searchParams.startTime);
+          const timeStr = startTime
+            .toLocaleString("sv", { timeZone: "Asia/Taipei" })
+            .replace(" ", "T");
+          params.append("startTime", timeStr);
+        }
 
-    const token = localStorage.getItem("JWT_Token");
-    const baseUrl = "http://localhost:8085";
-    
-    console.log('Request params:', params.toString()); // 添加日誌
+        if (this.searchParams.endTime) {
+          const endTime = new Date(this.searchParams.endTime);
+          const timeStr = endTime
+            .toLocaleString("sv", { timeZone: "Asia/Taipei" })
+            .replace(" ", "T");
+          params.append("endTime", timeStr);
+        }
 
-    const response = await fetch(
-      `${baseUrl}/api/logs/search?${params.toString()}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        // 其他參數
+        if (this.searchParams.operationType) {
+          params.append("operationType", this.searchParams.operationType);
+        }
+        if (this.searchParams.module) {
+          params.append("module", this.searchParams.module);
+        }
+
+        params.append("page", this.currentPage);
+        params.append("size", this.pageSize);
+
+        const token = localStorage.getItem("JWT_Token");
+        const baseUrl = "http://localhost:8085";
+
+        const response = await fetch(
+          `${baseUrl}/api/logs/search?${params.toString()}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          // 添加更詳細的錯誤信息
+          const errorBody = await response.text();
+          toast.error("Response error:", errorBody);
+          throw new Error(
+            `HTTP error! status: ${response.status}, body: ${errorBody}`
+          );
+        }
+
+        const data = await response.json();
+        if (data.message === "查詢成功") {
+          this.operationLogs = data.data.content;
+          this.totalItems = data.data.totalItems;
+          this.totalPages = data.data.totalPages;
+          this.currentPage = data.data.currentPage;
+        } else {
+          throw new Error(data.message || "取得數據失敗");
+        }
+      } catch (error) {
+        toast.error("取得數據失敗");
       }
-    );
+    },
 
-    if (!response.ok) {
-      // 添加更詳細的錯誤信息
-      const errorBody = await response.text();
-      console.error('Response error:', errorBody);
-      throw new Error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
-    }
-
-    const data = await response.json();
-    if (data.message === "查詢成功") {
-      this.operationLogs = data.data.content;
-      this.totalItems = data.data.totalItems;
-      this.totalPages = data.data.totalPages;
-      this.currentPage = data.data.currentPage;
-    } else {
-      throw new Error(data.message || "獲取數據失敗");
-    }
-  } catch (error) {
-    console.error("Error fetching logs:", error);
-    this.$toast?.error("獲取操作紀錄失敗");
-  }
-},
-
-// 重置搜尋時也要處理時間
-resetSearch() {
-  this.searchParams = {
-    startTime: "",
-    endTime: "",
-    operationType: "",
-    module: "",
-    userId: "",
-  };
-  this.currentPage = 0;
-  this.searchLogs();
-},
+    // 重置搜尋時也要處理時間
+    resetSearch() {
+      this.searchParams = {
+        startTime: "",
+        endTime: "",
+        operationType: "",
+        module: "",
+        userId: "",
+      };
+      this.currentPage = 0;
+      this.searchLogs();
+    },
 
     changePage(page) {
       if (page >= 0 && page < this.totalPages) {
@@ -462,16 +476,16 @@ resetSearch() {
 
     showModal() {
       this.isShow = true;
-      document.body.style.overflow = 'hidden'; // 防止背景滾動
+      document.body.style.overflow = "hidden"; // 防止背景滾動
     },
     closeModal() {
       this.isShow = false;
-      document.body.style.overflow = ''; // 恢復背景滾動
+      document.body.style.overflow = ""; // 恢復背景滾動
     },
 
     setSelectedRecord(record) {
-        this.selectedRecord = record;
-        this.showModal();
+      this.selectedRecord = record;
+      this.showModal();
     },
   },
   mounted() {
@@ -479,8 +493,8 @@ resetSearch() {
   },
   beforeDestroy() {
     // 組件銷毀時確保清理樣式
-    document.body.style.overflow = '';
-  }
+    document.body.style.overflow = "";
+  },
 };
 </script>
 
@@ -509,7 +523,6 @@ resetSearch() {
   width: 100%;
   margin-bottom: 1.5rem;
 }
-
 
 /* 搜尋按鈕 */
 .search-btn {
@@ -666,21 +679,20 @@ resetSearch() {
   border-color: #dee2e6;
 }
 
-
 /* 保持原有的詳細資訊相關樣式 */
 .bg-light {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
 pre {
-    margin: 0;
-    white-space: pre-wrap;
-    word-break: break-word;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 code {
-    color: #333;
-    font-family: monospace;
+  color: #333;
+  font-family: monospace;
 }
 
 .content-wrapper {
@@ -829,7 +841,7 @@ code {
   justify-content: space-between;
   padding: 1rem;
   background-color: #f8f9fa;
-  border-bottom: 2px solid #FFCD50;
+  border-bottom: 2px solid #ffcd50;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
@@ -909,7 +921,7 @@ code {
   .custom-modal-dialog {
     margin: 0.5rem;
   }
-  
+
   .custom-modal-content {
     max-height: calc(100vh - 1rem);
   }
@@ -925,5 +937,4 @@ code {
   border-color: #334255;
   box-shadow: 0 0 0 0.25rem rgba(51, 66, 85, 0.25);
 }
-
 </style>
