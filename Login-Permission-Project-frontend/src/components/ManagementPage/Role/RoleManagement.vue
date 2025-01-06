@@ -224,7 +224,7 @@ import {
     faMagnifyingGlass,
     faRotate
 } from '@fortawesome/free-solid-svg-icons';
-
+import { toast } from 'vue3-toastify'
 library.add(
     faPlus,
     faPenToSquare,

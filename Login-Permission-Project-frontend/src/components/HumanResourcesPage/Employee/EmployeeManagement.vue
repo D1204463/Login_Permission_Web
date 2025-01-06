@@ -397,6 +397,7 @@ export default {
                 return;
             }
             try {
+                toast.loading("處理中...");
                 const token = localStorage.getItem('JWT_Token');
                 const updatedDto = {
                     employee_id: this.selectedEmployee.employee_id,
@@ -411,8 +412,6 @@ export default {
                         return role.role_id;
                     }),
                 };
-
-                console.log(updatedDto);
 
                 const response = await fetch("http://localhost:8085/employee/test/update", {
                     method: "PUT",
@@ -433,7 +432,7 @@ export default {
                     throw new Error('Server response was not OK');
                 }
             } catch (error) {
-                toast.error("操作失敗");
+                toast.error("發生錯誤");
                 console.error("Error updating employee:", error);
             } finally {
                 this.isUpdating = false;
