@@ -15,7 +15,7 @@
                 <!-- Logo -->
                 <a href="/Home"
                     class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                    <span class="fs-5">Bank</span>
+                    <span class="fs-5">逢大銀行</span>
                 </a>
 
                 <!-- User Profile -->
@@ -26,12 +26,12 @@
                         <span class="mx-3">{{ userName || 'User' }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark text-small shadow" :class="{ 'show': isDropdownOpen }">
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
-                        <li><router-link to="/profile" class="dropdown-item">Profile</router-link></li>
+                        <li><a class="dropdown-item" href="#">設定</a></li>
+                        <li><router-link to="/profile" class="dropdown-item">個人資料</router-link></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><router-link to="/" class="dropdown-item" @click="logout">Sign out</router-link></li>
+                        <li><router-link to="/" class="dropdown-item" @click="logout">登出</router-link></li>
                     </ul>
                 </div>
 
