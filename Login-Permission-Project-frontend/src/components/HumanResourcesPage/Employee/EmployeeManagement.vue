@@ -397,7 +397,7 @@ export default {
                 return;
             }
             try {
-                toast.loading("處理中...");
+
                 const token = localStorage.getItem('JWT_Token');
                 const updatedDto = {
                     employee_id: this.selectedEmployee.employee_id,
