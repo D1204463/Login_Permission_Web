@@ -215,7 +215,8 @@
 <script>
 // import圖標的路徑
 import { popScopeId, ref } from 'vue'
-// import {  }
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
     faPlus,
@@ -373,9 +374,17 @@ export default {
             try {
                 // 檢查更新權限
                 if (!this.canUpdatePerm) {
-                    console.error('無權限修改權限資料');
+                    toast.error('無權限修改權限資料', {
+                        position: toast.POSITION.TOP_CENTER,
+                        autoClose: 3000
+                    });
                     return;
                 }
+
+                // 顯示 loading toast
+                const loadingToastId = toast.loading('更新權限中...', {
+                    position: toast.POSITION.TOP_CENTER
+                });
 
                 const token = localStorage.getItem('JWT_Token');
 
@@ -389,15 +398,43 @@ export default {
                 });
 
                 if (response.status === 403) {
-                    console.error('權限不足');
+                    // 更新 loading toast 為錯誤訊息
+                    toast.update(loadingToastId, {
+                        render: '權限不足',
+                        type: toast.TYPE.ERROR,
+                        autoClose: 3000,
+                        isLoading: false
+                    });
                     return;
                 }
 
                 if (response.ok) {
-                    this.getPermissionData();
+                    // 更新 loading toast 為成功訊息
+                    toast.update(loadingToastId, {
+                        render: '權限更新成功',
+                        type: toast.TYPE.SUCCESS,
+                        autoClose: 3000,
+                        isLoading: false
+                    });
+                    await this.getPermissionData();
+                } else {
+                    // 更新 loading toast 為錯誤訊息
+                    toast.update(loadingToastId, {
+                        render: '權限更新失敗',
+                        type: toast.TYPE.ERROR,
+                        autoClose: 3000,
+                        isLoading: false
+                    });
                 }
             } catch (error) {
                 console.log('Error Update Permission:', error);
+                // 更新 loading toast 為錯誤訊息
+                toast.update(loadingToastId, {
+                    render: '發生錯誤，請稍後再試',
+                    type: toast.TYPE.ERROR,
+                    autoClose: 3000,
+                    isLoading: false
+                });
             }
         },
     },
