@@ -150,19 +150,59 @@
                     <!-- 基本資料編輯區 -->
                     <h6 class="mb-3">基本資料</h6>
                     <div class="mb-3">
-                        <label for="editName" class="form-label">姓名</label>
+                        <label for="editName" class="form-label">姓名<span style="color: red;">*</span></label>
                         <input type="text" class="form-control" id="editName" v-model="selectedEmployee.name">
                     </div>
                     <div class="mb-3">
-                        <label for="editEmail" class="form-label">電子郵件</label>
+                        <label for="editEmail" class="form-label">電子郵件<span style="color: red;">*</span></label>
                         <input type="email" class="form-control" id="editEmail" v-model="selectedEmployee.email">
                     </div>
                     <div class="mb-3">
-                        <label for="editPhone" class="form-label">電話</label>
+                        <label for="editPhone" class="form-label">電話<span style="color: red;">*</span></label>
                         <input type="text" class="form-control" id="editPhone" v-model="selectedEmployee.phoneNumber">
                     </div>
 
-                    <!-- 角色編輯區 -->
+<!--                  <div class="mb-3">-->
+<!--                    <label for="editDepartment" class="form-label">部門</label>-->
+<!--                    <select class="form-select" id="editDepartment" v-model="selectedEmployee.department.department_id">-->
+<!--                      <option value="" disabled>選擇部門</option>-->
+<!--                      <option v-for="department in departments" :key="department.department_id" :value="department.department_id">-->
+<!--                        {{ department.department_name }}-->
+<!--                      </option>-->
+<!--                    </select>-->
+<!--                  </div>-->
+
+<!--                  &lt;!&ndash; 科別選擇 &ndash;&gt;-->
+<!--                  <div class="mb-3">-->
+<!--                    <label for="editDivision" class="form-label">科別</label>-->
+<!--                    <select class="form-select" id="editDivision" v-model="selectedEmployee.unit.unit_id">-->
+<!--                      <option v-for="unit in units" :key="unit.unit_id" :value="unit.unit_id">-->
+<!--                        {{ unit.unit_name }}-->
+<!--                      </option>-->
+<!--                    </select>-->
+<!--                  </div>-->
+
+                  <!-- 職位選擇 -->
+<!--                  <div class="mb-3">-->
+<!--                    <label for="editPosition" class="form-label">職位</label>-->
+<!--                    <select class="form-select" id="editPosition" v-model="selectedEmployee.position.position_id">-->
+<!--                      <option v-for="position in positions" :key="position.position_id" :value="position.position_id">-->
+<!--                        {{ position.position }}-->
+<!--                      </option>-->
+<!--                    </select>-->
+<!--                  </div>-->
+
+<!--                  &lt;!&ndash; 狀態選擇 &ndash;&gt;-->
+<!--                  <div class="mb-3">-->
+<!--                    <label for="editPosition" class="form-label">狀態</label>-->
+<!--                    <select class="form-select" id="editPosition" v-model="selectedEmployee.status.status_id">-->
+<!--                      <option v-for="stat  in  status" :key="stat.status_id" :value="stat.status_id">-->
+<!--                        {{ stat.name }}-->
+<!--                      </option>-->
+<!--                    </select>-->
+<!--                  </div>-->
+
+
                     <h6 class="mb-3 mt-4">角色設定</h6>
                     <div class="permission-checkboxes">
                         <div v-for="role in roles" :key="role.role_id" class="form-check">
@@ -198,6 +238,7 @@ import {fetchDepartment} from "@/utils/fetchDepartment.js";
 import{fetchStatus} from "@/utils/fetchStatus.js";
 import{fetchUnits} from "@/utils/fetchUnits.js";
 import{fetchPosition} from "@/utils/fetchPosition.js";
+import { toast } from 'vue3-toastify'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -245,10 +286,18 @@ export default {
                 email: '',
                 phoneNumber: '',
                 roles: [],
+              department: {
                 department_id: null,
+              },
+              unit: {
                 unit_id: null,
+              },
+              position: {
                 position_id: null,
-                status_id: null
+              },
+              status: {
+                status_id: null,
+              },
             },
             isUpdating: false,
         };
@@ -327,6 +376,10 @@ export default {
             if (this.isUpdating) return;
 
             this.isUpdating = true;
+            if(!this.selectedEmployee.name.trim() ||!this.selectedEmployee.email.trim() ||!this.selectedEmployee.phoneNumber.trim() ) {
+              toast.error("員工姓名, 信箱, 電話號碼為必填!");
+              return;
+            }
             try {
                 const token = localStorage.getItem('JWT_Token');
                 const updatedDto = {
@@ -334,10 +387,15 @@ export default {
                     name: this.selectedEmployee.name,
                     email: this.selectedEmployee.email,
                     phoneNumber: this.selectedEmployee.phoneNumber,
+                    status_id:this.selectedEmployee.status_id,
+                    department_id: this.selectedEmployee.department_id,
+                    unit_id:this.selectedEmployee.unit_id,
+                    position_id:this.selectedEmployee.position_id,
                     roleIds: this.selectedEmployee.roles.map(function (role) {
                         return role.role_id;
                     }),
                 };
+
                 console.log(updatedDto);
 
                 const response = await fetch("http://localhost:8085/employee/test/update", {
@@ -352,32 +410,20 @@ export default {
                     console.log("test success");
                     await this.fetchEmployees();
                     document.querySelector('#editEmployeeModal [data-bs-dismiss="modal"]').click();
+                  toast.success("操作成功");
                     this.selectedEmployee = null;
                 } else {
+                    toast.error("操作失敗");
                     throw new Error('Server response was not OK');
                 }
             } catch (error) {
+                toast.error("操作失敗");
                 console.error("Error updating employee:", error);
             } finally {
                 this.isUpdating = false;
             }
         },
         async onDeleteEmployee(employeeId) {
-          const token = localStorage.getItem('JWT_Token');
-            try {
-                const response = await fetch(`http://localhost:8085/employee/test/delete/${employeeId}`, {
-                    method: "DELETE",
-                    headers: {
-                      "Content-Type": "application/json",
-                      'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (response.ok) {
-                    await this.fetchEmployees();
-                }
-            } catch (error) {
-                console.error("Error deleting employee:", error);
-            }
         },
         async fetchRoles() {
             try {
